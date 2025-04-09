@@ -1,6 +1,6 @@
 # NYC Slice of Life 🍕
 
-Welcome to the official website of **NYC Slice of Life**, a project by Sarah that chronicles New York City’s best pizza spots, hidden gems, and slice shop stories — all through the lens of a lifelong NYC pizza lover.
+Welcome to the official website of **NYC Slice of Life**, a project that chronicles New York City’s best pop-ups, hidden gems, and stories — all through the lens of an NYC pop-up lover.
 
 Follow the journey on [Instagram](https://www.instagram.com/nycsliceoflife/) 🍕📸
 
@@ -8,17 +8,15 @@ Follow the journey on [Instagram](https://www.instagram.com/nycsliceoflife/) �
 
 ## 🚀 About This Website
 
-This site expands on the *NYC Slice of Life* Instagram experience with a more interactive and informative hub. Built from scratch by [Alex](https://github.com/yourusername), the site currently features:
+This site expands on the *NYC Slice of Life* Instagram experience with a more interactive and informative hub. Built from scratch by [Alex](https://github.com/anewbegin95), the site currently features:
 
 ### 🧭 Pages
-- **Home Page**: The main hub — links to blog posts, featured pizza spots, and recent highlights.  
-- **About Me Page**: A look into Sarah’s story, her love for NYC pizza, and why this account exists.  
-- **Calendar Page**: A living calendar of NYC pizza-related events — from grand openings to pop-ups to community pizza nights.
+- **Home Page**: The main hub — links to blog posts, featured pop-ups, and recent highlights.  
+- **About Me Page**: A look into the founder's story, her love for NYC pop-ups, and why this account exists.  
+- **Calendar Page**: A living calendar of NYC pop-up-related events — from grand openings to pop-ups.
 
 Future plans include:
-- 📍 An interactive pizza map with filters and favorites
-- 🛍️ Merch and gear
-- 🍕 Guided pizza tours
+- TBD!
 
 ---
 
@@ -43,3 +41,4 @@ cd project-pizza
 
 # Open index.html directly in your browser, or serve it locally:
 npx serve .
+```
