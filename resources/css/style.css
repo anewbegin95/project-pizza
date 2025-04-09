@@ -78,3 +78,23 @@ body, h1, h2, p, ul, li {
     padding: 10px 0;
     margin-top: 20px;
   }
+
+  @media (max-width: 768px) {
+    nav ul {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    nav ul li {
+      margin: 10px 0;
+    }
+  
+    header h1 {
+      font-size: 1.8rem;
+    }
+  
+    header p {
+      font-size: 1rem;
+    }
+  }
+  
