@@ -16,7 +16,7 @@ async function fetchAndDisplayEvents() {
   
       // Get the index of each column so we can map the data correctly
       const prefixIndex = headers.indexOf("prefix");
-      const linkTextIndex = headers.indexOf("link text");
+      const linkTextIndex = headers.indexOf("link_text");
       const linkIndex = headers.indexOf("link");
       const suffixIndex = headers.indexOf("suffix");
   
