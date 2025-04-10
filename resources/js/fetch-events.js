@@ -38,12 +38,15 @@ async function fetchAndDisplayEvents() {
         const linkText = cols[linkTextIndex] || "";
         const link = cols[linkIndex] || "#";
         const suffix = cols[suffixIndex] || "";
+
+        // Debugging line to check the values being processed
+        console.log({ prefix, linkText, link, suffix }); 
   
         // Create a new <li> element for the event
         const li = document.createElement("li");
   
         // Inject the event content into the <li>, combining prefix + link + suffix
-        li.innerHTML = `${prefix} <a href="${link}" target="_blank" rel="noopener noreferrer">${linkText}</a>${suffix ? " " + suffix : ""}`;
+        li.innerHTML = `${prefix} <a href="${link}" target="_blank" rel="noopener noreferrer">${linkText}</a>${suffix ? ` | ${suffix}` : ""}`;
   
         // Add this <li> to the <ul>
         ul.appendChild(li);
