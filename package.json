@@ -4,7 +4,8 @@
   "description": "Welcome to the official website of **NYC Slice of Life**, a project that chronicles New York City’s best pop-ups, hidden gems, and stories — all through the lens of an NYC pop-up lover.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,8 @@
     "@fullcalendar/core": "^6.1.17",
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/interaction": "^6.1.17"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
   }
 }
