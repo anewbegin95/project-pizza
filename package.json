@@ -24,6 +24,7 @@
     "@fullcalendar/interaction": "^6.1.17"
   },
   "devDependencies": {
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.0",
+    "vite": "^6.2.6"
   }
 }
