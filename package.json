@@ -1,0 +1,25 @@
+{
+  "name": "project-pizza",
+  "version": "1.0.0",
+  "description": "Welcome to the official website of **NYC Slice of Life**, a project that chronicles New York City’s best pop-ups, hidden gems, and stories — all through the lens of an NYC pop-up lover.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anewbegin95/project-pizza.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anewbegin95/project-pizza/issues"
+  },
+  "homepage": "https://github.com/anewbegin95/project-pizza#readme",
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17"
+  }
+}
