@@ -1,40 +1,59 @@
-// Wait for the entire document to be ready before running the code
-document.addEventListener('DOMContentLoaded', function () {
-    // Get the calendar container element by its ID
-    const calendarEl = document.getElementById('calendar');
-  
-    // Initialize FullCalendar with the necessary options and plugins
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      // Specify the plugins we want to use: dayGrid (month view) and interaction (click and drag events)
-      plugins: [FullCalendar.dayGridPlugin, FullCalendar.interactionPlugin],
-      
-      // Initial view when the calendar loads (month view)
-      initialView: 'dayGridMonth',
-  
-      // Header toolbar configuration: buttons on the top for navigation and current view
-      headerToolbar: {
-        left: 'prev,next today', // Navigation buttons for previous, next, and today
-        center: 'title',         // Display the calendar title in the center
-        right: 'dayGridMonth'    // Right side shows the "Month View"
-      },
-  
-      // Define events to show on the calendar
-      events: [
-        {
-          title: 'Test Event',    // Event title
-          start: '2025-04-15',    // Event start date
-          end: '2025-04-17',      // Event end date
-          description: 'This is a test event.'  // Event description (extendedProps)
+// Initialize the current date and set the default selected month and year
+let currentDate = new Date();
+let selectedMonth = currentDate.getMonth(); // 0-based index (0 = January)
+let selectedYear = currentDate.getFullYear(); // Current year
+
+// Get references to the calendar table and month-year span
+const calendarTable = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
+const monthYear = document.getElementById('month-year');
+
+// Function to render the calendar
+function renderCalendar() {
+    // Clear the previous table content
+    calendarTable.innerHTML = '';
+
+    // Set the header to the current month and year (e.g., "April 2025")
+    monthYear.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${selectedYear}`;
+
+    // Get the first day of the month (0 = Sunday, 1 = Monday, etc.)
+    const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate(); // Get the total number of days in the month
+
+    let row = calendarTable.insertRow(); // Create a new row for the calendar grid
+    let cell;
+
+    // Add empty cells for the days of the previous month
+    for (let i = 0; i < firstDay; i++) {
+        cell = row.insertCell(); // Empty cell for the previous month
+    }
+
+    // Add cells for each day of the current month
+    for (let day = 1; day <= daysInMonth; day++) {
+        if ((firstDay + day - 1) % 7 === 0) {
+            row = calendarTable.insertRow(); // Start a new row for each week
         }
-      ],
-  
-      // Event click handler: shows an alert with event title and description
-      eventClick: function (info) {
-        alert(`Event: ${info.event.title}\nDetails: ${info.event.extendedProps.description}`);
-      }
-    });
-  
-    // Render the calendar on the page
-    calendar.render();
-  });
-  
+        cell = row.insertCell();
+        cell.textContent = day; // Display the day number
+
+        // Add an event listener to show an alert when a date is clicked
+        cell.addEventListener('click', function () {
+            alert(`Event for ${selectedMonth + 1}/${day}/${selectedYear}`);
+        });
+    }
+}
+
+// Function to change the month when the user clicks next/previous
+function changeMonth(offset) {
+    selectedMonth += offset; // Offset adjusts the month by 1 (previous or next)
+    if (selectedMonth < 0) { // If the month goes below 0 (before January), move to December of the previous year
+        selectedMonth = 11;
+        selectedYear--;
+    } else if (selectedMonth > 11) { // If the month goes beyond 11 (after December), move to January of the next year
+        selectedMonth = 0;
+        selectedYear++;
+    }
+    renderCalendar(); // Re-render the calendar with the new month
+}
+
+// Initial render of the calendar
+renderCalendar();
