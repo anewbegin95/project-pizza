@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-        <title>NYC Slice of Life</title>
-        <!-- Link to your custom stylesheet -->
-        <link rel="stylesheet" href="resources/css/style.css">
-        <!-- FullCalendar CSS (using the CDN for the FullCalendar plugin) -->
-        <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <header>
-            <h1>Event Calendar</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="calendar.html">Calendar</a></li>
-            </ul>
-        </nav>
-        <main>
-            <!-- Calendar Section -->
-            <section id="calendar">
-                <!-- FullCalendar JS and Plugins (loaded via CDN) -->
-                <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/main.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
+    <title>NYC Slice of Life</title>
+    <!-- Link to your custom stylesheet -->
+    <link rel="stylesheet" href="resources/css/style.css">
+    
+    <!-- FullCalendar CSS (using version 6.0.0 from cdnjs) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/main.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Event Calendar</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="calendar">
+            <!-- FullCalendar JS and Plugins (using version 6.0.0 from cdnjs) -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/main.min.js" defer></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/daygrid.min.js" defer></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/interaction.min.js" defer></script>
 
-                <!-- External JS file to handle the calendar logic -->
-                <script src="resources/js/calendar.js"></script>
-            </section>
-        </main>
-    </body>
+            <!-- External JS file to handle the calendar logic -->
+            <script src="resources/js/calendar.js" defer></script>
+        </section>
+    </main>
+</body>
 </html>
