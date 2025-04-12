@@ -98,3 +98,36 @@ body, h1, h2, p, ul, li {
     }
   }
   
+  #calendar {
+    width: 80%;
+    margin: 20px auto;
+}
+
+#calendar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#calendar-table th, #calendar-table td {
+    width: 14.28%; /* 7 days in a week */
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#calendar-table td:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+button {
+    margin: 0 20px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
