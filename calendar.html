@@ -3,13 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-    <title>NYC Slice of Life</title>
-    <!-- Link to your custom stylesheet -->
-    <link rel="stylesheet" href="resources/css/style.css">
-    
-    <!-- FullCalendar CSS (using version 6.0.0 from cdnjs) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/main.min.css" rel="stylesheet">
+    <title>Simple Calendar</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
@@ -24,14 +19,31 @@
     </nav>
     <main>
         <section id="calendar">
-            <!-- FullCalendar JS and Plugins (using version 6.0.0 from cdnjs) -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/main.min.js" defer></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/daygrid.min.js" defer></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.0.0/interaction.min.js" defer></script>
+            <!-- Calendar Navigation Buttons -->
+            <div id="calendar-header">
+                <button id="prev" onclick="changeMonth(-1)">Previous</button>
+                <span id="month-year"></span> <!-- This will display the current month and year -->
+                <button id="next" onclick="changeMonth(1)">Next</button>
+            </div>
 
-            <!-- External JS file to handle the calendar logic -->
-            <script src="resources/js/calendar.js" defer></script>
+            <!-- Calendar Table to hold the calendar grid -->
+            <table id="calendar-table">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody></tbody> <!-- Dynamic days will be populated here -->
+            </table>
         </section>
     </main>
+
+    <script src="calendar.js"></script> <!-- External JS for calendar logic -->
 </body>
 </html>
