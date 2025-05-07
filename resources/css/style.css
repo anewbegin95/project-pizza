@@ -133,17 +133,52 @@ footer {
   padding: var(--space-xs) 0;
 }
 
-/* Header */
-header {
-  background-image: url('../images/banners/midtown_manhattan_skyline.jpeg');
-  background-size: cover;
-  background-position: center;
-  text-align: center;
-  padding: var(--space-lg) var(--space-md);
+/* Header & Navigation */
+.site-header {
+  background-color: var(--nyc-white);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--nyc-gray);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--nyc-black);
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.main-nav ul li a {
+  color: var(--nyc-dark-grey);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.main-nav ul li a:hover {
+  color: var(--nyc-yellow);
 }
 
 /* Navigation */
-nav ul {
+/* nav ul {
   list-style: none;
   display: flex;
   justify-content: center;
@@ -163,7 +198,7 @@ nav ul li a {
 
 nav ul li a:hover {
   text-decoration: underline;
-}
+} */
 
 /* Main Content */
 main {
