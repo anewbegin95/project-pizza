@@ -12,7 +12,7 @@ body {
 
 /* Header Styling */
 header {
-  background-image: url('https://images.unsplash.com/photo-1518355077561-4af7abce973d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800');
+  background-image: url('..images/banners/midtown_manhattan_skyline.jpeg');
   background-size: cover;
   background-position: center;
   color: grey;
