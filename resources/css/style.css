@@ -46,16 +46,25 @@ Happy Styling! 🎨
 
 /* CSS Variables */
 :root {
-  --nyc-yellow: #FFD700;
-  --nyc-dark-gray: #474646;
-  --nyc-white: #FFFFFF;
+  /* Color Palette */
+  /* Primary colors */
+  --nyc-yellow: #FFD700; /* For highlights, links, and buttons */
+  --nyc-dark-gray: #474646; /* For text */
+  --nyc-white: #FFFFFF; /* For backgrounds*/
+
+  /* Secondary colors */
   --nyc-soft-pink: #FFB6C1;
+  --nyc-dark-pink: #b55c88;
   --nyc-gray: #999999;
+
+  /* Default spacing */
+  --space-xxs: 4px;
   --space-xs: 8px;
   --space-sm: 16px;
   --space-md: 32px;
   --space-lg: 64px;
   --space-xl: 128px;
+  --space-xxl: 256px;
 }
 
 /* CSS Reset */
@@ -134,29 +143,36 @@ footer {
 }
 
 /* Header & Navigation */
-.site-header {
-  background-color: var(--nyc-white);
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--nyc-gray);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  max-width: 2000px;
+  position: relative;
 }
 
 .site-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 40px;
-  font-weight: 700;
-  color: var(--nyc-black);
+  flex-shrink: 0;
+}
+
+.site-title a {
+  text-decoration: none;
+  color: var(--nyc-dark-gray);
+}
+
+.site-title a:hover {
+  color: var(--nyc-yellow);
+}
+
+/* Main navigation */
+.main-nav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .main-nav ul {
@@ -164,41 +180,57 @@ footer {
   display: flex;
   gap: var(--space-md);
   margin: 0;
+  padding: 0;
 }
 
 .main-nav ul li a {
-  color: var(--nyc-dark-grey);
+  color: var(--nyc-dark-gray);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s;
 }
 
 .main-nav ul li a:hover {
   color: var(--nyc-yellow);
 }
 
-/* Navigation */
-/* nav ul {
-  list-style: none;
+/* Header actions */
+.header-actions {
   display: flex;
-  justify-content: center;
-  background: var(--nyc-gray);
-  padding: var(--space-sm);
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-nav ul li {
-  margin: 0 var(--space-md);
+.social-icons a {
+  display: block;
 }
 
-nav ul li a {
-  color: var(--nyc-white);
+.social-icons .icon {
+  width: 24px;
+  height: 24px;
+  transition: filter 0.3s;
+  margin: 0 var(--space-xs);
+}
+
+.social-icons .icon:hover {
+  filter: brightness(1.3);
+}
+
+/* Contact Button */
+.contact-btn {
+  padding: 8px 16px;
+  background-color: var(--nyc-yellow);
+  color: var(--nyc-dark-gray);
+  border-radius: 5px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  margin-left: var(--space-sm);
+  transition: background-color 0.3s;
 }
 
-nav ul li a:hover {
-  text-decoration: underline;
-} */
+.contact-btn:hover {
+  background-color: var(--nyc-soft-pink);
+  color: var(--nyc-dark-pink);
+}
 
 /* Main Content */
 main {
