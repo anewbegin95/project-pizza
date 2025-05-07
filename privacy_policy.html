@@ -4,9 +4,7 @@
         <!-- The head content will be dynamically loaded -->
     </head>
     <body>
-        <header>
-            <h1>Our Privacy Policy</h1>
-        </header>
+        <!-- The header content will be dynamically loaded -->
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -50,6 +48,13 @@
                         titleElement.textContent = pageTitle;
                         document.head.appendChild(titleElement);
                     }
+                });
+
+            // Load the header content
+            fetch('partials/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('afterbegin', data);
                 });
 
             // Load the footer content

@@ -4,31 +4,7 @@
         <!-- The head content will be dynamically loaded using script below-->
     </head>
     <body>
-        <header class="site-header">
-            <div class="header-container">
-                <div class="site-title">
-                    <h1><a href="/">NYC Slice of Life 🍕</a></h1>
-                </div>
-                <nav class="main-nav">
-                    <ul>
-                        <li><a href="/events.html">Events</a></li>
-                        <li><a href="/calendar.html">Calendar</a></li>
-                        <li><a href="/about.html">About Us</a></li>
-                    </ul>
-                </nav>
-                <div class="header-actions">
-                    <div class="social-icons">
-                        <a href="https://www.instagram.com/nycsliceoflife/" target="_blank">
-                            <img src="resources/images/icons/instagram.svg" alt="Instagram" class="icon" />
-                        </a>
-                        <a href="https://www.tiktok.com/@nycsliceoflife" target="_blank">
-                            <img src="resources/images/icons/tiktok.svg" alt="TikTok" class="icon" />
-                        </a>
-                    </div>
-                    <a href="/contact_us.html" class="btn contact-btn">Contact Us</a>
-                </div>
-            </div>
-        </header>
+        <!-- The header content will be dynamically loaded -->
         <main>
             <section>
                 <h2>🏗️ Page under construction. Excuse our mess!</h2>
@@ -59,6 +35,13 @@
                         titleElement.textContent = pageTitle;
                         document.head.appendChild(titleElement);
                     }
+                });
+
+            // Load the header content
+            fetch('partials/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('afterbegin', data);
                 });
 
             // Load the footer content

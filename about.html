@@ -4,6 +4,7 @@
         <!-- The head content will be dynamically loaded using script below-->
     </head>
     <body>
+        <!-- The header content will be dynamically loaded -->
         <main>
             <section>
                 <h2>🏗️ Page under construction. Excuse our mess!</h2>
@@ -25,6 +26,13 @@
                         titleElement.textContent = pageTitle;
                         document.head.appendChild(titleElement);
                     }
+                });
+
+            // Load the header content
+            fetch('partials/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('afterbegin', data);
                 });
 
             // Load the footer content
