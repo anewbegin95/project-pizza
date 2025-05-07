@@ -1,43 +1,94 @@
-/* General Reset */
-body, h1, h2, p, ul, li {
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+
+/* CSS Variables */
+:root {
+  --nyc-yellow: #FFD700;
+  --nyc-dark-grey: #474646;
+  --nyc-dark-grey: #1A1A1A;
+  --nyc-white: #FFFFFF;
+  --nyc-soft-pink: #FFB6C1;
+  --nyc-gray: #F2F2F2;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 128px;
+}
+
+/* CSS Reset */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Ensure the html and body take up the full height of the viewport */
 html, body {
   height: 100%;
   margin: 0;
 }
 
+/* Base Styles */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', 'Arial', sans-serif;
+  color: var(--nyc-dark-grey);
+  background-color: var(--nyc-white);
   line-height: 1.6;
   display: flex;
   flex-direction: column;
 }
 
-/* Header Styling */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--nyc-dark-grey);
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 28px;
+}
+
+p, ul, ol {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--nyc-dark-grey);
+  margin-bottom: var(--space-sm);
+}
+
+/* Container Layout */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+section {
+  margin-bottom: var(--space-lg);
+}
+
+header, footer {
+  padding: var(--space-md) 0;
+}
+
+/* Header */
 header {
   background-image: url('../images/banners/midtown_manhattan_skyline.jpeg');
   background-size: cover;
   background-position: center;
-  color: grey;
   text-align: center;
   padding: 50px 20px;
 }
 
-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-header p {
-  font-size: 1.2rem;
-}
-
-/* Navigation Styling */
+/* Navigation */
 nav ul {
   list-style: none;
   display: flex;
@@ -60,11 +111,11 @@ nav ul li a:hover {
   text-decoration: underline;
 }
 
-/* Main Content Styling */
+/* Main Content */
 main {
-  flex: 1; /* This makes the main content take up all available space */
+  flex: 1;
   padding: 20px;
-  padding-bottom: 20px; /* Add padding between the main content and the footer */
+  padding-bottom: 20px;
 }
 
 main section {
@@ -80,7 +131,7 @@ main p {
   color: #555;
 }
 
-/* Footer Styling */
+/* Footer */
 footer {
   text-align: center;
   background: #333;
@@ -89,7 +140,48 @@ footer {
   margin-top: 20px;
 }
 
+/* Buttons */
+button, .btn {
+  background-color: var(--nyc-yellow);
+  color: var(--nyc-dark-grey);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--nyc-soft-pink);
+}
+
+/* Links */
+a {
+  color: var(--nyc-yellow);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--nyc-soft-pink);
+}
+
+/* Responsive Typography */
 @media (max-width: 768px) {
+  h1 {
+    font-size: 32px;
+  }
+  h2 {
+    font-size: 28px;
+  }
+  h3 {
+    font-size: 24px;
+  }
+  p, ul, ol {
+    font-size: 14px;
+  }
+
   nav ul {
     flex-direction: column;
     text-align: center;
@@ -100,10 +192,55 @@ footer {
   }
 
   header h1 {
-    font-size: 1.8rem;
+    font-size: 29px;
   }
 
   header p {
-    font-size: 1rem;
+    font-size: 16px;
   }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: var(--space-sm);
+  }
+}
+
+/* Accessibility */
+a:focus, button:focus {
+  outline: 3px solid var(--nyc-yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-contrast: high) {
+  body {
+    background-color: var(--nyc-dark-grey);
+    color: var(--nyc-white);
+  }
+
+  a, button {
+    background-color: var(--nyc-yellow);
+    color: var(--nyc-dark-grey);
+  }
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Icons */
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--nyc-dark-grey);
+  transition: fill 0.3s;
+}
+
+.icon:hover {
+  fill: var(--nyc-yellow);
 }
