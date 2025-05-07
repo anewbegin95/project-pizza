@@ -47,11 +47,10 @@ Happy Styling! 🎨
 /* CSS Variables */
 :root {
   --nyc-yellow: #FFD700;
-  --nyc-dark-grey: #474646;
-  --nyc-dark-grey: #1A1A1A;
+  --nyc-dark-gray: #474646;
   --nyc-white: #FFFFFF;
   --nyc-soft-pink: #FFB6C1;
-  --nyc-gray: #F2F2F2;
+  --nyc-gray: #999999;
   --space-xs: 8px;
   --space-sm: 16px;
   --space-md: 32px;
@@ -74,7 +73,7 @@ html, body {
 /* Base Styles */
 body {
   font-family: 'Inter', 'Arial', sans-serif;
-  color: var(--nyc-dark-grey);
+  color: var(--nyc-dark-gray);
   background-color: var(--nyc-white);
   line-height: 1.6;
   display: flex;
@@ -84,7 +83,7 @@ body {
 h1, h2, h3 {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
-  color: var(--nyc-dark-grey);
+  color: var(--nyc-dark-gray);
 }
 
 h1 {
@@ -102,7 +101,7 @@ h3 {
 p, ul, ol {
   font-size: 16px;
   font-weight: 400;
-  color: var(--nyc-dark-grey);
+  color: var(--nyc-dark-gray);
   margin-bottom: var(--space-sm);
 }
 
@@ -128,7 +127,7 @@ header {
   background-size: cover;
   background-position: center;
   text-align: center;
-  padding: 50px 20px;
+  padding: var(--space-lg) var(--space-md);
 }
 
 /* Navigation */
@@ -136,16 +135,16 @@ nav ul {
   list-style: none;
   display: flex;
   justify-content: center;
-  background: #333;
-  padding: 10px;
+  background: var(--nyc-gray);
+  padding: var(--space-sm);
 }
 
 nav ul li {
-  margin: 0 15px;
+  margin: 0 var(--space-md);
 }
 
 nav ul li a {
-  color: white;
+  color: var(--nyc-white);
   text-decoration: none;
   font-weight: bold;
 }
@@ -157,36 +156,28 @@ nav ul li a:hover {
 /* Main Content */
 main {
   flex: 1;
-  padding: 20px;
-  padding-bottom: 20px;
+  padding: var(--space-md);
+  padding-bottom: var(--space-md);
 }
 
 main section {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-md);
 }
 
 main h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-main p {
-  color: #555;
+  margin-bottom: var(--space-sm);
 }
 
 /* Footer */
 footer {
   text-align: center;
-  background: #333;
-  color: white;
-  padding: 10px 0;
-  margin-top: 20px;
+  background: var(--nyc-gray);
 }
 
 /* Buttons */
 button, .btn {
   background-color: var(--nyc-yellow);
-  color: var(--nyc-dark-grey);
+  color: var(--nyc-dark-gray);
   border: none;
   padding: var(--space-sm) var(--space-md);
   font-size: 16px;
@@ -258,13 +249,13 @@ a:focus, button:focus {
 
 @media (prefers-contrast: high) {
   body {
-    background-color: var(--nyc-dark-grey);
+    background-color: var(--nyc-dark-gray);
     color: var(--nyc-white);
   }
 
   a, button {
     background-color: var(--nyc-yellow);
-    color: var(--nyc-dark-grey);
+    color: var(--nyc-dark-gray);
   }
 }
 
@@ -280,7 +271,7 @@ img {
 .icon {
   width: 24px;
   height: 24px;
-  fill: var(--nyc-dark-grey);
+  fill: var(--nyc-dark-gray);
   transition: fill 0.3s;
 }
 
