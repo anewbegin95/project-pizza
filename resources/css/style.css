@@ -42,7 +42,7 @@ Happy Styling! 🎨
 
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap');
 
 /* CSS Variables */
 :root {
@@ -72,7 +72,7 @@ html, body {
 
 /* Base Styles */
 body {
-  font-family: 'Inter', 'Arial', sans-serif;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
   color: var(--nyc-dark-gray);
   background-color: var(--nyc-white);
   line-height: 1.6;
@@ -80,8 +80,16 @@ body {
   flex-direction: column;
 }
 
-h1, h2, h3 {
-  font-family: 'Playfair Display', serif;
+/* Heading */
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-weight: 700;
+  color: var(--nyc-dark-gray);
+}
+
+/* Sub-heading */
+h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 700;
   color: var(--nyc-dark-gray);
 }
@@ -117,8 +125,12 @@ section {
   margin-bottom: var(--space-lg);
 }
 
-header, footer {
+header {
   padding: var(--space-md) 0;
+}
+
+footer {
+  padding: var(--space-xs) 0;
 }
 
 /* Header */
