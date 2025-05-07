@@ -1,100 +1,99 @@
 /* General Reset */
 body, h1, h2, p, ul, li {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-  }
-  
-  /* Header Styling */
-  header {
-    background-image: url('https://images.unsplash.com/photo-1518355077561-4af7abce973d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800');
-    background-size: cover;
-    background-position: center;
-    color: grey;
-    text-align: center;
-    padding: 50px 20px;
-  }
-  
-  header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-  
-  header p {
-    font-size: 1.2rem;
-  }
-  
-  /* Navigation Styling */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Header Styling */
+header {
+  background-image: url('https://images.unsplash.com/photo-1518355077561-4af7abce973d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800');
+  background-size: cover;
+  background-position: center;
+  color: grey;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.2rem;
+}
+
+/* Navigation Styling */
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  background: #333;
+  padding: 10px;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Main Content Styling */
+main {
+  padding: 20px;
+}
+
+main section {
+  margin-bottom: 20px;
+}
+
+main h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+main p {
+  color: #555;
+}
+
+/* Footer Styling */
+footer {
+  text-align: center;
+  background: #333;
+  color: white;
+  padding: 10px 0;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
   nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    background: #333;
-    padding: 10px;
-  }
-  
-  nav ul li {
-    margin: 0 15px;
-  }
-  
-  nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  nav ul li a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Main Content Styling */
-  main {
-    padding: 20px;
-  }
-  
-  main section {
-    margin-bottom: 20px;
-  }
-  
-  main h2 {
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  main p {
-    color: #555;
-  }
-  
-  /* Footer Styling */
-  footer {
+    flex-direction: column;
     text-align: center;
-    background: #333;
-    color: white;
-    padding: 10px 0;
-    margin-top: 20px;
   }
 
-  @media (max-width: 768px) {
-    nav ul {
-      flex-direction: column;
-      text-align: center;
-    }
-  
-    nav ul li {
-      margin: 10px 0;
-    }
-  
-    header h1 {
-      font-size: 1.8rem;
-    }
-  
-    header p {
-      font-size: 1rem;
-    }
+  nav ul li {
+    margin: 10px 0;
   }
-  
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  header p {
+    font-size: 1rem;
+  }
+}
