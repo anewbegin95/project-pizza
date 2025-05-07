@@ -234,6 +234,50 @@ footer {
 }
 
 /* -----------------------------------------------------------------------------
+  HERO SECTION
+----------------------------------------------------------------------------- */
+/* Hero Section */
+.hero {
+  background-image: url('resources/images/banners/midtown_manhattan_skyline.jpeg'); /* Path to your banner image */
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay for better text visibility */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Ensures the text is above the overlay */
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-family: 'Montserrat', 'Arial', sans-serif;
+}
+
+.hero p {
+  font-size: 1.5rem;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
   BUTTONS & LINKS
 ----------------------------------------------------------------------------- */
 
