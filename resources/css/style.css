@@ -12,7 +12,7 @@ body {
 
 /* Header Styling */
 header {
-  background-image: url('..images/banners/midtown_manhattan_skyline.jpeg');
+  background-image: url('../images/banners/midtown_manhattan_skyline.jpeg');
   background-size: cover;
   background-position: center;
   color: grey;
