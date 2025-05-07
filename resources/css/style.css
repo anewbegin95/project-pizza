@@ -1,3 +1,46 @@
+/* 
+===============================================================================
+NYC Slice of Life – Global Stylesheet
+Author: Alex Newbegin
+Last Updated: 2025-05-06
+
+📌 CSS Best Practices:
+
+1. Structure & Organization
+   - Group styles logically: use clear sections (e.g., Variables, Reset, Typography, Layout, Components).
+   - Use consistent indentation (2 or 4 spaces) and spacing between rules for readability.
+   - Place utility and global styles near the top (e.g., variables, resets).
+
+2. Naming Conventions
+   - Use class names that are descriptive and consistent (e.g., .main-header, .card-title).
+   - Follow BEM (Block__Element--Modifier) if working with large-scale components.
+
+3. Use Variables
+   - Define common values like colors and spacing as CSS variables for consistency and easy updates.
+
+4. Keep it DRY
+   - Don’t Repeat Yourself. Reuse classes and variables whenever possible to reduce redundancy.
+
+5. Responsive Design
+   - Use media queries to adapt layouts and text sizes for various screen widths.
+   - Test responsiveness on actual devices when possible.
+
+6. Maintain Accessibility
+   - Ensure color contrasts are readable.
+   - Use focus styles and responsive images/icons to support keyboard and screen reader users.
+
+7. Performance
+   - Avoid overly specific selectors or deep nesting to keep CSS performant and maintainable.
+   - Minimize use of !important unless absolutely necessary.
+
+8. Version Control
+   - Use comments and versioning when making major updates to keep track of changes over time.
+
+Happy Styling! 🎨
+===============================================================================
+*/
+
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
 
