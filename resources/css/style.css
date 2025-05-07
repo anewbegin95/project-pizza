@@ -153,9 +153,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-xs) var(--space-md) var(--space-md) var(--space-md);
   max-width: 2000px;
   position: relative;
+  border-bottom: var(--nyc-gray) 1px solid;
 }
 
 .site-title {
