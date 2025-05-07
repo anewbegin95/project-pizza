@@ -43,11 +43,14 @@
       
   </main>
 
-  <footer>
-    <p>&copy; 2025 NYC Slice of Life. All rights reserved.</p>
-    <p>For inquiries: <a href="mailto:NYCSliceofLife@gmail.com">NYCSliceofLife@gmail.com</a></p>
-    <p>Follow us on <a href="https://www.instagram.com/nycsliceoflife/">Instagram</a> | <a href="https://www.tiktok.com/@nycsliceoflife">TikTok</a></p>
-  </footer>
+  <script>
+    // Load the footer content
+    fetch('partials/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.body.insertAdjacentHTML('beforeend', data);
+        });
+  </script>
   
 </body>
 </html>
