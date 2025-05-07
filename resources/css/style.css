@@ -5,9 +5,17 @@ body, h1, h2, p, ul, li {
   box-sizing: border-box;
 }
 
+/* Ensure the html and body take up the full height of the viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header Styling */
@@ -54,7 +62,9 @@ nav ul li a:hover {
 
 /* Main Content Styling */
 main {
+  flex: 1; /* This makes the main content take up all available space */
   padding: 20px;
+  padding-bottom: 20px; /* Add padding between the main content and the footer */
 }
 
 main section {
