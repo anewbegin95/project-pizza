@@ -1,9 +1,13 @@
-/* 
+/*
 ===============================================================================
 NYC Slice of Life – Global Stylesheet
 Author: Alex Newbegin
-Last Updated: 2025-05-06
+Last Updated: 2025-05-07
+===============================================================================
+*/
 
+/*
+===============================================================================
 📌 CSS Best Practices:
 
 1. Structure & Organization
@@ -40,24 +44,26 @@ Happy Styling! 🎨
 ===============================================================================
 */
 
+/* -----------------------------------------------------------------------------
+  IMPORTS & VARIABLES
+----------------------------------------------------------------------------- */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap');
+/* → Loads three fonts from Google Fonts to use across the site */
 
 /* CSS Variables */
 :root {
   /* Color Palette */
-  /* Primary colors */
-  --nyc-yellow: #FFD700; /* For highlights, links, and buttons */
-  --nyc-dark-gray: #474646; /* For text */
-  --nyc-white: #FFFFFF; /* For backgrounds*/
+  --nyc-yellow: #FFD700;        /* Bright yellow for highlights, links, buttons */
+  --nyc-dark-gray: #474646;     /* Dark gray for main text */
+  --nyc-white: #FFFFFF;         /* Pure white for backgrounds */
 
-  /* Secondary colors */
-  --nyc-soft-pink: #FFB6C1;
-  --nyc-dark-pink: #b55c88;
-  --nyc-gray: #999999;
+  --nyc-soft-pink: #FFB6C1;     /* Accent color */
+  --nyc-dark-pink: #b55c88;     /* For hover states or contrast */
+  --nyc-gray: #999999;          /* Secondary gray, used in footer */
 
-  /* Default spacing */
+  /* Spacing scale for consistent layout */
   --space-xxs: 4px;
   --space-xs: 8px;
   --space-sm: 16px;
@@ -67,20 +73,21 @@ Happy Styling! 🎨
   --space-xxl: 256px;
 }
 
-/* CSS Reset */
+/* -----------------------------------------------------------------------------
+  RESET & BASE
+----------------------------------------------------------------------------- */
+
+/* Resets default browser styles */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box;  /* Includes padding and border in width/height */
 }
 
+/* Base styles for html and body */
 html, body {
   height: 100%;
   margin: 0;
-}
-
-/* Base Styles */
-body {
   font-family: 'Source Sans Pro', 'Arial', sans-serif;
   color: var(--nyc-dark-gray);
   background-color: var(--nyc-white);
@@ -89,40 +96,36 @@ body {
   flex-direction: column;
 }
 
-/* Heading */
-h1 {
-  font-family: 'Montserrat', 'Arial', sans-serif;
-  font-weight: 700;
-  color: var(--nyc-dark-gray);
-}
+/* -----------------------------------------------------------------------------
+  TYPOGRAPHY
+----------------------------------------------------------------------------- */
 
-/* Sub-heading */
-h2, h3 {
+/* Headings use a bold font and dark color */
+h1, h2, h3 {
   font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 700;
   color: var(--nyc-dark-gray);
 }
 
 h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif;
   font-size: 40px;
 }
 
-h2 {
-  font-size: 32px;
-}
+h2 { font-size: 32px; }
+h3 { font-size: 28px; }
 
-h3 {
-  font-size: 28px;
-}
-
+/* Paragraph and list text */
 p, ul, ol {
   font-size: 16px;
   font-weight: 400;
-  color: var(--nyc-dark-gray);
   margin-bottom: var(--space-sm);
 }
 
-/* Container Layout */
+/* -----------------------------------------------------------------------------
+  LAYOUT
+----------------------------------------------------------------------------- */
+
 .container {
   width: 90%;
   max-width: 1200px;
@@ -142,7 +145,10 @@ footer {
   padding: var(--space-xs) 0;
 }
 
-/* Header & Navigation */
+/* -----------------------------------------------------------------------------
+  HEADER
+----------------------------------------------------------------------------- */
+
 .header-container {
   display: flex;
   align-items: center;
@@ -165,7 +171,6 @@ footer {
   color: var(--nyc-yellow);
 }
 
-/* Main navigation */
 .main-nav {
   flex-grow: 1;
   display: flex;
@@ -187,89 +192,79 @@ footer {
   color: var(--nyc-dark-gray);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.3s;
 }
 
 .main-nav ul li a:hover {
   color: var(--nyc-yellow);
 }
 
-/* Header actions */
 .header-actions {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
+.social-icons {
+  display: flex;
+  gap: var(--space-md); /* adds spacing between icons */
+  align-items: center;
+  padding-right: var(--space-md);
+}
+
 .social-icons a {
-  display: block;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
 }
 
 .social-icons .icon {
   width: 24px;
   height: 24px;
+  display: inline-block;
   transition: filter 0.3s;
-  margin: 0 var(--space-xs);
+  filter: none;
+  box-shadow: none;
 }
+
 
 .social-icons .icon:hover {
   filter: brightness(1.3);
 }
 
-/* Contact Button */
-.contact-btn {
-  padding: 8px 16px;
+/* -----------------------------------------------------------------------------
+  BUTTONS & LINKS
+----------------------------------------------------------------------------- */
+
+.contact-btn,
+button,
+.btn {
+  padding: var(--space-xs) var(--space-sm);
   background-color: var(--nyc-yellow);
   color: var(--nyc-dark-gray);
+  border: none;
   border-radius: 5px;
-  text-decoration: none;
+  font-size: 16px;
   font-weight: 600;
-  margin-left: var(--space-sm);
-  transition: background-color 0.3s;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  height: 50px;
+  width: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.contact-btn:hover {
+
+.contact-btn:hover,
+button:hover,
+.btn:hover {
   background-color: var(--nyc-soft-pink);
   color: var(--nyc-dark-pink);
 }
 
-/* Main Content */
-main {
-  flex: 1;
-  padding: var(--space-md);
-  padding-bottom: var(--space-md);
-}
-
-main section {
-  margin-bottom: var(--space-md);
-}
-
-main h2 {
-  margin-bottom: var(--space-sm);
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  background: var(--nyc-gray);
-}
-
-/* Buttons */
-button, .btn {
-  background-color: var(--nyc-yellow);
-  color: var(--nyc-dark-gray);
-  border: none;
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover, .btn:hover {
-  background-color: var(--nyc-soft-pink);
-}
-
-/* Links */
 a {
   color: var(--nyc-yellow);
   text-decoration: none;
@@ -280,48 +275,44 @@ a:hover {
   color: var(--nyc-soft-pink);
 }
 
-/* Responsive Typography */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 32px;
-  }
-  h2 {
-    font-size: 28px;
-  }
-  h3 {
-    font-size: 24px;
-  }
-  p, ul, ol {
-    font-size: 14px;
-  }
+/* -----------------------------------------------------------------------------
+  FOOTER
+----------------------------------------------------------------------------- */
 
-  nav ul {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  nav ul li {
-    margin: 10px 0;
-  }
-
-  header h1 {
-    font-size: 29px;
-  }
-
-  header p {
-    font-size: 16px;
-  }
+footer {
+  padding: var(--space-xs) 0;
+  text-align: center;
+  background: var(--nyc-gray);
 }
 
-@media (max-width: 480px) {
-  .container {
-    width: 100%;
-    padding: var(--space-sm);
-  }
+/* -----------------------------------------------------------------------------
+  IMAGES & ICONS
+----------------------------------------------------------------------------- */
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Accessibility */
-a:focus, button:focus {
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--nyc-dark-gray);
+  transition: fill 0.3s;
+}
+
+.icon:hover {
+  fill: var(--nyc-yellow);
+}
+
+/* -----------------------------------------------------------------------------
+  ACCESSIBILITY
+----------------------------------------------------------------------------- */
+
+a:focus,
+button:focus {
   outline: 3px solid var(--nyc-yellow);
   outline-offset: 2px;
 }
@@ -332,28 +323,39 @@ a:focus, button:focus {
     color: var(--nyc-white);
   }
 
-  a, button {
+  a,
+  button {
     background-color: var(--nyc-yellow);
     color: var(--nyc-dark-gray);
   }
 }
 
-/* Images */
-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* -----------------------------------------------------------------------------
+  RESPONSIVE STYLES
+----------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  p, ul, ol { font-size: 14px; }
+
+  .main-nav ul {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .main-nav ul li {
+    margin: 10px 0;
+  }
+
+  header h1 { font-size: 29px; }
+  header p { font-size: 16px; }
 }
 
-/* Icons */
-.icon {
-  width: 24px;
-  height: 24px;
-  fill: var(--nyc-dark-gray);
-  transition: fill 0.3s;
-}
-
-.icon:hover {
-  fill: var(--nyc-yellow);
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: var(--space-sm);
+  }
 }
