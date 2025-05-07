@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-  <title>NYC Slice of Life</title>
-  <link rel="stylesheet" href="resources/css/style.css">
-</head>
+<html lang="en" data-title="NYC Slice of Life">
+    <head>
+        <!-- The head content will be dynamically loaded -->
+    </head>
 <body>
     <header>
         <h1>Welcome to NYC Slice of Life 🍕</h1>
@@ -44,13 +40,29 @@
   </main>
 
   <script>
+    // Load the head content
+    fetch('partials/head.html')
+        .then(response => response.text())
+        .then(data => {
+            // Insert the head content into the <head> tag
+            document.head.insertAdjacentHTML('beforeend', data);
+
+            // Set the page-specific title
+            const pageTitle = document.documentElement.getAttribute('data-title');
+            if (pageTitle) {
+                const titleElement = document.createElement('title');
+                titleElement.textContent = pageTitle;
+                document.head.appendChild(titleElement);
+            }
+        });
+
     // Load the footer content
     fetch('partials/footer.html')
         .then(response => response.text())
         .then(data => {
             document.body.insertAdjacentHTML('beforeend', data);
         });
-  </script>
+</script>
   
 </body>
 </html>
