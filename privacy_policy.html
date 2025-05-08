@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title="Privacy Policy">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-        <title>NYC Slice of Life | Privacy Policy</title>
-        <link rel="stylesheet" href="resources/css/style.css">
+        <!-- The head content will be dynamically loaded -->
     </head>
     <body>
-        <header>
-            <h1>Our Privacy Policy</h1>
-        </header>
+        <!-- The header content will be dynamically loaded -->
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -39,11 +33,36 @@
                 <p>If you have any questions about this Privacy Policy, you can reach us at <a href="mailto:info@nycsliceoflife.com">info@nycsliceoflife.com</a>.</p>
             </section>
         </main>
-        <footer>
-            <p>&copy; 2025 NYC Slice of Life. All rights reserved.</p>
-            <p>For inquiries: <a href="mailto:NYCSliceofLife@gmail.com">NYCSliceofLife@gmail.com</a></p>
-            <p>Follow us on <a href="https://www.instagram.com/nycsliceoflife/">Instagram</a> | <a href="https://www.tiktok.com/@nycsliceoflife">TikTok</a></p>
-            <p><a href="privacy_policy.html">Privacy Policy</a> | <a href="contact_us.html">Contact Us</a></p>
-        </footer>
+        <script>
+            // Load the head content
+            fetch('partials/head.html')
+                .then(response => response.text())
+                .then(data => {
+                    // Insert the head content into the <head> tag
+                    document.head.insertAdjacentHTML('beforeend', data);
+
+                    // Set the page-specific title
+                    const pageTitle = document.documentElement.getAttribute('data-title');
+                    if (pageTitle) {
+                        const titleElement = document.createElement('title');
+                        titleElement.textContent = pageTitle;
+                        document.head.appendChild(titleElement);
+                    }
+                });
+
+            // Load the header content
+            fetch('partials/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('afterbegin', data);
+                });
+
+            // Load the footer content
+            fetch('partials/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('beforeend', data);
+                });
+        </script>
     </body>
 </html>

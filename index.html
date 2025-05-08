@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title="NYC Slice of Life">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-        <title>NYC Slice of Life</title>
-        <link rel="stylesheet" href="resources/css/style.css">
+        <!-- The head content will be dynamically loaded using script below-->
     </head>
     <body>
-        <header>
-            <h1>Welcome to NYC Slice of Life 🍕</h1>
-            <p>Your guide to NYC's best pop-ups, date ideas, and weekend plans!</p>
-        </header>
+        <!-- The header content will be dynamically loaded -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to NYC Slice of Life</h1>
+                <p>Your guide to New York City's best pop-ups, date ideas, and weekend plans!</p>
+            </div>
+        </section>
         <main>
             <section>
                 <h2>🏗️ Page under construction. Excuse our mess!</h2>
@@ -27,11 +26,36 @@
                 </ul>
             </section>
         </main>
-        <footer>
-            <p>&copy; 2025 NYC Slice of Life. All rights reserved.</p>
-            <p>For inquiries: <a href="mailto:NYCSliceofLife@gmail.com">NYCSliceofLife@gmail.com</a></p>
-            <p>Follow us on <a href="https://www.instagram.com/nycsliceoflife/">Instagram</a> | <a href="https://www.tiktok.com/@nycsliceoflife">TikTok</a></p>
-            <p><a href="privacy_policy.html">Privacy Policy</a> | <a href="contact_us.html">Contact Us</a></p>
-        </footer>
+        <script>
+            // Load the head content
+            fetch('partials/head.html')
+                .then(response => response.text())
+                .then(data => {
+                    // Insert the head content into the <head> tag
+                    document.head.insertAdjacentHTML('beforeend', data);
+
+                    // Set the page-specific title
+                    const pageTitle = document.documentElement.getAttribute('data-title');
+                    if (pageTitle) {
+                        const titleElement = document.createElement('title');
+                        titleElement.textContent = pageTitle;
+                        document.head.appendChild(titleElement);
+                    }
+                });
+
+            // Load the header content
+            fetch('partials/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('afterbegin', data);
+                });
+
+            // Load the footer content
+            fetch('partials/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('beforeend', data);
+                });
+        </script>
     </body>
 </html>

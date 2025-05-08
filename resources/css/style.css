@@ -1,99 +1,409 @@
-/* General Reset */
-body, h1, h2, p, ul, li {
+/*
+===============================================================================
+NYC Slice of Life – Global Stylesheet
+Author: Alex Newbegin
+Last Updated: 2025-05-07
+===============================================================================
+*/
+
+/*
+===============================================================================
+📌 CSS Best Practices:
+
+1. Structure & Organization
+   - Group styles logically: use clear sections (e.g., Variables, Reset, Typography, Layout, Components).
+   - Use consistent indentation (2 or 4 spaces) and spacing between rules for readability.
+   - Place utility and global styles near the top (e.g., variables, resets).
+
+2. Naming Conventions
+   - Use class names that are descriptive and consistent (e.g., .main-header, .card-title).
+   - Follow BEM (Block__Element--Modifier) if working with large-scale components.
+
+3. Use Variables
+   - Define common values like colors and spacing as CSS variables for consistency and easy updates.
+
+4. Keep it DRY
+   - Don’t Repeat Yourself. Reuse classes and variables whenever possible to reduce redundancy.
+
+5. Responsive Design
+   - Use media queries to adapt layouts and text sizes for various screen widths.
+   - Test responsiveness on actual devices when possible.
+
+6. Maintain Accessibility
+   - Ensure color contrasts are readable.
+   - Use focus styles and responsive images/icons to support keyboard and screen reader users.
+
+7. Performance
+   - Avoid overly specific selectors or deep nesting to keep CSS performant and maintainable.
+   - Minimize use of !important unless absolutely necessary.
+
+8. Version Control
+   - Use comments and versioning when making major updates to keep track of changes over time.
+
+Happy Styling! 🎨
+===============================================================================
+*/
+
+/* -----------------------------------------------------------------------------
+  IMPORTS & VARIABLES
+----------------------------------------------------------------------------- */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap');
+/* → Loads three fonts from Google Fonts to use across the site */
+
+/* CSS Variables */
+:root {
+  /* Color Palette */
+  --nyc-yellow: #FFD700;        /* Bright yellow for highlights, links, buttons */
+  --nyc-dark-gray: #474646;     /* Dark gray for main text */
+  --nyc-white: #FFFFFF;         /* Pure white for backgrounds */
+
+  --nyc-soft-pink: #FFB6C1;     /* Accent color */
+  --nyc-dark-pink: #b55c88;     /* For hover states or contrast */
+  --nyc-gray: #999999;          /* Secondary gray, used in footer */
+
+  /* Spacing scale for consistent layout */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 128px;
+  --space-xxl: 256px;
+}
+
+/* -----------------------------------------------------------------------------
+  RESET & BASE
+----------------------------------------------------------------------------- */
+
+/* Resets default browser styles */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box;  /* Includes padding and border in width/height */
 }
 
-body {
-  font-family: Arial, sans-serif;
+/* Base styles for html and body */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+  color: var(--nyc-dark-gray);
+  background-color: var(--nyc-white);
   line-height: 1.6;
+  /* display: flex; */
+  /* flex-direction: column; */
 }
 
-/* Header Styling */
+/* -----------------------------------------------------------------------------
+  TYPOGRAPHY
+----------------------------------------------------------------------------- */
+
+/* Headings use a bold font and dark color */
+h1, h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-weight: 700;
+  color: var(--nyc-dark-gray);
+}
+
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-size: 40px;
+}
+
+h2 { font-size: 32px; }
+h3 { font-size: 28px; }
+
+/* Paragraph and list text */
+p, ul, ol {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+}
+
+/* -----------------------------------------------------------------------------
+  LAYOUT
+----------------------------------------------------------------------------- */
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+section {
+  margin-bottom: var(--space-lg);
+}
+
 header {
-  background-image: url('https://images.unsplash.com/photo-1518355077561-4af7abce973d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800');
-  background-size: cover;
-  background-position: center;
-  color: grey;
-  text-align: center;
-  padding: 50px 20px;
+  padding: var(--space-md) 0;
 }
 
-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+footer {
+  padding: var(--space-xs) 0;
 }
 
-header p {
-  font-size: 1.2rem;
+/* -----------------------------------------------------------------------------
+  HEADER
+----------------------------------------------------------------------------- */
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  max-width: 2000px;
+  position: relative;
 }
 
-/* Navigation Styling */
-nav ul {
-  list-style: none;
+.site-title {
+  flex-shrink: 0;
+}
+
+.site-title a {
+  text-decoration: none;
+  color: var(--nyc-dark-gray);
+}
+
+.site-title a:hover {
+  color: var(--nyc-yellow);
+}
+
+.main-nav {
+  flex-grow: 1;
   display: flex;
   justify-content: center;
-  background: #333;
-  padding: 10px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-nav ul li {
-  margin: 0 15px;
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
 }
 
-nav ul li a {
-  color: white;
+.main-nav ul li a {
+  color: var(--nyc-dark-gray);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 500;
+  transition: color 0.3s;
 }
 
-nav ul li a:hover {
-  text-decoration: underline;
+.main-nav ul li a:hover {
+  color: var(--nyc-yellow);
 }
 
-/* Main Content Styling */
-main {
-  padding: 20px;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-main section {
-  margin-bottom: 20px;
+.social-icons {
+  display: flex;
+  gap: var(--space-md); /* adds spacing between icons */
+  align-items: center;
+  padding-right: var(--space-md);
 }
 
-main h2 {
-  color: #333;
-  margin-bottom: 10px;
+.social-icons a {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
 }
 
-main p {
-  color: #555;
+.social-icons .icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  transition: filter 0.3s;
+  filter: none;
+  box-shadow: none;
 }
 
-/* Footer Styling */
-footer {
+.social-icons a[href*="instagram"] .icon {
+  width: 40px; /* Adjust the width */
+  height: 40px; /* Adjust the height */
+}
+
+
+.social-icons .icon:hover {
+  filter: brightness(1.3);
+}
+
+/* -----------------------------------------------------------------------------
+  HERO SECTION
+----------------------------------------------------------------------------- */
+.hero {
+  background-image: url('../images/banners/midtown_manhattan_skyline.jpeg'); /* Ensure the path is correct */
+  background-size: cover;
+  background-position: center;
+  height: 50vh; /* Full viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  background: #333;
   color: white;
-  padding: 10px 0;
-  margin-top: 20px;
+  position: relative;
 }
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2); /* Adds a dark overlay for better text visibility */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Ensures the text is above the overlay */
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 1rem;
+  font-family: 'Montserrat', 'Arial', sans-serif;
+}
+
+.hero p {
+  font-size: 1.5rem;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
+  BUTTONS & LINKS
+----------------------------------------------------------------------------- */
+
+.contact-btn,
+button,
+.btn {
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--nyc-yellow);
+  color: var(--nyc-dark-gray);
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  height: 50px;
+  width: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.contact-btn:hover,
+button:hover,
+.btn:hover {
+  background-color: var(--nyc-soft-pink);
+  color: var(--nyc-dark-pink);
+}
+
+a {
+  color: var(--nyc-yellow);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--nyc-soft-pink);
+}
+
+/* -----------------------------------------------------------------------------
+  FOOTER
+----------------------------------------------------------------------------- */
+
+footer {
+  padding: var(--space-xs) 0;
+  text-align: center;
+  background: var(--nyc-gray);
+}
+
+/* -----------------------------------------------------------------------------
+  IMAGES & ICONS
+----------------------------------------------------------------------------- */
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--nyc-dark-gray);
+  transition: fill 0.3s;
+}
+
+.icon:hover {
+  fill: var(--nyc-yellow);
+}
+
+/* -----------------------------------------------------------------------------
+  ACCESSIBILITY
+----------------------------------------------------------------------------- */
+
+a:focus,
+button:focus {
+  outline: 3px solid var(--nyc-yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-contrast: high) {
+  body {
+    background-color: var(--nyc-dark-gray);
+    color: var(--nyc-white);
+  }
+
+  a,
+  button {
+    background-color: var(--nyc-yellow);
+    color: var(--nyc-dark-gray);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+  RESPONSIVE STYLES
+----------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
-  nav ul {
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  p, ul, ol { font-size: 14px; }
+
+  .main-nav ul {
     flex-direction: column;
     text-align: center;
   }
 
-  nav ul li {
+  .main-nav ul li {
     margin: 10px 0;
   }
 
-  header h1 {
-    font-size: 1.8rem;
-  }
+  header h1 { font-size: 29px; }
+  header p { font-size: 16px; }
+}
 
-  header p {
-    font-size: 1rem;
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: var(--space-sm);
   }
 }
