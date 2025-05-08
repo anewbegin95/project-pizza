@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" data-title="NYC Slice of Life">
     <head>
-        <!-- The head content will be dynamically loaded using script below-->
+        <!-- The head, header, and footer content will be dynamically loaded using script below-->
+        <script src="resources/js/partials-loader.js"></script>
     </head>
     <body>
         <!-- The header content will be dynamically loaded -->
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Welcome to NYC Slice of Life</h1>
-                <p>Your guide to New York City's best pop-ups, date ideas, and weekend plans!</p>
-            </div>
-        </section>
         <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Welcome to NYC Slice of Life</h1>
+                    <p>Your guide to New York City's best pop-ups, date ideas, and weekend plans!</p>
+                </div>
+            </section>
             <section>
                 <h2>🏗️ Page under construction. Excuse our mess!</h2>
                 <p>Refer to our <a href="https://phase-geography-eca.notion.site/NYC-Slice-of-Life-13efe92c0240806f984ff5d669e50505" target="_blank">Notion Page</a> for information about upcoming events.</p>
@@ -26,36 +27,6 @@
                 </ul>
             </section>
         </main>
-        <script>
-            // Load the head content
-            fetch('partials/head.html')
-                .then(response => response.text())
-                .then(data => {
-                    // Insert the head content into the <head> tag
-                    document.head.insertAdjacentHTML('beforeend', data);
-
-                    // Set the page-specific title
-                    const pageTitle = document.documentElement.getAttribute('data-title');
-                    if (pageTitle) {
-                        const titleElement = document.createElement('title');
-                        titleElement.textContent = pageTitle;
-                        document.head.appendChild(titleElement);
-                    }
-                });
-
-            // Load the header content
-            fetch('partials/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.body.insertAdjacentHTML('afterbegin', data);
-                });
-
-            // Load the footer content
-            fetch('partials/footer.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.body.insertAdjacentHTML('beforeend', data);
-                });
-        </script>
+        <!-- Footer will be dynamically loaded -->
     </body>
 </html>
