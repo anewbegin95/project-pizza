@@ -356,6 +356,64 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
+  EVENTS GRID
+----------------------------------------------------------------------------- */
+/* EVENTS GRID STYLING */
+.events-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+/* EVENT TILE */
+.event-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--nyc-gray);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--nyc-white);
+  max-width: 300px;
+}
+
+.event-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* EVENT IMAGE */
+.event-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+/* EVENT TEXT BLOCK */
+.event-text {
+  padding: 16px;
+}
+
+.event-text h3 {
+  font-size: var(--font-xl); /* You mentioned using CSS variables — adjust if needed */
+  margin: 0 0 8px 0;
+  color: var(--text-dark);
+}
+
+.event-text p {
+  font-size: var(--font-sm);
+  margin: 0;
+  color: var(--text-light);
+}
+
+
+/* -----------------------------------------------------------------------------
   ACCESSIBILITY
 ----------------------------------------------------------------------------- */
 
