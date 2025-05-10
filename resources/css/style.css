@@ -233,7 +233,7 @@ footer {
 }
 
 
-.social-icons .icon:hover {
+social-icons .icon:hover {
   filter: brightness(1.3);
 }
 
@@ -413,31 +413,52 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
-  EVENT MODALS
+  EVENT MODAL
 ----------------------------------------------------------------------------- */
-/* Modal Styles */
+/* Ensure the modal background covers the entire screen */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  top: var(--space-md); /* Leave space for the header */
-  left: 0;
-  width: 100%;
-  height: calc(100% - var(--space-md)); /* Subtract header height */
-  background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
-  z-index: 1000;
-  overflow-y: auto; /* Add vertical scrolling if content overflows */
-  justify-content: flex-start; /* Align content to the top */
-  align-items: flex-start; /* Align content to the top */
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; /* Start at the very top of the screen */
+    left: 0; /* Start at the very left of the screen */
+    width: 100%; /* Cover the full width of the screen */
+    height: 100%; /* Cover the full height of the screen */
+    background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+    z-index: 1000;
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content vertically */
 }
 
 .modal-content {
-  background-color: var(--nyc-white);
-  padding: var(--space-md);
-  border-radius: 0; /* Remove border radius for full-screen look */
-  width: 100%; /* Full width */
-  height: auto; /* Allow content to determine height */
-  box-shadow: none; /* Remove shadow for a cleaner look */
-  position: relative;
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Two columns: 1/3 for title and details, 2/3 for image and description */
+    gap: var(--space-md); /* Add spacing between columns */
+    align-items: start; /* Align content to the top */
+    margin: auto; /* Center the modal content */
+    background-color: var(--nyc-white);
+    padding: var(--space-md);
+    border-radius: 8px; /* Add rounded corners */
+    width: 75%; /* Occupy the middle 75% of the screen */
+    height: 80%; /* Add space at the bottom */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    position: relative;
+}
+
+#modalTitle {
+    font-size: 32px; /* Match H2 format */
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: var(--nyc-dark-gray);
+    margin-bottom: var(--space-sm);
+    text-align: left; /* Align text to the left */
+}
+
+#modalDateRange, #modalLocation {
+    font-size: 16px;
+    color: var(--nyc-dark-gray);
+    margin-bottom: var(--space-sm);
+    text-align: left; /* Align text to the left */
 }
 
 .modal-content img {
