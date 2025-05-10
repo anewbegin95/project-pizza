@@ -7,6 +7,46 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
 // === FUNCTIONS ===
 
+// === MODAL FUNCTIONALITY ===
+
+// Function to open the modal and populate it with event details
+function openEventModal(event) {
+    const modal = document.getElementById('eventModal');
+
+    // Populate modal content
+    document.getElementById('modalTitle').textContent = event.name;
+    document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
+    document.getElementById('modalImage').alt = `${event.name} image`;
+    document.getElementById('modalDateRange').textContent = `${event.start_datetime} – ${event.end_datetime}`;
+    document.getElementById('modalLocation').textContent = `Location: ${event.location || 'TBD'}`;
+    document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
+
+    // Show the modal
+    modal.classList.remove('hidden');
+}
+
+// Function to close the modal
+function closeEventModal() {
+    const modal = document.getElementById('eventModal');
+    modal.classList.add('hidden');
+}
+
+// Add event listener to close button
+const closeButton = document.querySelector('.close-button');
+if (closeButton) {
+    closeButton.addEventListener('click', closeEventModal);
+}
+
+// Add event listener to close modal when clicking outside the content
+const modal = document.getElementById('eventModal');
+if (modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeEventModal();
+        }
+    });
+}
+
 function createEventTile(event) {
     console.log('Creating tile for event:', event); // Debugging log
 
@@ -26,6 +66,9 @@ function createEventTile(event) {
     // Date range
     const dateText = document.createElement('p');
     dateText.textContent = `${event.start_datetime} – ${event.end_datetime}`;
+
+    // Add click event listener to open modal
+    tile.addEventListener('click', () => openEventModal(event));
 
     // Assemble tile
     tile.appendChild(img);
