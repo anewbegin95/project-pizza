@@ -35,16 +35,13 @@ function openEventModal(event) {
     modal.classList.remove('hidden');
 }
 
-// Function to close the modal
-function closeEventModal() {
-    const modal = document.getElementById('eventModal');
-    modal.classList.add('hidden');
-}
-
-// Add event listener to close button
-const closeButton = document.querySelector('.close-button');
-if (closeButton) {
-    closeButton.addEventListener('click', closeEventModal);
+// Add event listener to the "Return to all events" button
+const returnButton = document.querySelector('.return-button');
+if (returnButton) {
+    returnButton.addEventListener('click', () => {
+        const modal = document.getElementById('eventModal');
+        modal.classList.add('hidden'); // Close the modal
+    });
 }
 
 // Add event listener to close modal when clicking outside the content
@@ -137,5 +134,25 @@ function loadAndDisplayEvents() {
 // === MAIN ===
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Load and display events
     loadAndDisplayEvents();
+
+    // Add event listener to the "Return to all events" button
+    const returnButton = document.querySelector('.return-button');
+    if (returnButton) {
+        returnButton.addEventListener('click', () => {
+            const modal = document.getElementById('eventModal');
+            modal.classList.add('hidden'); // Close the modal
+        });
+    }
+
+    // Add event listener to close modal when clicking outside the content
+    const modal = document.getElementById('eventModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden'); // Close the modal
+            }
+        });
+    }
 });
