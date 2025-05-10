@@ -271,7 +271,7 @@ social-icons .icon:hover {
 
 .menu-toggle:hover {
   background-color: transparent;;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-yellow);
 }
 
 .menu-toggle:focus {
