@@ -312,22 +312,24 @@ social-icons .icon:hover {
   margin: var(--space-sm) 0;
 }
 
+/* Collapsible Menu Links */
 .collapsible-menu ul li a {
   font-size: 20px;
-  color: var(--nyc-dark-gray);
-  text-decoration: none;
-  transition: none;
-  outline: none; /* Remove default outline */
+  color: var(--nyc-dark-gray); /* Default text color */
+  text-decoration: none; /* No underline by default */
+  transition: color 0.3s, text-decoration 0.3s; /* Smooth hover effect */
+  outline: none; /* Remove focus outline */
 }
 
+/* Hover Effect: Yellow text with underline */
 .collapsible-menu ul li a:hover {
-  color: var(--nyc-dark-grey);
-  text-decoration: none;
-  background-color: transparent; /* No background on hover */;
+  color: var(--nyc-yellow); /* Change text color to yellow */
+  text-decoration: underline; /* Add underline on hover */
 }
 
+/* Focus Effect: Optional, if you want to keep focus styles */
 .collapsible-menu ul li a:focus {
-  outline: none; /* Remove the yellow outline on focus */
+  outline: none; /* Remove the default focus outline */
 }
 
 /* Show the menu when toggled */
