@@ -269,6 +269,15 @@ social-icons .icon:hover {
   z-index: 1001; /* Ensure it appears above other elements */
 }
 
+.menu-toggle:hover {
+  background-color: transparent;;
+  color: var(--nyc-dark-gray);
+}
+
+.menu-toggle:focus {
+  outline: none;
+}
+
 /* Collapsible Menu */
 .collapsible-menu {
   position: fixed; /* Ensure it covers the entire screen */
@@ -307,11 +316,18 @@ social-icons .icon:hover {
   font-size: 20px;
   color: var(--nyc-dark-gray);
   text-decoration: none;
-  transition: color 0.3s;
+  transition: none;
+  outline: none; /* Remove default outline */
 }
 
 .collapsible-menu ul li a:hover {
-  color: var(--nyc-yellow);
+  color: var(--nyc-dark-grey);
+  text-decoration: none;
+  background-color: transparent; /* No background on hover */;
+}
+
+.collapsible-menu ul li a:focus {
+  outline: none; /* Remove the yellow outline on focus */
 }
 
 /* Show the menu when toggled */
@@ -403,6 +419,12 @@ a {
 
 a:hover {
   color: var(--nyc-soft-pink); /* Hover link color */
+}
+
+a:focus,
+button:focus {
+    outline: 3px solid var(--nyc-yellow);
+    outline-offset: 2px;
 }
 
 /* -----------------------------------------------------------------------------
