@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" data-title="NYC Slice of Life">
     <head>
-        <!-- The head content will be dynamically loaded -->
+      <!-- The head, header, and footer content will be dynamically loaded using script below-->
+      <script src="resources/js/partials-loader.js"></script>
     </head>
 <body>
     <header>
@@ -38,30 +39,6 @@
       </section>
       
   </main>
-
-  <script>
-    // Load the head content
-    fetch('partials/head.html')
-        .then(response => response.text())
-        .then(data => {
-            // Insert the head content into the <head> tag
-            document.head.insertAdjacentHTML('beforeend', data);
-
-            // Set the page-specific title
-            const pageTitle = document.documentElement.getAttribute('data-title');
-            if (pageTitle) {
-                const titleElement = document.createElement('title');
-                titleElement.textContent = pageTitle;
-                document.head.appendChild(titleElement);
-            }
-        });
-
-    // Load the footer content
-    fetch('partials/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.body.insertAdjacentHTML('beforeend', data);
-        });
 </script>
   
 </body>

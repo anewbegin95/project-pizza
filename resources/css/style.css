@@ -233,7 +233,7 @@ footer {
 }
 
 
-.social-icons .icon:hover {
+social-icons .icon:hover {
   filter: brightness(1.3);
 }
 
@@ -354,6 +354,172 @@ img {
 .icon:hover {
   fill: var(--nyc-yellow);
 }
+
+/* -----------------------------------------------------------------------------
+  EVENTS GRID
+----------------------------------------------------------------------------- */
+/* EVENTS GRID STYLING */
+.events-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+/* EVENT TILE */
+.event-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--nyc-gray);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--nyc-white);
+  max-width: 300px;
+}
+
+.event-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* EVENT IMAGE */
+.event-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+/* EVENT TEXT BLOCK */
+.event-text {
+  padding: 16px;
+}
+
+.event-text h3 {
+  font-size: var(--font-xl); /* You mentioned using CSS variables — adjust if needed */
+  margin: 0 0 8px 0;
+  color: var(--text-dark);
+}
+
+.event-text p {
+  font-size: var(--font-sm);
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* -----------------------------------------------------------------------------
+  EVENT MODAL
+----------------------------------------------------------------------------- */
+/* Modal layout */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; /* Start at the very top of the screen */
+    left: 0; /* Start at the very left of the screen */
+    width: 100%; /* Cover the full width of the screen */
+    height: 100%; /* Cover the full height of the screen */
+    background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+    z-index: 1000;
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content vertically */
+}
+
+.modal-content {
+    display: grid;
+    grid-template-columns: 1fr 3fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
+    gap: var(--space-md); /* Add spacing between columns */
+    align-items: start; /* Align content to the top */
+    margin: auto; /* Center the modal content */
+    background-color: var(--nyc-white);
+    padding: var(--space-md);
+    border-radius: 8px; /* Add rounded corners */
+    width: 75%; /* Occupy the middle 75% of the screen */
+    max-height: 90%; /* Ensure the modal doesn't exceed 90% of the screen height */
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    position: relative;
+}
+
+/* Modal Content */
+#modalTitle {
+    font-size: 32px; /* Match H2 format */
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: var(--nyc-dark-gray);
+    margin-bottom: var(--space-sm);
+    text-align: left; /* Align text to the left */
+}
+
+.modal-details {
+  grid-column: 1 / 2; /* Place in the first column */
+  text-align: left; /* Align text to the left */
+}
+
+#modalDateRange {
+  font-size: 20px;
+  color: var(--nyc-dark-gray);
+  margin-bottom: var(--space-sm);
+}
+
+#modalLocation {
+  font-size: 20px;
+  color: var(--nyc-dark-gray);
+  margin-bottom: var(--space-md);
+}
+
+.modal-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content p {
+  font-size: 16px;
+  margin-bottom: var(--space-sm);
+}
+
+/* Modal Button */
+.modal-button {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--nyc-yellow);
+  color: var(--nyc-dark-gray);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-button:hover {
+  background-color: var(--nyc-soft-pink);
+  color: var(--nyc-dark-pink);
+}
+
+.return-button {
+  font-size: 20px;
+}
+
+/* Show the modal when it is not hidden */
+.modal:not(.hidden) {
+  display: flex;
+}
+
 
 /* -----------------------------------------------------------------------------
   ACCESSIBILITY
