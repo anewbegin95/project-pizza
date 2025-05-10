@@ -197,6 +197,7 @@ footer {
 
 .main-nav ul li a:hover {
   color: var(--nyc-yellow);
+  text-decoration: underline;
 }
 
 .header-actions {
@@ -513,6 +514,24 @@ img {
 
 .return-button {
   font-size: 20px;
+  background-color: transparent;
+  border: none;
+  color: var(--nyc-yellow);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  white-space: nowrap;
+  transition: color 0.3s;
+  display: inline;
+}
+
+.return-button:hover {
+  color: var(--nyc-soft-pink);
+  background-color: transparent;
+  text-decoration: underline;
 }
 
 /* Show the modal when it is not hidden */
