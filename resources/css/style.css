@@ -432,7 +432,7 @@ img {
 
 .modal-content {
     display: grid;
-    grid-template-columns: 1fr 2fr; /* Two columns: 1/3 for title and details, 2/3 for image and description */
+    grid-template-columns: 1fr 3fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
     gap: var(--space-md); /* Add spacing between columns */
     align-items: start; /* Align content to the top */
     margin: auto; /* Center the modal content */
@@ -440,12 +440,13 @@ img {
     padding: var(--space-md);
     border-radius: 8px; /* Add rounded corners */
     width: 75%; /* Occupy the middle 75% of the screen */
-    height: 80%; /* Add space at the bottom */
+    max-height: 90%; /* Ensure the modal doesn't exceed 90% of the screen height */
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
     position: relative;
 }
 
-/* Modal Details Section */
+/* Modal Content */
 #modalTitle {
     font-size: 32px; /* Match H2 format */
     font-family: 'Work Sans', sans-serif;
