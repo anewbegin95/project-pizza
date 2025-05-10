@@ -38,21 +38,38 @@ fetch('partials/head.html')
 
 fetch('partials/header.html')
   .then((response) => {
-    // Check if the fetch was successful
     if (!response.ok) {
       throw new Error(`Failed to load header.html: ${response.statusText}`);
     }
-
-    // Convert response to text (HTML string)
+    console.log('Header loaded successfully'); // Debugging log
     return response.text();
   })
   .then((headerContent) => {
     // Insert the fetched header at the beginning of the <body>
     document.body.insertAdjacentHTML('afterbegin', headerContent);
+
+    // Initialize header.js functionality after header.html is loaded
+    initializeHeader();
   })
   .catch((error) => {
     console.error(error);
   });
+
+// Function to initialize header.js functionality
+function initializeHeader() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const collapsibleMenu = document.querySelector('.collapsible-menu');
+
+  if (menuToggle && collapsibleMenu) {
+    menuToggle.addEventListener('click', () => {
+      collapsibleMenu.classList.toggle('open');
+      menuToggle.textContent = collapsibleMenu.classList.contains('open') ? 'x' : '=';
+    });
+    console.log('Menu toggle initialized'); // Debugging log
+  } else {
+    console.error('Menu toggle or collapsible menu not found in the DOM.');
+  }
+}
 
 
 // --- Load footer partial from partials/footer.html ---
