@@ -489,18 +489,29 @@ img {
   margin-bottom: var(--space-sm);
 }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  font-weight: bold;
+/* Modal Button */
+.modal-button {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--nyc-yellow);
   color: var(--nyc-dark-gray);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  text-align: center;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.close-button:hover {
-  color: var(--nyc-yellow);
+.modal-button:hover {
+  background-color: var(--nyc-soft-pink);
+  color: var(--nyc-dark-pink);
+}
+
+.return-button {
+  font-size: 20px;
 }
 
 /* Show the modal when it is not hidden */

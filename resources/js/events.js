@@ -21,6 +21,16 @@ function openEventModal(event) {
     document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
     document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
 
+    // Populate the button
+    const modalLink = document.getElementById('modalLink');
+    if (event.link && event.link_text) {
+        modalLink.href = event.link;
+        modalLink.textContent = event.link_text;
+        modalLink.classList.remove('hidden'); // Show the button
+    } else {
+        modalLink.classList.add('hidden'); // Hide the button if no link is provided
+    }
+
     // Show the modal
     modal.classList.remove('hidden');
 }
