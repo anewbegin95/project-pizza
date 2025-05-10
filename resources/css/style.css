@@ -415,7 +415,7 @@ img {
 /* -----------------------------------------------------------------------------
   EVENT MODAL
 ----------------------------------------------------------------------------- */
-/* Ensure the modal background covers the entire screen */
+/* Modal layout */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -445,6 +445,7 @@ img {
     position: relative;
 }
 
+/* Modal Details Section */
 #modalTitle {
     font-size: 32px; /* Match H2 format */
     font-family: 'Work Sans', sans-serif;
@@ -454,11 +455,21 @@ img {
     text-align: left; /* Align text to the left */
 }
 
-#modalDateRange, #modalLocation {
-    font-size: 16px;
-    color: var(--nyc-dark-gray);
-    margin-bottom: var(--space-sm);
-    text-align: left; /* Align text to the left */
+.modal-details {
+  grid-column: 1 / 2; /* Place in the first column */
+  text-align: left; /* Align text to the left */
+}
+
+#modalDateRange {
+  font-size: 20px;
+  color: var(--nyc-dark-gray);
+  margin-bottom: var(--space-sm);
+}
+
+#modalLocation {
+  font-size: 20px;
+  color: var(--nyc-dark-gray);
+  margin-bottom: var(--space-md);
 }
 
 .modal-content img {

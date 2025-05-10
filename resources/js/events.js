@@ -18,7 +18,7 @@ function openEventModal(event) {
     document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
     document.getElementById('modalImage').alt = `${event.name} image`;
     document.getElementById('modalDateRange').textContent = `${event.start_datetime} – ${event.end_datetime}`;
-    document.getElementById('modalLocation').textContent = `Location: ${event.location || 'TBD'}`;
+    document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
     document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
 
     // Show the modal
