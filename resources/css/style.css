@@ -148,26 +148,39 @@ footer {
 /* -----------------------------------------------------------------------------
   HEADER
 ----------------------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--nyc-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
 .header-container {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: var(--space-xs) var(--space-md);
-  max-width: 2000px;
-  position: relative;
+  align-items: center;
+  width: 100%;
 }
 
+/* Site Title */
 .site-title {
   flex-shrink: 0;
 }
 
-.site-title a {
+.site-title h1 {
+  font-size: 24px; /* Default size */
+  margin: 0;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.site-title h1 a {
   text-decoration: none;
   color: var(--nyc-dark-gray);
 }
 
-.site-title a:hover {
+.site-title h1 a:hover {
   color: var(--nyc-yellow);
 }
 
@@ -192,6 +205,7 @@ footer {
   color: var(--nyc-dark-gray);
   text-decoration: none;
   font-weight: 500;
+  font-size: 16px; /* Default size */
   transition: color 0.3s;
 }
 
@@ -208,7 +222,7 @@ footer {
 
 .social-icons {
   display: flex;
-  gap: var(--space-md); /* adds spacing between icons */
+  gap: var(--space-md); /* Adds spacing between icons */
   align-items: center;
   padding-right: var(--space-md);
 }
@@ -220,19 +234,24 @@ footer {
 }
 
 .social-icons .icon {
-  width: 32px;
-  height: 32px;
+  width: 32px; /* Set a consistent width */
+  height: 32px; /* Set a consistent height */
   display: inline-block;
+  object-fit: contain; /* Ensures the image fits within the box without distortion */
   transition: filter 0.3s;
   filter: none;
   box-shadow: none;
 }
 
 .social-icons a[href*="instagram"] .icon {
-  width: 40px; /* Adjust the width */
-  height: 40px; /* Adjust the height */
+  width: 32px; /* Override any custom sizes to match the default */
+  height: 32px;
 }
 
+.social-icons a[href*="tiktok"] .icon {
+  width: 24px; /* Ensure TikTok icon matches the default size */
+  height: 24px;
+}
 
 social-icons .icon:hover {
   filter: brightness(1.3);
@@ -261,7 +280,7 @@ social-icons .icon:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.2); /* Adds a dark overlay for better text visibility */
+  background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay for better text visibility */
   z-index: 1;
 }
 
@@ -272,7 +291,8 @@ social-icons .icon:hover {
 
 .hero h1 {
   font-size: 48px;
-  margin-bottom: 1rem;
+  color: var(--nyc-yellow);
+  margin-bottom: var(--space-sm);
   font-family: 'Montserrat', 'Arial', sans-serif;
 }
 
@@ -288,40 +308,39 @@ social-icons .icon:hover {
 .contact-btn,
 button,
 .btn {
-  padding: var(--space-xs) var(--space-sm);
-  background-color: var(--nyc-yellow);
-  color: var(--nyc-dark-gray);
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-  height: 50px;
-  width: 140px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: var(--space-xs) var(--space-sm); /* Consistent padding */
+  background-color: var(--nyc-yellow); /* Button background color */
+  color: var(--nyc-dark-gray); /* Text color */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Default font size */
+  font-weight: 600; /* Bold text */
+  text-decoration: none; /* Remove underline */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover transitions */
+  height: auto; /* Allow height to adjust dynamically */
+  width: auto; /* Allow width to adjust dynamically */
+  display: inline-flex; /* Inline-flex for better alignment */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  white-space: nowrap; /* Prevent text wrapping */
 }
-
 
 .contact-btn:hover,
 button:hover,
 .btn:hover {
-  background-color: var(--nyc-soft-pink);
-  color: var(--nyc-dark-pink);
+  background-color: var(--nyc-soft-pink); /* Hover background color */
+  color: var(--nyc-dark-pink); /* Hover text color */
 }
 
 a {
-  color: var(--nyc-yellow);
-  text-decoration: none;
-  transition: color 0.3s;
+  color: var(--nyc-yellow); /* Link color */
+  text-decoration: none; /* Remove underline */
+  transition: color 0.3s; /* Smooth hover transition */
 }
 
 a:hover {
-  color: var(--nyc-soft-pink);
+  color: var(--nyc-soft-pink); /* Hover link color */
 }
 
 /* -----------------------------------------------------------------------------
@@ -584,11 +603,57 @@ button:focus {
 
   header h1 { font-size: 29px; }
   header p { font-size: 16px; }
+
+  /* Adjust contact button for smaller screens */
+  .contact-btn,
+  button,
+  .btn {
+    font-size: 14px; /* Reduce font size */
+    padding: var(--space-xxs) var(--space-xs); /* Adjust padding */
+    height: auto; /* Allow height to adjust dynamically */
+    width: auto; /* Allow width to adjust dynamically */
+  }
+
+  .hero {
+    height: 40vh; /* Reduce height for smaller screens */
+  }
+
+  .hero h1 {
+    font-size: 36px; /* Scale down font size */
+    margin-bottom: var(--space-xs); /* Adjust spacing */
+  }
+
+  .hero p {
+    font-size: 18px; /* Scale down font size */
+  }
 }
 
 @media (max-width: 480px) {
   .container {
     width: 100%;
     padding: var(--space-sm);
+  }
+
+  /* Further adjust contact button for very small screens */
+  .contact-btn,
+  button,
+  .btn {
+    font-size: 12px; /* Further reduce font size */
+    padding: var(--space-xxs); /* Minimal padding */
+    height: auto; /* Allow height to adjust dynamically */
+    width: auto; /* Allow width to adjust dynamically */
+  }
+
+  .hero {
+    height: 30vh; /* Further reduce height for very small screens */
+  }
+
+  .hero h1 {
+    font-size: 28px; /* Further scale down font size */
+    margin-bottom: var(--space-xxs); /* Adjust spacing */
+  }
+
+  .hero p {
+    font-size: 16px; /* Further scale down font size */
   }
 }
