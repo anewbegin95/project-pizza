@@ -2,7 +2,7 @@
 ===============================================================================
 NYC Slice of Life – Global Stylesheet
 Author: Alex Newbegin
-Last Updated: 2025-05-07
+Last Updated: 2025-05-11
 ===============================================================================
 */
 
@@ -54,14 +54,18 @@ Happy Styling! 🎨
 
 /* CSS Variables */
 :root {
-  /* Color Palette */
-  --nyc-yellow: #FFD700;        /* Bright yellow for highlights, links, buttons */
-  --nyc-dark-gray: #474646;     /* Dark gray for main text */
-  --nyc-white: #FFFFFF;         /* Pure white for backgrounds */
+  /* Updated Color Palette */
+  --nyc-light-pink: #FFB6C1;   /* Light pink as primary */
+  --nyc-navy: #001B2E;         /* Main text and headings */
+  --nyc-white: #FFFFFF;        /* Primary background */
 
-  --nyc-soft-pink: #FFB6C1;     /* Accent color */
-  --nyc-dark-pink: #b55c88;     /* For hover states or contrast */
-  --nyc-gray: #999999;          /* Secondary gray, used in footer */
+  --nyc-fuschia: #D81E5B;       /* Fuschia as fuschia */
+  --nyc-light-blue: #4D7EA8;    /* Section dividers and subtle backgrounds */
+  --nyc-light-green: #A1C7B6;   /* Success messages and callouts */
+
+  --nyc-light-gray: #F5F5F5;   /* Alternate background */
+  --nyc-medium-gray: #B0B0B0;  /* Secondary text and borders */
+  --nyc-charcoal: #2E2E2E;     /* Dark mode or overlays */
 
   /* Spacing scale for consistent layout */
   --space-xxs: 4px;
@@ -89,7 +93,7 @@ html, body {
   height: 100%;
   margin: 0;
   font-family: 'Source Sans Pro', 'Arial', sans-serif;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
   background-color: var(--nyc-white);
   line-height: 1.6;
   /* display: flex; */
@@ -104,7 +108,7 @@ html, body {
 h1, h2, h3 {
   font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 700;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
 }
 
 h1 {
@@ -135,6 +139,7 @@ p, ul, ol {
 
 section {
   margin-bottom: var(--space-lg);
+  background-color: var(--nyc-white);
 }
 
 header {
@@ -177,11 +182,11 @@ footer {
 
 .site-title h1 a {
   text-decoration: none;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
 }
 
 .site-title h1 a:hover {
-  color: var(--nyc-yellow);
+  color: var(--nyc-fuschia);
 }
 
 .main-nav {
@@ -202,7 +207,7 @@ footer {
 }
 
 .main-nav ul li a {
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
   text-decoration: none;
   font-weight: 500;
   font-size: 16px; /* Default size */
@@ -210,7 +215,7 @@ footer {
 }
 
 .main-nav ul li a:hover {
-  color: var(--nyc-yellow);
+  color: var(--nyc-fuschia);
   text-decoration: underline;
 }
 
@@ -263,7 +268,7 @@ social-icons .icon:hover {
   border: none;
   font-size: 24px;
   font-weight: bold;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
   cursor: pointer;
   display: none; /* Hidden by default */
   z-index: 1001; /* Ensure it appears above other elements */
@@ -271,7 +276,7 @@ social-icons .icon:hover {
 
 .menu-toggle:hover {
   background-color: transparent;;
-  color: var(--nyc-yellow);
+  color: var(--nyc-fuschia);
 }
 
 .menu-toggle:focus {
@@ -315,7 +320,7 @@ social-icons .icon:hover {
 /* Collapsible Menu Links */
 .collapsible-menu ul li a {
   font-size: 20px;
-  color: var(--nyc-dark-gray); /* Default text color */
+  color: var(--nyc-navy); /* Default text color */
   text-decoration: none; /* No underline by default */
   transition: color 0.3s, text-decoration 0.3s; /* Smooth hover effect */
   outline: none; /* Remove focus outline */
@@ -323,7 +328,7 @@ social-icons .icon:hover {
 
 /* Hover Effect: Yellow text with underline */
 .collapsible-menu ul li a:hover {
-  color: var(--nyc-yellow); /* Change text color to yellow */
+  color: var(--nyc-fuschia); /* Change text color to yellow */
   text-decoration: underline; /* Add underline on hover */
 }
 
@@ -349,7 +354,7 @@ social-icons .icon:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: white;
+  color: var(--nyc-white);
   position: relative;
 }
 
@@ -371,7 +376,7 @@ social-icons .icon:hover {
 
 .hero h1 {
   font-size: 48px;
-  color: var(--nyc-yellow);
+  color: var(--nyc-light-pink);
   margin-bottom: var(--space-sm);
   font-family: 'Montserrat', 'Arial', sans-serif;
 }
@@ -385,48 +390,113 @@ social-icons .icon:hover {
   BUTTONS & LINKS
 ----------------------------------------------------------------------------- */
 
+/* Primary Buttons */
 .contact-btn,
 button,
 .btn {
-  padding: var(--space-xs) var(--space-sm); /* Consistent padding */
-  background-color: var(--nyc-yellow); /* Button background color */
-  color: var(--nyc-dark-gray); /* Text color */
-  border: none; /* Remove border */
-  border-radius: 5px; /* Rounded corners */
-  font-size: 16px; /* Default font size */
-  font-weight: 600; /* Bold text */
-  text-decoration: none; /* Remove underline */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s, color 0.3s; /* Smooth hover transitions */
-  height: auto; /* Allow height to adjust dynamically */
-  width: auto; /* Allow width to adjust dynamically */
-  display: inline-flex; /* Inline-flex for better alignment */
-  align-items: center; /* Center content vertically */
-  justify-content: center; /* Center content horizontally */
-  white-space: nowrap; /* Prevent text wrapping */
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 12px 24px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .contact-btn:hover,
 button:hover,
 .btn:hover {
-  background-color: var(--nyc-soft-pink); /* Hover background color */
-  color: var(--nyc-dark-pink); /* Hover text color */
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
+/* Secondary Buttons */
+.secondary-btn {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.secondary-btn:hover {
+  background-color: var(--nyc-light-blue);
+  color: var(--nyc-navy);
 }
 
 a {
-  color: var(--nyc-yellow); /* Link color */
-  text-decoration: none; /* Remove underline */
-  transition: color 0.3s; /* Smooth hover transition */
+  color: var(--nyc-fuschia);
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
 a:hover {
-  color: var(--nyc-soft-pink); /* Hover link color */
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
 }
 
 a:focus,
 button:focus {
-    outline: 3px solid var(--nyc-yellow);
+    outline: 3px solid var(--nyc-fuschia);
     outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------------
+  BACKGROUNDS
+----------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+}
+
+.alt-section {
+  background-color: var(--nyc-light-pink);
+}
+
+.highlighted-section {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
+.success-message {
+  background-color: var(--nyc-light-green);
+}
+
+/* -----------------------------------------------------------------------------
+  FORMS
+----------------------------------------------------------------------------- */
+
+input,
+textarea {
+  border: 1px solid var(--nyc-medium-gray);
+  color: var(--nyc-navy);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--nyc-medium-gray);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--nyc-light-blue);
+  outline: none;
+}
+
+/* -----------------------------------------------------------------------------
+  SECTION DIVIDERS
+----------------------------------------------------------------------------- */
+
+.divider {
+  border-top: 2px solid var(--nyc-light-blue);
+  margin: var(--space-md) 0;
 }
 
 /* -----------------------------------------------------------------------------
@@ -434,9 +504,8 @@ button:focus {
 ----------------------------------------------------------------------------- */
 
 footer {
-  padding: var(--space-xs) 0;
   text-align: center;
-  background: var(--nyc-gray);
+  background: var(--nyc-medium-gray);
 }
 
 /* -----------------------------------------------------------------------------
@@ -453,12 +522,12 @@ img {
 .icon {
   width: 24px;
   height: 24px;
-  fill: var(--nyc-dark-gray);
+  fill: var(--nyc-navy);
   transition: fill 0.3s;
 }
 
 .icon:hover {
-  fill: var(--nyc-yellow);
+  fill: var(--nyc-fuschia);
 }
 
 /* -----------------------------------------------------------------------------
@@ -557,7 +626,7 @@ img {
     font-size: 32px; /* Match H2 format */
     font-family: 'Work Sans', sans-serif;
     font-weight: 700;
-    color: var(--nyc-dark-gray);
+    color: var(--nyc-navy);
     margin-bottom: var(--space-sm);
     text-align: left; /* Align text to the left */
 }
@@ -569,13 +638,13 @@ img {
 
 #modalDateRange {
   font-size: 20px;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
   margin-bottom: var(--space-sm);
 }
 
 #modalLocation {
   font-size: 20px;
-  color: var(--nyc-dark-gray);
+  color: var(--nyc-navy);
   margin-bottom: var(--space-md);
 }
 
@@ -601,8 +670,8 @@ img {
   display: inline-block;
   margin-top: var(--space-sm);
   padding: var(--space-xs) var(--space-md);
-  background-color: var(--nyc-yellow);
-  color: var(--nyc-dark-gray);
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
   text-decoration: none;
   font-size: 16px;
   font-weight: 600;
@@ -613,15 +682,15 @@ img {
 }
 
 .modal-button:hover {
-  background-color: var(--nyc-soft-pink);
-  color: var(--nyc-dark-pink);
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
 }
 
 .return-button {
   font-size: 20px;
   background-color: transparent;
   border: none;
-  color: var(--nyc-yellow);
+  color: var(--nyc-fuschia);
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -634,7 +703,7 @@ img {
 }
 
 .return-button:hover {
-  color: var(--nyc-soft-pink);
+  color: var(--nyc-light-pink);
   background-color: transparent;
   text-decoration: underline;
 }
@@ -651,20 +720,20 @@ img {
 
 a:focus,
 button:focus {
-  outline: 3px solid var(--nyc-yellow);
+  outline: 3px solid var(--nyc-fuschia);
   outline-offset: 2px;
 }
 
 @media (prefers-contrast: high) {
   body {
-    background-color: var(--nyc-dark-gray);
+    background-color: var(--nyc-navy);
     color: var(--nyc-white);
   }
 
   a,
   button {
-    background-color: var(--nyc-yellow);
-    color: var(--nyc-dark-gray);
+    background-color: var(--nyc-fuschia);
+    color: var(--nyc-navy);
   }
 }
 
