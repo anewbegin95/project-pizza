@@ -9,6 +9,30 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
 // === MODAL FUNCTIONALITY ===
 
+// Update the function to handle multi-day events without specific times
+function formatEventDate(start, end, allDay) {
+    if (allDay === 'TRUE') {
+        // All-day event
+        if (start === end) {
+            return start; // Single-day all-day event
+        } else {
+            return `${start} – ${end}`; // Multi-day all-day event
+        }
+    } else {
+        // Check if times are included
+        const startHasTime = start.includes(':');
+        const endHasTime = end.includes(':');
+
+        if (!startHasTime && !endHasTime) {
+            // Multi-day event without specific times
+            return `${start} – ${end}`;
+        } else {
+            // Event with specific times
+            return `${start} – ${end}`;
+        }
+    }
+}
+
 // Function to open the modal and populate it with event details
 function openEventModal(event) {
     const modal = document.getElementById('eventModal');
@@ -17,7 +41,11 @@ function openEventModal(event) {
     document.getElementById('modalTitle').textContent = event.name;
     document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
     document.getElementById('modalImage').alt = `${event.name} image`;
-    document.getElementById('modalDateRange').textContent = `${event.start_datetime} – ${event.end_datetime}`;
+    document.getElementById('modalDateRange').textContent = formatEventDate(
+        event.start_datetime,
+        event.end_datetime,
+        event.all_day
+    );
     document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
     document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
 
