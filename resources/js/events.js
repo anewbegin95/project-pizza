@@ -9,26 +9,47 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
 // === MODAL FUNCTIONALITY ===
 
-// Update the function to handle multi-day events without specific times
+// Updated formatEventDate to handle all desired behaviors
 function formatEventDate(start, end, allDay) {
+    if (start === 'Ongoing') {
+        return 'Ongoing';
+    }
+
+    // Parse dates explicitly to handle the format correctly
+    const startDate = new Date(Date.parse(start));
+    const endDate = new Date(Date.parse(end));
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+        console.error('Invalid date format:', { start, end });
+        return 'Invalid date';
+    }
+
+    // Format dates directly with the correct timezone
+    const startDateFormatted = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+    const endDateFormatted = endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+
+    const startTimeFormatted = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
+    const endTimeFormatted = endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
+
     if (allDay === 'TRUE') {
-        // All-day event
         if (start === end) {
-            return start; // Single-day all-day event
+            return startDateFormatted; // Single-day all-day event
         } else {
-            return `${start} – ${end}`; // Multi-day all-day event
+            return `${startDateFormatted} – ${endDateFormatted}`; // Multi-day all-day event
         }
     } else {
-        // Check if times are included
-        const startHasTime = start.includes(':');
-        const endHasTime = end.includes(':');
-
-        if (!startHasTime && !endHasTime) {
-            // Multi-day event without specific times
-            return `${start} – ${end}`;
+        if (!start.includes(':') && !end.includes(':')) {
+            // Inspecific times
+            return `${startDateFormatted} – ${endDateFormatted}`;
+        } else if (startDate.toDateString() === endDate.toDateString() && start.includes(':') && end.includes(':')) {
+            // Same-day event with precise times
+            return `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
+        } else if (startDate.toDateString() === endDate.toDateString()) {
+            // Same-day event with times
+            return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
         } else {
-            // Event with specific times
-            return `${start} – ${end}`;
+            // Multi-day event with times
+            return `${startDateFormatted}, ${startTimeFormatted} – ${endDateFormatted}, ${endTimeFormatted}`;
         }
     }
 }
@@ -100,7 +121,7 @@ function createEventTile(event) {
 
     // Date range
     const dateText = document.createElement('p');
-    dateText.textContent = `${event.start_datetime} – ${event.end_datetime}`;
+    dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day);
 
     // Add click event listener to open modal
     tile.addEventListener('click', () => openEventModal(event));
@@ -128,6 +149,8 @@ function parseCSV(csvText) {
         headers.forEach((header, i) => {
             event[header] = values[i]?.replace(/^"|"$/g, ''); // Remove surrounding quotes
         });
+
+        console.log('Raw event data:', event); // Debugging log to inspect raw event data
 
         return event;
     });

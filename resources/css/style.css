@@ -645,7 +645,7 @@ img {
 
 .modal-content {
     display: grid;
-    grid-template-columns: 1fr 3fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
+    grid-template-columns: 1fr 2fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
     gap: var(--space-md); /* Add spacing between columns */
     align-items: start; /* Align content to the top */
     margin: auto; /* Center the modal content */
@@ -701,12 +701,6 @@ img {
 .modal-content p {
   font-size: 16px;
   margin-bottom: var(--space-sm);
-}
-
-#modalRecurrence {
-    font-style: italic;
-    color: var(--secondary-color);
-    margin-top: var(--space-xs);
 }
 
 #modalRecurrence.hidden {
