@@ -59,7 +59,7 @@ Happy Styling! 🎨
   --nyc-navy: #001B2E;         /* Main text and headings */
   --nyc-white: #FFFFFF;        /* Primary background */
 
-  --nyc-fuschia: #D81E5B;       /* Fuschia as fuschia */
+  --nyc-fuschia: #D81E5B;       /* Fuschia as accent */
   --nyc-light-blue: #4D7EA8;    /* Section dividers and subtle backgrounds */
   --nyc-light-green: #A1C7B6;   /* Success messages and callouts */
 
@@ -560,6 +560,7 @@ img {
 .event-tile:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 /* EVENT IMAGE */
