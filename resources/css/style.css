@@ -104,26 +104,51 @@ html, body {
   TYPOGRAPHY
 ----------------------------------------------------------------------------- */
 
-/* Headings use a bold font and dark color */
-h1, h2, h3 {
-  font-family: 'Work Sans', 'Arial', sans-serif;
+/* Ensuring uniform font usage across the file */
+
+/* Updated font-family for all text elements */
+body, p, ul, ol, input, textarea, button {
+  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
+}
+
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif; /* Heading font */
+  font-size: 40px;
   font-weight: 700;
   color: var(--nyc-navy);
 }
 
-h1 {
-  font-family: 'Montserrat', 'Arial', sans-serif;
-  font-size: 40px;
+h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
 }
 
-h2 { font-size: 32px; }
-h3 { font-size: 28px; }
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+
+h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
 
 /* Paragraph and list text */
 p, ul, ol {
   font-size: 16px;
   font-weight: 400;
+  color: var(--nyc-navy);
   margin-bottom: var(--space-sm);
+}
+
+/* Ensured all other text elements inherit the correct font */
+.modal-content p, .event-text p {
+  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
+}
+
+.modal-content h2, .event-text h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
 }
 
 /* -----------------------------------------------------------------------------
@@ -505,7 +530,7 @@ textarea:focus {
 
 footer {
   text-align: center;
-  background: var(--nyc-medium-gray);
+  background: var(--nyc-light-gray);
 }
 
 /* -----------------------------------------------------------------------------
