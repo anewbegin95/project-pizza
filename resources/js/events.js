@@ -9,6 +9,28 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
 // === MODAL FUNCTIONALITY ===
 
+/*
+ * formatEventDate Scenarios:
+ * 1. Ongoing Events:
+ *    - If the start date is 'Ongoing', display 'Ongoing'.
+ * 
+ * 2. Invalid or Missing Dates:
+ *    - If either start or end date is invalid, display 'Invalid date'.
+ * 
+ * 3. All-Day Events:
+ *    - Single-day all-day event: Display the date (e.g., 'Fri, May 16').
+ *    - Multi-day all-day event: Display the date range (e.g., 'May 16 – May 17').
+ * 
+ * 4. Events with Inspecific Times:
+ *    - If both start and end times are '0:00' or missing, display only the date range (e.g., 'May 16 – May 17').
+ * 
+ * 5. Same-Day Events with Precise Times:
+ *    - If the start and end times are on the same day and precise, display the date with a time range (e.g., 'Fri, May 16, 5:30 - 8:30 PM').
+ * 
+ * 6. Multi-Day Events with Times:
+ *    - If the event spans multiple days with times, display the full date and time range (e.g., 'Fri, May 16, 5:30 PM – Sat, May 17, 8:30 PM').
+ */
+
 // Updated formatEventDate to handle all desired behaviors
 function formatEventDate(start, end, allDay) {
     if (start === 'Ongoing') {
@@ -24,12 +46,16 @@ function formatEventDate(start, end, allDay) {
         return 'Invalid date';
     }
 
-    // Format dates directly with the correct timezone
-    const startDateFormatted = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' });
-    const endDateFormatted = endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+    // Adjust dates to Eastern Time (US) explicitly
+    const startDateEastern = new Date(startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const endDateEastern = new Date(endDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
-    const startTimeFormatted = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
-    const endTimeFormatted = endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
+    // Format dates directly with the correct timezone
+    const startDateFormatted = startDateEastern.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const endDateFormatted = endDateEastern.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    const startTimeFormatted = startDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const endTimeFormatted = endDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
     if (allDay === 'TRUE') {
         if (start === end) {
@@ -38,7 +64,10 @@ function formatEventDate(start, end, allDay) {
             return `${startDateFormatted} – ${endDateFormatted}`; // Multi-day all-day event
         }
     } else {
-        if (!start.includes(':') && !end.includes(':')) {
+        if (startTimeFormatted === '12:00 AM' && endTimeFormatted === '12:00 AM' && startDate.toDateString() !== endDate.toDateString()) {
+            // If both times are midnight and the dates differ, render only the date range without times
+            return `${startDateFormatted} – ${endDateFormatted}`;
+        } else if (!start.includes(':') && !end.includes(':')) {
             // Inspecific times
             return `${startDateFormatted} – ${endDateFormatted}`;
         } else if (startDate.toDateString() === endDate.toDateString() && start.includes(':') && end.includes(':')) {
