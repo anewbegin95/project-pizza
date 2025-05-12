@@ -9,42 +9,59 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
 // === MODAL FUNCTIONALITY ===
 
+// Updated formatEventDate to handle all desired behaviors
 /*
  * formatEventDate Scenarios:
- * 1. Ongoing Events:
- *    - If the start date is 'Ongoing', display 'Ongoing'.
+ * 1. Exact Start & End Datetime (One Day):
+ *    - Example: "Sun, May 11, 2:00 – 5:00 PM"
+ *    - Example: "Sun, May 11, 10:00 AM – 5:00 PM"
  * 
- * 2. Invalid or Missing Dates:
- *    - If either start or end date is invalid, display 'Invalid date'.
+ * 2. Exact Start & End Datetime (Over Many Days):
+ *    - Example: "Sun, May 11 – Tues, May 13, 2:00 - 5:00 PM"
+ *    - Example: "Sun, May 11 2025 – Tues, May 13, 10:00 AM - 5:00 PM"
  * 
- * 3. All-Day Events:
- *    - Single-day all-day event: Display the date (e.g., 'Fri, May 16').
- *    - Multi-day all-day event: Display the date range (e.g., 'May 16 – May 17').
+ * 3. Exact Day but Not Time (One Day):
+ *    - Example: "Sun, May 11"
  * 
- * 4. Events with Inspecific Times:
- *    - If both start and end times are '0:00' or missing, display only the date range (e.g., 'May 16 – May 17').
+ * 4. Exact Start & End Day but No Time (Over Many Days):
+ *    - Example: "Sun, May 11 – Tue, May 13"
  * 
- * 5. Same-Day Events with Precise Times:
- *    - If the start and end times are on the same day and precise, display the date with a time range (e.g., 'Fri, May 16, 5:30 - 8:30 PM').
+ * 5. Single day, all day:
+ *    - Example: "Sun, May 11 (all day)"
  * 
- * 6. Multi-Day Events with Times:
- *    - If the event spans multiple days with times, display the full date and time range (e.g., 'Fri, May 16, 5:30 PM – Sat, May 17, 8:30 PM').
+ * 6. Multi-day, all day:
+ *    - Example: "Sun, May 11 – Tue, May 13 (all day)"
+ * 
+ * 7. Ongoing Events (With Start Date):
+ *    - Example: "Starting Sun, May 11, ongoing"
+ * 
+ * 8. Recurring Events (Specific Days or Times):
+ *    - Example: "Next on "Fri, May 16, 5:30 – 8:30 PM"
+ * 
+ * 8. Drop-In Events (Exact Start Time but No End Time):
+ *    - Example: "Sun, May 11, starting at 2:00 PM"
+ * 
+ * 10. Closing Events (Exact End Time but No Start Time):
+ *    - Example: "Sun, May 11, ending at 5:00 PM"
+ * 
+ * 11. Seasonal or Approximate Date Ranges:
+ *    - Example: "Spring 2025", or "May 2025"
+ * 
+ * 12. Multi-Session Events (Specific Dates and Times for Each Session):
+ *    - Example:
+ *      "Session 1: Sun, May 11, 2:00 PM – 4:00 PM"
+ *      "Session 2: Mon, May 12, 10:00 AM – 12:00 PM"
+ * 
+ * 13. Events with No Specific Date or Time (TBD):
+ *    - Example: "Date and time to be announced"
+ * 
+ * 14. Ongoing Event
+ *   - Example: "Ongoing"
  */
-
-// Updated formatEventDate to handle all desired behaviors
-function formatEventDate(start, end, allDay) {
-    if (start === 'Ongoing') {
-        return 'Ongoing';
-    }
-
+function formatEventDate(start, end, allDay, recurring) {
     // Parse dates explicitly to handle the format correctly
     const startDate = new Date(Date.parse(start));
     const endDate = new Date(Date.parse(end));
-
-    if (isNaN(startDate) || isNaN(endDate)) {
-        console.error('Invalid date format:', { start, end });
-        return 'Invalid date';
-    }
 
     // Adjust dates to Eastern Time (US) explicitly
     const startDateEastern = new Date(startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
@@ -57,29 +74,165 @@ function formatEventDate(start, end, allDay) {
     const startTimeFormatted = startDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     const endTimeFormatted = endDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-    if (allDay === 'TRUE') {
-        if (start === end) {
-            return startDateFormatted; // Single-day all-day event
-        } else {
-            return `${startDateFormatted} – ${endDateFormatted}`; // Multi-day all-day event
-        }
-    } else {
-        if (startTimeFormatted === '12:00 AM' && endTimeFormatted === '12:00 AM' && startDate.toDateString() !== endDate.toDateString()) {
-            // If both times are midnight and the dates differ, render only the date range without times
-            return `${startDateFormatted} – ${endDateFormatted}`;
-        } else if (!start.includes(':') && !end.includes(':')) {
-            // Inspecific times
-            return `${startDateFormatted} – ${endDateFormatted}`;
-        } else if (startDate.toDateString() === endDate.toDateString() && start.includes(':') && end.includes(':')) {
-            // Same-day event with precise times
-            return `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
-        } else if (startDate.toDateString() === endDate.toDateString()) {
-            // Same-day event with times
-            return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
-        } else {
-            // Multi-day event with times
-            return `${startDateFormatted}, ${startTimeFormatted} – ${endDateFormatted}, ${endTimeFormatted}`;
-        }
+    /*
+     * Example 14: Ongoing Events
+     * Input: start = "Ongoing", end = "", allDay = "TRUE", recurring = "FALSE"
+     * Output (Tile): "Ongoing"
+     * Output (Modal): "Ongoing"
+     */
+    if (start === 'Ongoing' && !end) {
+        return 'Ongoing';
+    }
+
+    /*
+     * Example 1: Exact Start & End Datetime (One Day)
+     * Input: start = "2025-05-11 10:00:00", end = "2025-05-11 17:00:00", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11, 10:00 AM – 5:00 PM"
+     * Output (Modal): "Sun, May 11, 10:00 AM – 5:00 PM"
+     */
+    if (startDate.toDateString() === endDate.toDateString() && start.includes(':') && end.includes(':') && allDay === 'FALSE' && recurring === 'FALSE') {
+        return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
+    }
+
+    /*
+     * Example 2: Exact Start & End Datetime (Over Many Days)
+     * Input: start = "2025-05-11 10:00:00", end = "2025-05-13 17:00:00", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11, 10:00 AM – Tue, May 13, 5:00 PM"
+     * Output (Modal): "Sun, May 11, 10:00 AM – Tue, May 13, 5:00 PM"
+     */
+    if (start.includes(':') && end.includes(':') && (startTimeFormatted != '12:00 AM' || endTimeFormatted != '12:00 AM') && allDay === 'FALSE' && recurring === 'FALSE') {
+        return `${startDateFormatted} - ${endDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
+    }
+
+    /*
+     * Example 3: Exact Day but Not Time (One Day)
+     * Input: start = "2025-05-11", end = "2025-05-11", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11"
+     * Output (Modal): "Sun, May 11"
+     */
+    if (startDate.toDateString() === endDate.toDateString() && ((!start.includes(':') && !end.includes(':')) || (startTimeFormatted === '12:00 AM' && endTimeFormatted === '12:00 AM')) && allDay === 'FALSE' && recurring === 'FALSE') {
+        return startDateFormatted;
+    }
+
+    /*
+     * Example 4: Exact Start & End Day but No Time (Over Many Days)
+     * Input: start = "2025-05-11", end = "2025-05-13", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11 – Tue, May 13"
+     * Output (Modal): "Sun, May 11 – Tue, May 13"
+     */
+    if (start != end && ((!start.includes(':') && !end.includes(':')) || (startTimeFormatted === '12:00 AM' && endTimeFormatted === '12:00 AM')) && allDay === 'FALSE' && recurring === 'FALSE') {
+        return `${startDateFormatted} – ${endDateFormatted}`;
+    }
+
+    /*
+     * Example 5: Single day, all day
+     * Input: start = "2025-05-11", end = "2025-05-11", allDay = "TRUE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11 (all day)"
+     * Output (Modal): "Sun, May 11 (all day)"
+     */
+    if (allDay === 'TRUE' && recurring === 'FALSE' && start === end) {
+        return `${startDateFormatted} (all day)`;
+    }
+
+    /*
+     * Example 6: Multi-day, all day
+     * Input: start = "2025-05-11", end = "2025-05-13", allDay = "TRUE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11 – Tue, May 13 (all day)"
+     * Output (Modal): "Sun, May 11 – Tue, May 13 (all day)"
+     */
+    if (allDay === 'TRUE' && recurring === 'FALSE' && start !== end && end) {
+        return `${startDateFormatted} – ${endDateFormatted} (all day)`;
+    }
+
+    /*
+     * Example 7: Ongoing Events (With Start Date)
+     * Input: start = "2025-05-11", end = "Ongoing"
+     * Output (Tile): "Starting Sun, May 11, ongoing"
+     * Output (Modal): "Starting Sun, May 11, ongoing"
+     */
+    if (start && (end === 'Ongoing')) {
+        return `Starting ${startDateFormatted}, ongoing`;
+    }
+
+    /*
+     * Example 8: Recurring Events (Specific Days or Times)
+     * Input: start = "2025-05-16 17:30:00", end = "2025-05-16 20:30:00", recurring = "TRUE", recurrence_pattern = "Every Friday from 5:30 PM to 8:30 PM"
+     * Output (Tile): "Next on Fri, May 16, 5:30 – 8:30 PM"
+     * Output (Modal): "Next on Fri, May 16, 5:30 – 8:30 PM"
+     */
+    if (recurring === 'TRUE') {
+        return `Next on ${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`
+    }
+
+    /*
+     * Example 9: Drop-In Events (Exact Start Time but No End Time)
+     * Input: start = "2025-05-11 14:00:00", end = "", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Sun, May 11, starting at 2:00 PM"
+     * Output (Modal): "Sun, May 11, starting at 2:00 PM"
+     */
+    if (start && !end) {
+        return `${startDateFormatted}, starting at ${startTimeFormatted}`;
+    }
+
+    /*
+     * Example 10 Closing Events (Exact End Time but No Start Time)
+     * Input: start = "", end = "2025-05-11 17:00:00"
+     * Output (Tile): "Sun, May 11, ending at 5:00 PM"
+     * Output (Modal): "Sun, May 11, ending at 5:00 PM"
+     */
+    if (!start && end) {
+        return `${endDateFormatted}, ending at ${endTimeFormatted}`;
+    }
+
+    /*
+     * Example 11: Seasonal or Approximate Date Ranges
+     * Input: start = "2025-05", end = "2025-05"
+     * Output (Tile): "May 2025"
+     * Output (Modal): "May 2025"
+     */
+    if (start.includes('-') && !start.includes(':') && start === end) {
+        return `${startDateEastern.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+    } else if (start.includes('-') && !start.includes(':') && start !== end) {
+        // Handle seasonal ranges spanning multiple months or years
+        const startMonthYear = startDateEastern.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const endMonthYear = endDateEastern.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return `${startMonthYear} – ${endMonthYear}`;
+    }
+
+    /*
+     * Example 12: Multi-Session Events (Specific Dates and Times for Each Session)
+     * Input: Sessions provided as an array of objects with start and end times
+     * Output (Tile): "Session 1: Sun, May 11, 2:00 PM – 4:00 PM"
+     * Output (Modal): "Session 1: Sun, May 11, 2:00 PM – 4:00 PM\nSession 2: Mon, May 12, 10:00 AM – 12:00 PM"
+     */
+    if (event.sessions && Array.isArray(event.sessions)) {
+        return event.sessions.map(session => {
+            const sessionStart = new Date(session.start);
+            const sessionEnd = new Date(session.end);
+            const sessionStartFormatted = sessionStart.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            const sessionStartTimeFormatted = sessionStart.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const sessionEndTimeFormatted = sessionEnd.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            return `${sessionStartFormatted}, ${sessionStartTimeFormatted} – ${sessionEndTimeFormatted}`;
+        }).join('\n');
+    }
+
+    /*
+     * Example 13: Events with No Specific Date or Time (TBD)
+     * Input: start = "", end = ""
+     * Output (Tile): "Date and time to be announced"
+     * Output (Modal): "Date and time to be announced"
+     */
+    if (!start || !end) {
+        return 'Date and time to be announced';
+    }
+
+    /* Scenaio 14. Ongoing Events
+     * Input: start = "Ongoing", end = "", allDay = "FALSE", recurring = "FALSE"
+     * Output (Tile): "Ongoing"
+     * Output (Modal): "Ongoing"
+     */
+    if (start === 'Ongoing') {
+        return 'Ongoing';
     }
 }
 
@@ -94,7 +247,8 @@ function openEventModal(event) {
     document.getElementById('modalDateRange').textContent = formatEventDate(
         event.start_datetime,
         event.end_datetime,
-        event.all_day
+        event.all_day,
+        event.recurring
     );
     document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
     document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
@@ -132,6 +286,7 @@ if (modal) {
     });
 }
 
+// Function to create event tiles in event grit
 function createEventTile(event) {
     console.log('Creating tile for event:', event); // Debugging log
 
@@ -150,7 +305,7 @@ function createEventTile(event) {
 
     // Date range
     const dateText = document.createElement('p');
-    dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day);
+    dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
 
     // Add click event listener to open modal
     tile.addEventListener('click', () => openEventModal(event));
@@ -178,6 +333,9 @@ function parseCSV(csvText) {
         headers.forEach((header, i) => {
             event[header] = values[i]?.replace(/^"|"$/g, ''); // Remove surrounding quotes
         });
+
+        // Ensure recurring field is always defined
+        event['recurring'] = event['recurring'] || 'FALSE';
 
         console.log('Raw event data:', event); // Debugging log to inspect raw event data
 
