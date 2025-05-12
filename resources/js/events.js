@@ -208,6 +208,11 @@ function formatEventDate(start, end, allDay, recurring) {
 
 // Function to open the modal and populate it with event details
 function openEventModal(event) {
+    // Prevent modal access if display is FALSE
+    if (event.display === 'FALSE') {
+        return;
+    }
+
     const modal = document.getElementById('eventModal');
 
     // Populate modal content
@@ -258,6 +263,11 @@ if (modal) {
 
 // Function to create event tiles in event grit
 function createEventTile(event) {
+    // Skip creating the tile if display is FALSE
+    if (event.display === 'FALSE') {
+        return null;
+    }
+
     console.log('Creating tile for event:', event); // Debugging log
 
     const tile = document.createElement('div');
@@ -306,6 +316,7 @@ function parseCSV(csvText) {
 
         // Ensure recurring field is always defined
         event['recurring'] = event['recurring'] || 'FALSE';
+        event['display'] = event['display'] || 'TRUE'; // Default to TRUE if not provided
 
         console.log('Raw event data:', event); // Debugging log to inspect raw event data
 
@@ -329,7 +340,9 @@ function loadAndDisplayEvents() {
             events.forEach(event => {
                 console.log('Event:', event); // Debugging log
                 const tile = createEventTile(event);
-                grid.appendChild(tile);
+                if (tile) {
+                    grid.appendChild(tile); // Only append if tile is not null
+                }
             });
 
             document.querySelector('main').appendChild(grid);
