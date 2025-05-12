@@ -228,14 +228,15 @@ function openEventModal(event) {
     document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
     document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
 
-    // Populate the button
+    // Handle the modal button
     const modalLink = document.getElementById('modalLink');
-    if (event.link && event.link_text) {
+    if (event.link && event.link.trim() !== '') {
         modalLink.href = event.link;
-        modalLink.textContent = event.link_text;
+        modalLink.textContent = event.link_text || 'Learn More'; // Default text if link_text is missing
         modalLink.classList.remove('hidden'); // Show the button
     } else {
-        modalLink.classList.add('hidden'); // Hide the button if no link is provided
+        modalLink.href = '#'; // Reset the href to avoid invalid links
+        modalLink.classList.add('hidden'); // Hide the button
     }
 
     // Show the modal
@@ -317,6 +318,7 @@ function parseCSV(csvText) {
         // Ensure recurring field is always defined
         event['recurring'] = event['recurring'] || 'FALSE';
         event['display'] = event['display'] || 'TRUE'; // Default to TRUE if not provided
+        event['link'] = event['link'] || ''; // Default to an empty string if not provided
 
         console.log('Raw event data:', event); // Debugging log to inspect raw event data
 

@@ -723,6 +723,10 @@ img {
   transition: background-color 0.3s, color 0.3s;
 }
 
+.modal-button.hidden {
+    display: none;
+}
+
 .modal-button:hover {
   background-color: var(--nyc-fuschia);
   color: var(--nyc-white);
