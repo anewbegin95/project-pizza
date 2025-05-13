@@ -49,6 +49,11 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
  *    - Example: "Date and time to be announced"
  */
 function formatEventDate(start, end, allDay, recurring) {
+    // Ensure start and end are defined
+    if (!start) start = '';
+    if (!end) end = '';
+
+    console.log('formatEventDate called with:', { start, end, allDay, recurring }); // Debugging log
     // Parse dates explicitly to handle the format correctly
     const startDate = new Date(Date.parse(start));
     const endDate = new Date(Date.parse(end));
@@ -226,7 +231,7 @@ function openEventModal(event) {
         event.recurring
     );
     document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
-    document.getElementById('modalDescription').textContent = event.long_desc || 'No description available.';
+    document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.'; // Replace line breaks with <br>
 
     // Handle the modal button
     const modalLink = document.getElementById('modalLink');
@@ -300,29 +305,42 @@ function createEventTile(event) {
 }
 
 function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n');
+    const rows = csvText.trim().split('\n'); // Split the CSV into rows
 
     // Split the first line for headers
     const headers = rows[0].split(',').map(h => h.trim());
 
-    // Convert each row into an object
-    const events = rows.slice(1).map(row => {
-        const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim()); // Handles commas inside quotes
+    const events = [];
+    let currentRow = []; // Temporary storage for multi-line rows
 
-        // Zip headers and values together into an object
-        const event = {};
-        headers.forEach((header, i) => {
-            event[header] = values[i]?.replace(/^"|"$/g, ''); // Remove surrounding quotes
-        });
+    rows.slice(1).forEach(row => {
+        currentRow.push(row); // Add the current row to the temporary storage
 
-        // Ensure recurring field is always defined
-        event['recurring'] = event['recurring'] || 'FALSE';
-        event['display'] = event['display'] || 'TRUE'; // Default to TRUE if not provided
-        event['link'] = event['link'] || ''; // Default to an empty string if not provided
+        // Check if the quotes are balanced in the combined row
+        const combinedRow = currentRow.join('\n'); // Combine all rows in the current group
+        const quoteCount = (combinedRow.match(/"/g) || []).length;
 
-        console.log('Raw event data:', event); // Debugging log to inspect raw event data
+        if (quoteCount % 2 === 0) {
+            // If quotes are balanced, process the combined row
+            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim()); // Handle commas inside quotes
 
-        return event;
+            // Zip headers and values together into an object
+            const event = {};
+            headers.forEach((header, i) => {
+                // Remove any number of surrounding quotes and preserve line breaks
+                event[header] = values[i]?.replace(/^"+|"+$/g, '') || ''; // Remove one or more surrounding quotes
+            });
+
+            // Ensure recurring field is always defined
+            event['recurring'] = event['recurring'] || 'FALSE';
+            event['display'] = event['display'] || 'TRUE'; // Default to TRUE if not provided
+            event['link'] = event['link'] || ''; // Default to an empty string if not provided
+
+            console.log('Parsed Events:', events); // Debugging log to inspect parsed events
+
+            events.push(event);
+            currentRow = []; // Reset for the next row
+        }
     });
 
     return events;
