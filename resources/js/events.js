@@ -1,52 +1,54 @@
-// events.js
-
 // === CONSTANTS ===
 
-// CSV URL of your published Google Sheet (ensure the sheet is public!)
+/**
+ * URL of the published Google Sheet in CSV format.
+ * Ensure the sheet is public for this to work.
+ */
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=0&single=true&output=csv';
 
-// === FUNCTIONS ===
+// === UTILITY FUNCTIONS ===
 
-// === MODAL FUNCTIONALITY ===
+/**
+ * Parses a CSV string into an array of event objects.
+ * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
+ * @param {string} csvText - The raw CSV string.
+ * @returns {Array<Object>} - Array of parsed event objects.
+ */
+function parseCSV(csvText) {
+    const rows = csvText.trim().split('\n');
+    const headers = rows[0].split(',').map(h => h.trim());
+    const events = [];
+    let currentRow = [];
 
-// Updated formatEventDate to handle all desired behaviors
-/*
- * formatEventDate Scenarios:
- * 1. Ongoing Events
- *    - Example: "Ongoing"
- * 
- * 2. Ongoing Events (With Start Date)
- *    - Example: "Starting Sun, May 11, ongoing"
- * 
- * 3. Exact Start & End Datetime (One Day)
- *    - Example: "Sun, May 11, 10:00 AM – 5:00 PM"
- * 
- * 4. Exact Start & End Datetime (Over Many Days)
- *    - Example: "Sun, May 11, 2:00 PM – Tues, May 13, 5:00 PM"
- * 
- * 5. Exact Day but Not Time (One Day)
- *    - Example: "Sun, May 11"
- * 
- * 6. Exact Start & End Day but No Time (Over Many Days)
- *    - Example: "Sun, May 11 – Tue, May 13"
- * 
- * 7. Single day, all day
- *    - Example: "Sun, May 11 (all day)"
- * 
- * 8. Multi-day, all day
- *    - Example: "Sun, May 11 – Tue, May 13 (all day)"
- * 
- * 9. Recurring Events (Specific Days or Times)
- *    - Example: "Next on "Fri, May 16, 5:30 – 8:30 PM"
- * 
- * 10. Drop-In Events (Exact Start Time but No End Time)
- *    - Example: "Sun, May 11, starting at 2:00 PM"
- * 
- * 11. Closing Events (Exact End Time but No Start Time)
- *    - Example: "Sun, May 11, ending at 5:00 PM"
- * 
- * 12. Events with No Specific Date or Time (TBD):
- *    - Example: "Date and time to be announced"
+    rows.slice(1).forEach(row => {
+        currentRow.push(row);
+        const combinedRow = currentRow.join('\n');
+        const quoteCount = (combinedRow.match(/"/g) || []).length;
+
+        if (quoteCount % 2 === 0) {
+            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
+            const event = {};
+            headers.forEach((header, i) => {
+                event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
+            });
+            event['recurring'] = event['recurring'] || 'FALSE';
+            event['display'] = event['display'] || 'TRUE';
+            event['link'] = event['link'] || '';
+            events.push(event);
+            currentRow = [];
+        }
+    });
+
+    return events;
+}
+
+/**
+ * Formats event dates into human-readable strings based on various scenarios.
+ * @param {string} start - Start date/time of the event.
+ * @param {string} end - End date/time of the event.
+ * @param {string} allDay - Whether the event lasts all day.
+ * @param {string} recurring - Whether the event is recurring.
+ * @returns {string} - Formatted date string.
  */
 function formatEventDate(start, end, allDay, recurring) {
     // Ensure start and end are defined
@@ -211,92 +213,32 @@ function formatEventDate(start, end, allDay, recurring) {
     }
 }
 
-// Function to open the modal and populate it with event details
-function openEventModal(event) {
-    // Prevent modal access if display is FALSE
-    if (event.display === 'FALSE') {
-        return;
-    }
+// === UI RENDERING FUNCTIONS ===
 
-    const modal = document.getElementById('eventModal');
-
-    // Populate modal content
-    document.getElementById('modalTitle').textContent = event.name;
-    document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
-    document.getElementById('modalImage').alt = `${event.name} image`;
-    document.getElementById('modalDateRange').textContent = formatEventDate(
-        event.start_datetime,
-        event.end_datetime,
-        event.all_day,
-        event.recurring
-    );
-    document.getElementById('modalLocation').textContent = `${event.location || 'TBD'}`;
-    document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.'; // Replace line breaks with <br>
-
-    // Handle the modal button
-    const modalLink = document.getElementById('modalLink');
-    if (event.link && event.link.trim() !== '') {
-        modalLink.href = event.link;
-        modalLink.textContent = event.link_text || 'Learn More'; // Default text if link_text is missing
-        modalLink.classList.remove('hidden'); // Show the button
-    } else {
-        modalLink.href = '#'; // Reset the href to avoid invalid links
-        modalLink.classList.add('hidden'); // Hide the button
-    }
-
-    // Show the modal
-    modal.classList.remove('hidden');
-}
-
-// Add event listener to the "Return to all events" button
-const returnButton = document.querySelector('.return-button');
-if (returnButton) {
-    returnButton.addEventListener('click', () => {
-        const modal = document.getElementById('eventModal');
-        modal.classList.add('hidden'); // Close the modal
-    });
-}
-
-// Add event listener to close modal when clicking outside the content
-const modal = document.getElementById('eventModal');
-if (modal) {
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeEventModal();
-        }
-    });
-}
-
-// Function to create event tiles in event grit
+/**
+ * Creates an event tile for the events grid.
+ * @param {Object} event - Event object containing event details.
+ * @returns {HTMLElement|null} - The event tile element or null if the event should not be displayed.
+ */
 function createEventTile(event) {
-    // Skip creating the tile if display is FALSE
-    if (event.display === 'FALSE') {
-        return null;
-    }
-
-    console.log('Creating tile for event:', event); // Debugging log
+    if (event.display === 'FALSE') return null;
 
     const tile = document.createElement('div');
     tile.className = 'event-tile';
 
-    // Image
     const img = document.createElement('img');
-    img.src = event.img || 'resources/images/images/default-event-image.jpeg'; // Fallback image
+    img.src = event.img || 'resources/images/images/default-event-image.jpeg';
     img.alt = `${event.name} image`;
     img.className = 'event-img';
 
-    // Title
     const title = document.createElement('h3');
     title.textContent = event.name;
 
-    // Date range
     const dateText = document.createElement('p');
     dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
 
-    // Add click event listener to open modal
     tile.addEventListener('click', () => openEventModal(event));
 
-    // Assemble tile
     tile.appendChild(img);
     tile.appendChild(title);
     tile.appendChild(dateText);
@@ -304,65 +246,50 @@ function createEventTile(event) {
     return tile;
 }
 
-function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n'); // Split the CSV into rows
+/**
+ * Opens the event modal and populates it with event details.
+ * @param {Object} event - Event object containing event details.
+ */
+function openEventModal(event) {
+    if (event.display === 'FALSE') return;
 
-    // Split the first line for headers
-    const headers = rows[0].split(',').map(h => h.trim());
+    const modal = document.getElementById('eventModal');
+    document.getElementById('modalTitle').textContent = event.name;
+    document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
+    document.getElementById('modalImage').alt = `${event.name} image`;
+    document.getElementById('modalDateRange').textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
+    document.getElementById('modalLocation').textContent = event.location || 'TBD';
+    document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.';
 
-    const events = [];
-    let currentRow = []; // Temporary storage for multi-line rows
+    const modalLink = document.getElementById('modalLink');
+    if (event.link && event.link.trim() !== '') {
+        modalLink.href = event.link;
+        modalLink.textContent = event.link_text || 'Learn More';
+        modalLink.classList.remove('hidden');
+    } else {
+        modalLink.href = '#';
+        modalLink.classList.add('hidden');
+    }
 
-    rows.slice(1).forEach(row => {
-        currentRow.push(row); // Add the current row to the temporary storage
-
-        // Check if the quotes are balanced in the combined row
-        const combinedRow = currentRow.join('\n'); // Combine all rows in the current group
-        const quoteCount = (combinedRow.match(/"/g) || []).length;
-
-        if (quoteCount % 2 === 0) {
-            // If quotes are balanced, process the combined row
-            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim()); // Handle commas inside quotes
-
-            // Zip headers and values together into an object
-            const event = {};
-            headers.forEach((header, i) => {
-                // Remove any number of surrounding quotes and preserve line breaks
-                event[header] = values[i]?.replace(/^"+|"+$/g, '') || ''; // Remove one or more surrounding quotes
-            });
-
-            // Ensure recurring field is always defined
-            event['recurring'] = event['recurring'] || 'FALSE';
-            event['display'] = event['display'] || 'TRUE'; // Default to TRUE if not provided
-            event['link'] = event['link'] || ''; // Default to an empty string if not provided
-
-            console.log('Parsed Events:', events); // Debugging log to inspect parsed events
-
-            events.push(event);
-            currentRow = []; // Reset for the next row
-        }
-    });
-
-    return events;
+    modal.classList.remove('hidden');
 }
 
-// Fetch and display events from CSV
+// === MAIN FUNCTIONALITY ===
+
+/**
+ * Fetches events from the CSV URL, parses them, and displays them in the events grid.
+ */
 function loadAndDisplayEvents() {
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(response => response.text())
         .then(csvText => {
             const events = parseCSV(csvText);
-            console.log('Parsed Events:', events); // Debugging log
-
             const grid = document.createElement('div');
             grid.className = 'events-grid';
 
             events.forEach(event => {
-                console.log('Event:', event); // Debugging log
                 const tile = createEventTile(event);
-                if (tile) {
-                    grid.appendChild(tile); // Only append if tile is not null
-                }
+                if (tile) grid.appendChild(tile);
             });
 
             document.querySelector('main').appendChild(grid);
@@ -372,27 +299,24 @@ function loadAndDisplayEvents() {
         });
 }
 
-// === MAIN ===
+// === EVENT LISTENERS ===
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load and display events
     loadAndDisplayEvents();
 
-    // Add event listener to the "Return to all events" button
     const returnButton = document.querySelector('.return-button');
     if (returnButton) {
         returnButton.addEventListener('click', () => {
             const modal = document.getElementById('eventModal');
-            modal.classList.add('hidden'); // Close the modal
+            modal.classList.add('hidden');
         });
     }
 
-    // Add event listener to close modal when clicking outside the content
     const modal = document.getElementById('eventModal');
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.classList.add('hidden'); // Close the modal
+                modal.classList.add('hidden');
             }
         });
     }
