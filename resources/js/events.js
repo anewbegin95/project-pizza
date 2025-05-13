@@ -251,7 +251,10 @@ function createEventTile(event) {
  * @param {Object} event - Event object containing event details.
  */
 function openEventModal(event) {
-    if (event.display === 'FALSE') return;
+    // Prevent modal access if display is FALSE
+    if (event.display === 'FALSE') {
+        return;
+    }
 
     const modal = document.getElementById('eventModal');
     document.getElementById('modalTitle').textContent = event.name;
@@ -261,6 +264,7 @@ function openEventModal(event) {
     document.getElementById('modalLocation').textContent = event.location || 'TBD';
     document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.';
 
+    // Handle the modal CTA button
     const modalLink = document.getElementById('modalLink');
     if (event.link && event.link.trim() !== '') {
         modalLink.href = event.link;
@@ -271,7 +275,73 @@ function openEventModal(event) {
         modalLink.classList.add('hidden');
     }
 
+    // Handle the ICS link
+    const icsLink = document.getElementById('icsLink');
+    if (icsLink) {
+        icsLink.classList.remove('hidden'); // Show the ICS link
+        icsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            downloadICS(event);
+        });
+    }
+
     modal.classList.remove('hidden');
+}
+
+// === ICS FILE GENERATION ===
+/**
+ * Generates an ICS file for the event.
+ * @param {Object} event - Event object containing event details.
+ * @returns {string} - The ICS file content as a string.
+ */
+function generateICS(event) {
+    // Format the start and end dates in UTC
+    const formatDate = (dateString, allDay) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (allDay === 'TRUE') {
+            return date.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD for all-day events
+        }
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'; // YYYYMMDDTHHMMSSZ
+    };
+
+    const dtStart = formatDate(event.start_datetime, event.all_day);
+    const dtEnd = formatDate(event.end_datetime, event.all_day);
+
+    // Generate the ICS content
+    return `
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${event.name}
+DTSTART:${dtStart}
+DTEND:${dtEnd}
+LOCATION:${event.location || ''}
+DESCRIPTION:${event.long_desc || ''}
+END:VEVENT
+END:VCALENDAR
+    `.trim();
+}
+
+/**
+ * Downloads the ICS file for the event.
+ * @param {Object} event - Event object containing event details.
+ */
+function downloadICS(event) {
+    const icsContent = generateICS(event);
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${event.name.replace(/\s+/g, '_')}.ics`; // Use event name as the file name
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Revoke the object URL to free up memory
+    URL.revokeObjectURL(url);
 }
 
 // === MAIN FUNCTIONALITY ===
