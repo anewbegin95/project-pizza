@@ -613,6 +613,18 @@ img {
   color: var(--text-light);
 }
 
+/* Recurring Event Badge */
+.event-tile .recurring-badge {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: var(--space-xs);
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--space-xxs);
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+}
+
 /* -----------------------------------------------------------------------------
   EVENT MODAL
 ----------------------------------------------------------------------------- */
@@ -633,7 +645,7 @@ img {
 
 .modal-content {
     display: grid;
-    grid-template-columns: 1fr 3fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
+    grid-template-columns: 1fr 2fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
     gap: var(--space-md); /* Add spacing between columns */
     align-items: start; /* Align content to the top */
     margin: auto; /* Center the modal content */
@@ -673,7 +685,6 @@ img {
   color: var(--nyc-navy);
   margin-bottom: var(--space-md);
 }
-
 .modal-content img {
   max-width: 100%;
   height: auto;
@@ -691,11 +702,15 @@ img {
   margin-bottom: var(--space-sm);
 }
 
+#modalRecurrence.hidden {
+    display: none;
+}
+
 /* Modal Button */
 .modal-button {
-  display: inline-block;
-  margin-top: var(--space-sm);
+  display: inline-block; /* Ensure the button takes up only as much space as needed */
   padding: var(--space-xs) var(--space-md);
+
   background-color: var(--nyc-light-pink);
   color: var(--nyc-fuschia);
   text-decoration: none;
@@ -705,12 +720,32 @@ img {
   text-align: center;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  width: auto; /* Allow the button to resize based on its content */
+  white-space: nowrap; /* Prevent the button text from wrapping */
+}
+
+.modal-button.hidden {
+    display: none;
 }
 
 .modal-button:hover {
   background-color: var(--nyc-fuschia);
   color: var(--nyc-white);
 }
+
+#icsLink {
+    display: block; /* Ensure the link appears on its own line */
+    margin-top: var(--space-md); /* Add a small margin above the link */
+    font-size: 14px; /* Adjust font size for consistency */
+    color: var(--nyc-fuschia); /* Match the link color */
+    text-decoration: underline; /* Ensure it looks like a link */
+    cursor: pointer; /* Add pointer cursor for better UX */
+}
+
+#icsLink:hover {
+    color: var(--nyc-light-pink); /* Change color on hover */
+}
+
 
 .return-button {
   font-size: 20px;
