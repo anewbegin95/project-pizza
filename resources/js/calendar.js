@@ -1,7 +1,5 @@
 // Calendar logic for month-view
 
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=0&single=true&output=csv';
-
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let events = [];
@@ -77,43 +75,34 @@ function placeEventsInGrid(month, year) {
   });
 }
 
-// Navigation
-document.addEventListener('DOMContentLoaded', () => {
-  fetch(GOOGLE_SHEET_CSV_URL)
-    .then(res => res.text())
-    .then(csv => {
-      events = parseCSV(csv)
-        .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
-      renderCalendar(currentMonth, currentYear);
-    });
+// Navigation and calendar initialization
 
-  document.getElementById('prev-month').onclick = () => {
-    currentMonth--;
-    if (currentMonth < 0) {
-      currentMonth = 11;
-      currentYear--;
-    }
-    renderCalendar(currentMonth, currentYear);
-  };
-  document.getElementById('next-month').onclick = () => {
-    currentMonth++;
-    if (currentMonth > 11) {
-      currentMonth = 0;
-      currentYear++;
-    }
-    renderCalendar(currentMonth, currentYear);
-  };
-});
-
-// === EVENT LISTENERS ===
 document.addEventListener('DOMContentLoaded', () => {
-  fetch(GOOGLE_SHEET_CSV_URL)
-    .then(res => res.text())
-    .then(csv => {
-      events = parseCSV(csv)
-        .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
-      console.log('Loaded events:', events); // <-- Add this line
+  // Only run on calendar.html (where #calendar-grid exists)
+  if (document.getElementById('calendar-grid')) {
+    fetch(GOOGLE_SHEET_CSV_URL)
+      .then(res => res.text())
+      .then(csv => {
+        events = parseCSV(csv)
+          .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
+        renderCalendar(currentMonth, currentYear);
+      });
+
+    document.getElementById('prev-month').onclick = () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
       renderCalendar(currentMonth, currentYear);
-    });
-  // ...rest of code...
+    };
+    document.getElementById('next-month').onclick = () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    };
+  }
 });
