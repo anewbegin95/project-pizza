@@ -32,7 +32,7 @@ function parseCSV(csvText) {
                 event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
             });
             event['recurring'] = event['recurring'] || 'FALSE';
-            event['display'] = event['display'] || 'TRUE';
+            event['master_display'] = event['master_display'] || 'TRUE';
             event['link'] = event['link'] || '';
             events.push(event);
             currentRow = [];
@@ -221,7 +221,7 @@ function formatEventDate(start, end, allDay, recurring) {
  * @returns {HTMLElement|null} - The event tile element or null if the event should not be displayed.
  */
 function createEventTile(event) {
-    if (event.display === 'FALSE') return null;
+    if (String(event.master_display).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
     tile.className = 'event-tile';
@@ -251,8 +251,8 @@ function createEventTile(event) {
  * @param {Object} event - Event object containing event details.
  */
 function openEventModal(event) {
-    // Prevent modal access if display is FALSE
-    if (event.display === 'FALSE') {
+    // Prevent modal access if master_display is FALSE
+    if (String(event.master_display).toUpperCase() === 'FALSE') {
         return;
     }
 
@@ -353,7 +353,7 @@ function loadAndDisplayEvents() {
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(response => response.text())
         .then(csvText => {
-            const events = parseCSV(csvText);
+            const events = parseCSV(csvText).filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
             const grid = document.createElement('div');
             grid.className = 'events-grid';
 
@@ -372,7 +372,10 @@ function loadAndDisplayEvents() {
 // === EVENT LISTENERS ===
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadAndDisplayEvents();
+    // Only run on events.html
+    if (document.getElementById('eventsGrid')) {
+        loadAndDisplayEvents();
+    }
 
     const returnButton = document.querySelector('.return-button');
     if (returnButton) {

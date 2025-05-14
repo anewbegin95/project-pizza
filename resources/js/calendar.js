@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch(GOOGLE_SHEET_CSV_URL)
     .then(res => res.text())
     .then(csv => {
-      events = parseCSV(csv);
+      events = parseCSV(csv)
+        .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
       renderCalendar(currentMonth, currentYear);
     });
 
@@ -102,4 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderCalendar(currentMonth, currentYear);
   };
+});
+
+// === EVENT LISTENERS ===
+document.addEventListener('DOMContentLoaded', () => {
+  fetch(GOOGLE_SHEET_CSV_URL)
+    .then(res => res.text())
+    .then(csv => {
+      events = parseCSV(csv)
+        .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
+      console.log('Loaded events:', events); // <-- Add this line
+      renderCalendar(currentMonth, currentYear);
+    });
+  // ...rest of code...
 });
