@@ -1,102 +1,887 @@
-/* General Reset */
-body, h1, h2, p, ul, li {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
+/*
+===============================================================================
+NYC Slice of Life – Global Stylesheet
+Author: Alex Newbegin
+Last Updated: 2025-05-11
+===============================================================================
+*/
+
+/*
+===============================================================================
+📌 CSS Best Practices:
+
+1. Structure & Organization
+   - Group styles logically: use clear sections (e.g., Variables, Reset, Typography, Layout, Components).
+   - Use consistent indentation (2 or 4 spaces) and spacing between rules for readability.
+   - Place utility and global styles near the top (e.g., variables, resets).
+
+2. Naming Conventions
+   - Use class names that are descriptive and consistent (e.g., .main-header, .card-title).
+   - Follow BEM (Block__Element--Modifier) if working with large-scale components.
+
+3. Use Variables
+   - Define common values like colors and spacing as CSS variables for consistency and easy updates.
+
+4. Keep it DRY
+   - Don’t Repeat Yourself. Reuse classes and variables whenever possible to reduce redundancy.
+
+5. Responsive Design
+   - Use media queries to adapt layouts and text sizes for various screen widths.
+   - Test responsiveness on actual devices when possible.
+
+6. Maintain Accessibility
+   - Ensure color contrasts are readable.
+   - Use focus styles and responsive images/icons to support keyboard and screen reader users.
+
+7. Performance
+   - Avoid overly specific selectors or deep nesting to keep CSS performant and maintainable.
+   - Minimize use of !important unless absolutely necessary.
+
+8. Version Control
+   - Use comments and versioning when making major updates to keep track of changes over time.
+
+Happy Styling! 🎨
+===============================================================================
+*/
+
+/* -----------------------------------------------------------------------------
+  IMPORTS & VARIABLES
+----------------------------------------------------------------------------- */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap');
+/* → Loads three fonts from Google Fonts to use across the site */
+
+/* CSS Variables */
+:root {
+  /* Updated Color Palette */
+  --nyc-light-pink: #FFB6C1;   /* Light pink as primary */
+  --nyc-navy: #001B2E;         /* Main text and headings */
+  --nyc-white: #FFFFFF;        /* Primary background */
+
+  --nyc-fuschia: #D81E5B;       /* Fuschia as accent */
+  --nyc-light-blue: #4D7EA8;    /* Section dividers and subtle backgrounds */
+  --nyc-light-green: #A1C7B6;   /* Success messages and callouts */
+
+  --nyc-light-gray: #F5F5F5;   /* Alternate background */
+  --nyc-medium-gray: #B0B0B0;  /* Secondary text and borders */
+  --nyc-charcoal: #2E2E2E;     /* Dark mode or overlays */
+
+  /* Spacing scale for consistent layout */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 128px;
+  --space-xxl: 256px;
+}
+
+/* -----------------------------------------------------------------------------
+  RESET & BASE
+----------------------------------------------------------------------------- */
+
+/* Resets default browser styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;  /* Includes padding and border in width/height */
+}
+
+/* Base styles for html and body */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+  color: var(--nyc-navy);
+  background-color: var(--nyc-white);
+  line-height: 1.6;
+  /* display: flex; */
+  /* flex-direction: column; */
+}
+
+/* -----------------------------------------------------------------------------
+  TYPOGRAPHY
+----------------------------------------------------------------------------- */
+
+/* Ensuring uniform font usage across the file */
+
+/* Updated font-family for all text elements */
+body, p, ul, ol, input, textarea, button {
+  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
+}
+
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif; /* Heading font */
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+
+h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+
+h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+
+/* Paragraph and list text */
+p, ul, ol {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--nyc-navy);
+  margin-bottom: var(--space-sm);
+}
+
+/* Ensured all other text elements inherit the correct font */
+.modal-content p, .event-text p {
+  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
+}
+
+.modal-content h2, .event-text h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
+}
+
+/* -----------------------------------------------------------------------------
+  LAYOUT
+----------------------------------------------------------------------------- */
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+section {
+  margin-bottom: var(--space-lg);
+  background-color: var(--nyc-white);
+}
+
+header {
+  padding: var(--space-md) 0;
+}
+
+footer {
+  padding: var(--space-xs) 0;
+}
+
+/* -----------------------------------------------------------------------------
+  HEADER
+----------------------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--nyc-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Site Title */
+.site-title {
+  flex-shrink: 0;
+}
+
+.site-title h1 {
+  font-size: 24px; /* Default size */
+  margin: 0;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.site-title h1 a {
+  text-decoration: none;
+  color: var(--nyc-navy);
+}
+
+.site-title h1 a:hover {
+  color: var(--nyc-fuschia);
+}
+
+.main-nav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav ul li a {
+  color: var(--nyc-navy);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px; /* Default size */
+  transition: color 0.3s;
+}
+
+.main-nav ul li a:hover {
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.social-icons {
+  display: flex;
+  gap: var(--space-md); /* Adds spacing between icons */
+  align-items: center;
+  padding-right: var(--space-md);
+}
+
+.social-icons a {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.social-icons .icon {
+  width: 32px; /* Set a consistent width */
+  height: 32px; /* Set a consistent height */
+  display: inline-block;
+  object-fit: contain; /* Ensures the image fits within the box without distortion */
+  transition: filter 0.3s;
+  filter: none;
+  box-shadow: none;
+}
+
+.social-icons a[href*="instagram"] .icon {
+  width: 32px; /* Override any custom sizes to match the default */
+  height: 32px;
+}
+
+.social-icons a[href*="tiktok"] .icon {
+  width: 24px; /* Ensure TikTok icon matches the default size */
+  height: 24px;
+}
+
+social-icons .icon:hover {
+  filter: brightness(1.3);
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--nyc-navy);
+  cursor: pointer;
+  display: none; /* Hidden by default */
+  z-index: 1001; /* Ensure it appears above other elements */
+}
+
+.menu-toggle:hover {
+  background-color: transparent;;
+  color: var(--nyc-fuschia);
+}
+
+.menu-toggle:focus {
+  outline: none;
+}
+
+/* Collapsible Menu */
+.collapsible-menu {
+  position: fixed; /* Ensure it covers the entire screen */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width of the viewport */
+  height: 100%; /* Full height of the viewport */
+  background-color: var(--nyc-white); /* Background color for the menu */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md); /* Spacing between menu items */
+  transform: translateX(100%); /* Hidden off-screen by default */
+  transition: transform 0.3s ease-in-out; /* Smooth slide-in effect */
+  z-index: 1000; /* Ensure it appears above other elements */
+  overflow: hidden; /* Prevent scrolling when the menu is open */
+}
+
+.collapsible-menu.open {
+  transform: translateX(0); /* Slide into view */
+}
+
+.collapsible-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.collapsible-menu ul li {
+  margin: var(--space-sm) 0;
+}
+
+/* Collapsible Menu Links */
+.collapsible-menu ul li a {
+  font-size: 20px;
+  color: var(--nyc-navy); /* Default text color */
+  text-decoration: none; /* No underline by default */
+  transition: color 0.3s, text-decoration 0.3s; /* Smooth hover effect */
+  outline: none; /* Remove focus outline */
+}
+
+/* Hover Effect: Yellow text with underline */
+.collapsible-menu ul li a:hover {
+  color: var(--nyc-fuschia); /* Change text color to yellow */
+  text-decoration: underline; /* Add underline on hover */
+}
+
+/* Focus Effect: Optional, if you want to keep focus styles */
+.collapsible-menu ul li a:focus {
+  outline: none; /* Remove the default focus outline */
+}
+
+/* Show the menu when toggled */
+.collapsible-menu.open {
+  transform: translateX(0); /* Slide into view */
+}
+
+/* -----------------------------------------------------------------------------
+  HERO SECTION
+----------------------------------------------------------------------------- */
+.hero {
+  background-image: url('../images/banners/midtown_manhattan_skyline.jpeg'); /* Ensure the path is correct */
+  background-size: cover;
+  background-position: center;
+  height: 50vh; /* Full viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--nyc-white);
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay for better text visibility */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Ensures the text is above the overlay */
+}
+
+.hero h1 {
+  font-size: 48px;
+  color: var(--nyc-light-pink);
+  margin-bottom: var(--space-sm);
+  font-family: 'Montserrat', 'Arial', sans-serif;
+}
+
+.hero p {
+  font-size: 1.5rem;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
+  BUTTONS & LINKS
+----------------------------------------------------------------------------- */
+
+/* Primary Buttons */
+.contact-btn,
+button,
+.btn {
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 12px 24px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.contact-btn:hover,
+button:hover,
+.btn:hover {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
+/* Secondary Buttons */
+.secondary-btn {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.secondary-btn:hover {
+  background-color: var(--nyc-light-blue);
+  color: var(--nyc-navy);
+}
+
+a {
+  color: var(--nyc-fuschia);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+
+a:focus,
+button:focus {
+    outline: 3px solid var(--nyc-fuschia);
+    outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------------
+  BACKGROUNDS
+----------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+}
+
+.alt-section {
+  background-color: var(--nyc-light-pink);
+}
+
+.highlighted-section {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
+.success-message {
+  background-color: var(--nyc-light-green);
+}
+
+/* -----------------------------------------------------------------------------
+  FORMS
+----------------------------------------------------------------------------- */
+
+input,
+textarea {
+  border: 1px solid var(--nyc-medium-gray);
+  color: var(--nyc-navy);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--nyc-medium-gray);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--nyc-light-blue);
+  outline: none;
+}
+
+/* -----------------------------------------------------------------------------
+  SECTION DIVIDERS
+----------------------------------------------------------------------------- */
+
+.divider {
+  border-top: 2px solid var(--nyc-light-blue);
+  margin: var(--space-md) 0;
+}
+
+/* -----------------------------------------------------------------------------
+  FOOTER
+----------------------------------------------------------------------------- */
+
+footer {
+  text-align: center;
+  background: var(--nyc-light-gray);
+}
+
+/* -----------------------------------------------------------------------------
+  IMAGES & ICONS
+----------------------------------------------------------------------------- */
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--nyc-navy);
+  transition: fill 0.3s;
+}
+
+.icon:hover {
+  fill: var(--nyc-fuschia);
+}
+
+/* -----------------------------------------------------------------------------
+  EVENTS GRID
+----------------------------------------------------------------------------- */
+/* EVENTS GRID STYLING */
+.events-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+/* EVENT TILE */
+.event-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--nyc-gray);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--nyc-white);
+  max-width: 300px;
+}
+
+.event-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* EVENT IMAGE */
+.event-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+/* EVENT TEXT BLOCK */
+.event-text {
+  padding: 16px;
+}
+
+.event-text h3 {
+  font-size: var(--font-xl); /* You mentioned using CSS variables — adjust if needed */
+  margin: 0 0 8px 0;
+  color: var(--text-dark);
+}
+
+.event-text p {
+  font-size: var(--font-sm);
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* Recurring Event Badge */
+.event-tile .recurring-badge {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: var(--space-xs);
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--space-xxs);
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+}
+
+/* -----------------------------------------------------------------------------
+  EVENT MODAL
+----------------------------------------------------------------------------- */
+/* Modal layout */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; /* Start at the very top of the screen */
+    left: 0; /* Start at the very left of the screen */
+    width: 100%; /* Cover the full width of the screen */
+    height: 100%; /* Cover the full height of the screen */
+    background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+    z-index: 1000;
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content vertically */
+}
+
+.modal-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
+    gap: var(--space-md); /* Add spacing between columns */
+    align-items: start; /* Align content to the top */
+    margin: auto; /* Center the modal content */
+    background-color: var(--nyc-white);
+    padding: var(--space-md);
+    border-radius: 8px; /* Add rounded corners */
+    width: 75%; /* Occupy the middle 75% of the screen */
+    max-height: 90%; /* Ensure the modal doesn't exceed 90% of the screen height */
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    position: relative;
+}
+
+/* Modal Content */
+#modalTitle {
+    font-size: 32px; /* Match H2 format */
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: var(--nyc-navy);
+    margin-bottom: var(--space-sm);
+    text-align: left; /* Align text to the left */
+}
+
+.modal-details {
+  grid-column: 1 / 2; /* Place in the first column */
+  text-align: left; /* Align text to the left */
+}
+
+#modalDateRange {
+  font-size: 20px;
+  color: var(--nyc-navy);
+  margin-bottom: var(--space-sm);
+}
+
+#modalLocation {
+  font-size: 20px;
+  color: var(--nyc-navy);
+  margin-bottom: var(--space-md);
+}
+.modal-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content p {
+  font-size: 16px;
+  margin-bottom: var(--space-sm);
+}
+
+#modalRecurrence.hidden {
+    display: none;
+}
+
+/* Modal Button */
+.modal-button {
+  display: inline-block; /* Ensure the button takes up only as much space as needed */
+  padding: var(--space-xs) var(--space-md);
+
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  width: auto; /* Allow the button to resize based on its content */
+  white-space: nowrap; /* Prevent the button text from wrapping */
+}
+
+.modal-button.hidden {
+    display: none;
+}
+
+.modal-button:hover {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
+#icsLink {
+    display: block; /* Ensure the link appears on its own line */
+    margin-top: var(--space-md); /* Add a small margin above the link */
+    font-size: 14px; /* Adjust font size for consistency */
+    color: var(--nyc-fuschia); /* Match the link color */
+    text-decoration: underline; /* Ensure it looks like a link */
+    cursor: pointer; /* Add pointer cursor for better UX */
+}
+
+#icsLink:hover {
+    color: var(--nyc-light-pink); /* Change color on hover */
+}
+
+
+.return-button {
+  font-size: 20px;
+  background-color: transparent;
+  border: none;
+  color: var(--nyc-fuschia);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  white-space: nowrap;
+  transition: color 0.3s;
+  display: inline;
+}
+
+.return-button:hover {
+  color: var(--nyc-light-pink);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+/* Show the modal when it is not hidden */
+.modal:not(.hidden) {
+  display: flex;
+}
+
+
+/* -----------------------------------------------------------------------------
+  ACCESSIBILITY
+----------------------------------------------------------------------------- */
+
+a:focus,
+button:focus {
+  outline: 3px solid var(--nyc-fuschia);
+  outline-offset: 2px;
+}
+
+@media (prefers-contrast: high) {
   body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-  }
-  
-  /* Header Styling */
-  header {
-    background-image: url('https://images.unsplash.com/photo-1518355077561-4af7abce973d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800');
-    background-size: cover;
-    background-position: center;
-    color: grey;
-    text-align: center;
-    padding: 50px 20px;
-  }
-  
-  header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-  
-  header p {
-    font-size: 1.2rem;
-  }
-  
-  /* Navigation Styling */
-  nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    background: #333;
-    padding: 10px;
-  }
-  
-  nav ul li {
-    margin: 0 15px;
-  }
-  
-  nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  nav ul li a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Main Content Styling */
-  main {
-    padding: 20px;
-  }
-  
-  main section {
-    margin-bottom: 20px;
-  }
-  
-  main h2 {
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  main p {
-    color: #555;
-  }
-  
-  /* Footer Styling */
-  footer {
-    text-align: center;
-    background: #333;
-    color: white;
-    padding: 10px 0;
-    margin-top: 20px;
+    background-color: var(--nyc-navy);
+    color: var(--nyc-white);
   }
 
-  @media (max-width: 768px) {
-    nav ul {
-      flex-direction: column;
-      text-align: center;
-    }
-  
-    nav ul li {
-      margin: 10px 0;
-    }
-  
-    header h1 {
-      font-size: 1.8rem;
-    }
-  
-    header p {
-      font-size: 1rem;
-    }
+  a,
+  button {
+    background-color: var(--nyc-fuschia);
+    color: var(--nyc-navy);
   }
+}
+
+/* -----------------------------------------------------------------------------
+  RESPONSIVE STYLES
+----------------------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  p, ul, ol { font-size: 14px; }
+
+  .main-nav,
+  .header-actions {
+      display: none; /* Hide main navigation and header actions */
+  }
+
+  .menu-toggle {
+      display: block; /* Show the menu toggle button */
+  }
+
+  header h1 { font-size: 29px; }
+  header p { font-size: 16px; }
+
+  /* Adjust contact button for smaller screens */
+  .contact-btn,
+  button,
+  .btn {
+    font-size: 14px; /* Reduce font size */
+    padding: var(--space-xxs) var(--space-xs); /* Adjust padding */
+    height: auto; /* Allow height to adjust dynamically */
+    width: auto; /* Allow width to adjust dynamically */
+  }
+
+  .hero {
+    height: 40vh; /* Reduce height for smaller screens */
+  }
+
+  .hero h1 {
+    font-size: 36px; /* Scale down font size */
+    margin-bottom: var(--space-xs); /* Adjust spacing */
+  }
+
+  .hero p {
+    font-size: 18px; /* Scale down font size */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: var(--space-sm);
+  }
+
+  .main-nav,
+  .header-actions {
+      display: none; /* Hide main navigation and header actions */
+  }
+
+  .menu-toggle {
+      display: block; /* Show the menu toggle button */
+  }
+
+  /* Further adjust contact button for very small screens */
+  .contact-btn,
+  button,
+  .btn {
+    font-size: 12px; /* Further reduce font size */
+    padding: var(--space-xxs); /* Minimal padding */
+    height: auto; /* Allow height to adjust dynamically */
+    width: auto; /* Allow width to adjust dynamically */
+  }
+
+  .hero {
+    height: 30vh; /* Further reduce height for very small screens */
+  }
+
+  .hero h1 {
+    font-size: 28px; /* Further scale down font size */
+    margin-bottom: var(--space-xxs); /* Adjust spacing */
+  }
+
+  .hero p {
+    font-size: 16px; /* Further scale down font size */
+  }
+<<<<<<< HEAD
   
 #calendar {
     width: 80%;
@@ -130,4 +915,6 @@ button {
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
+=======
+>>>>>>> staging
 }
