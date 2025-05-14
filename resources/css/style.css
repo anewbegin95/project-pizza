@@ -774,6 +774,47 @@ img {
   display: flex;
 }
 
+/* -----------------------------------------------------------------------------
+  CALENDAR
+----------------------------------------------------------------------------- */
+/* Add to resources/css/style.css */
+#calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.calendar-row {
+  display: flex;
+}
+.calendar-cell {
+  flex: 1;
+  min-height: 80px;
+  border: 1px solid #eee;
+  position: relative;
+  background: #fff;
+}
+.calendar-date {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin: 4px;
+}
+.calendar-event-badge {
+  background: var(--accent-color, #ffd700);
+  color: #222;
+  margin: 2px 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  display: block;
+}
+.inactive-day {
+  background: #f8f8f8;
+  color: #ccc;
+}
+.active-day {
+  background: #fff;
+}
 
 /* -----------------------------------------------------------------------------
   ACCESSIBILITY
