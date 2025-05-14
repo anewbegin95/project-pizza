@@ -777,43 +777,84 @@ img {
 /* -----------------------------------------------------------------------------
   CALENDAR
 ----------------------------------------------------------------------------- */
-/* Add to resources/css/style.css */
 #calendar-grid {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-xxs);
+  background: var(--nyc-white);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: var(--space-md) auto;
+  width: 100%;
+  max-width: 900px;
+  overflow: hidden;
 }
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs);
+  background: var(--nyc-light-blue);
+  color: var(--nyc-navy);
+  font-weight: bold;
+}
+
 .calendar-row {
   display: flex;
 }
+
 .calendar-cell {
   flex: 1;
   min-height: 80px;
-  border: 1px solid #eee;
+  border: 1px solid var(--nyc-light-gray);
   position: relative;
-  background: #fff;
+  background: var(--nyc-white);
+  transition: background 0.2s;
+  padding: var(--space-xs);
+  box-sizing: border-box;
 }
+
+.calendar-cell:focus-within, .calendar-cell:focus {
+  outline: 2px solid var(--nyc-fuschia);
+  z-index: 2;
+}
+
 .calendar-date {
-  font-size: 0.9em;
-  font-weight: bold;
-  margin: 4px;
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--nyc-navy);
+  margin-bottom: var(--space-xxs);
 }
+
 .calendar-event-badge {
-  background: var(--accent-color, #ffd700);
-  color: #222;
-  margin: 2px 0;
-  padding: 2px 6px;
+  background: var(--nyc-light-pink);
+  color: var(--nyc-navy);
+  margin: var(--space-xxs) 0;
+  padding: var(--space-xxs) var(--space-xs);
   border-radius: 4px;
-  font-size: 0.85em;
+  font-size: 0.95em;
+  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-weight: 600;
   cursor: pointer;
   display: block;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 1px 4px rgba(216,30,91,0.05);
 }
+
+.calendar-event-badge:hover, .calendar-event-badge:focus {
+  background: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  outline: none;
+}
+
 .inactive-day {
-  background: #f8f8f8;
-  color: #ccc;
+  background: var(--nyc-light-gray);
+  color: var(--nyc-medium-gray);
 }
+
 .active-day {
-  background: #fff;
+  background: var(--nyc-white);
 }
 
 /* -----------------------------------------------------------------------------
@@ -883,6 +924,16 @@ button:focus {
   .hero p {
     font-size: 18px; /* Scale down font size */
   }
+
+  #calendar-grid {
+    max-width: 100%;
+    font-size: 0.95em;
+  }
+
+  .calendar-cell {
+    min-height: 60px;
+    padding: var(--space-xxs);
+  }
 }
 
 @media (max-width: 480px) {
@@ -921,5 +972,20 @@ button:focus {
 
   .hero p {
     font-size: 16px; /* Further scale down font size */
+  }
+
+  #calendar-grid {
+    font-size: 0.85em;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .calendar-cell {
+    min-height: 40px;
+    padding: 2px;
+  }
+
+  .calendar-date {
+    font-size: 0.9em;
   }
 }
