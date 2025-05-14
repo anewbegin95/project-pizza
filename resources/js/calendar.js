@@ -6,40 +6,6 @@ let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let events = [];
 
-/**
- * Parses a CSV string into an array of event objects.
- * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
- * @param {string} csvText - The raw CSV string.
- * @returns {Array<Object>} - Array of parsed event objects.
- */
-function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(',').map(h => h.trim());
-    const events = [];
-    let currentRow = [];
-
-    rows.slice(1).forEach(row => {
-        currentRow.push(row);
-        const combinedRow = currentRow.join('\n');
-        const quoteCount = (combinedRow.match(/"/g) || []).length;
-
-        if (quoteCount % 2 === 0) {
-            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
-            const event = {};
-            headers.forEach((header, i) => {
-                event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
-            });
-            event['recurring'] = event['recurring'] || 'FALSE';
-            event['display'] = event['display'] || 'TRUE';
-            event['link'] = event['link'] || '';
-            events.push(event);
-            currentRow = [];
-        }
-    });
-
-    return events;
-}
-
 // Utility: Format date for cell IDs
 function formatDateId(date) {
   return date.toISOString().split('T')[0];
@@ -109,48 +75,6 @@ function placeEventsInGrid(month, year) {
       current.setDate(current.getDate() + 1);
     }
   });
-}
-
-/**
- * Opens the event modal and populates it with event details.
- * @param {Object} event - Event object containing event details.
- */
-function openEventModal(event) {
-    // Prevent modal access if display is FALSE
-    if (event.display === 'FALSE') {
-        return;
-    }
-
-    const modal = document.getElementById('eventModal');
-    document.getElementById('modalTitle').textContent = event.name;
-    document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
-    document.getElementById('modalImage').alt = `${event.name} image`;
-    document.getElementById('modalDateRange').textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
-    document.getElementById('modalLocation').textContent = event.location || 'TBD';
-    document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.';
-
-    // Handle the modal CTA button
-    const modalLink = document.getElementById('modalLink');
-    if (event.link && event.link.trim() !== '') {
-        modalLink.href = event.link;
-        modalLink.textContent = event.link_text || 'Learn More';
-        modalLink.classList.remove('hidden');
-    } else {
-        modalLink.href = '#';
-        modalLink.classList.add('hidden');
-    }
-
-    // Handle the ICS link
-    const icsLink = document.getElementById('icsLink');
-    if (icsLink) {
-        icsLink.classList.remove('hidden'); // Show the ICS link
-        icsLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            downloadICS(event);
-        });
-    }
-
-    modal.classList.remove('hidden');
 }
 
 // Navigation
