@@ -78,35 +78,46 @@ function renderCalendar(month, year) {
  * @param {number} year - The year (4-digit).
  */
 function placeEventsInGrid(month, year) {
+
     // Loop through each event loaded from the CSV
     events.forEach(event => {
+
         // Parse the event's start and end dates
         const start = event.start_datetime ? new Date(event.start_datetime) : null;
         const end = event.end_datetime ? new Date(event.end_datetime) : start;
         if (!start) return; // Skip if no valid start date
 
-        // For multi-day events, loop through each day from start to end
+        // Only process events that appear in this month
         let current = new Date(start);
+        let barStarted = false;
         while (current <= end) {
-            // Only add the event if the current day is in the displayed month/year
             if (current.getMonth() === month && current.getFullYear() === year) {
+
                 // Find the cell for this date
                 const cell = document.querySelector(`.calendar-cell[data-date="${formatDateId(current)}"]`);
                 if (cell) {
-                    // Create a badge for the event
-                    const badge = document.createElement('div');
-                    badge.className = 'calendar-event-badge';
-                    badge.textContent = event.name; // Show the event name
-                    badge.tabIndex = 0; // Make badge focusable for accessibility
-                    // When clicked, open the event modal (function from events.js)
-                    badge.addEventListener('click', () => openEventModal(event));
-                    cell.appendChild(badge); // Add the badge to the cell
+                    if (!barStarted) {
+                        // Create a badge for the event
+                        const bar = document.createElement('div');
+                        bar.className = 'calendar-event-badge';
+                        bar.textContent = event.name; // Show the event name
+                        bar.tabIndex = 0; // Make badge focusable for accessibility
+
+                        // When clicked, open the event modal (function from events.js)
+                        bar.addEventListener('click', () => openEventModal(event));
+                        cell.appendChild(bar); // Add the badge to the cell
+                        barStarted = true;
+                    } else {
+                        // Add a continuation bar in subsequent cells
+                        const cont = document.createElement('div');
+                        cont.className = 'calendar-event-bar-continue';
+                        cell.appendChild(cont);
+                    }
                 }
             }
-            // Move to the next day
-            current.setDate(current.getDate() + 1);
+        current.setDate(current.getDate() + 1);
         }
-    });
+  });
 }
 
 // === MAIN FUNCTIONALITY ===

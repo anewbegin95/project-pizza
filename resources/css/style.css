@@ -885,6 +885,33 @@ img {
   outline: none;
 }
 
+.calendar-event-bar {
+  background: var(--nyc-light-pink);
+  color: var(--nyc-navy);
+  border-radius: var(--space-xxs);
+  font-size: 14px;
+  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-weight: 400;
+  cursor: pointer;
+  display: block;
+  margin: 2px 0;
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  z-index: 1;
+}
+
+.calendar-event-bar-continue {
+  background: var(--nyc-light-pink);
+  height: 24px; /* Match the bar height */
+  border-radius: 0 var(--space-xxs) var(--space-xxs) 0;
+  margin: 2px 0;
+  position: relative;
+  z-index: 0;
+}
+
 .inactive-day {
   background: var(--nyc-light-gray);
   color: var(--nyc-medium-gray);
