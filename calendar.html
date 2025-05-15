@@ -22,8 +22,22 @@
                 <div id="calendar-grid"></div>
             </section>
         </main>
+        <!-- Modal for popping up event details (shared with events.html) -->
         <div id="eventModal" class="modal hidden">
-        <!-- Modal content as in events.html -->
+            <div class="modal-content">
+                <button class="return-button">← Return to all events</button>
+                <div class="modal-details">
+                    <h2 id="modalTitle">Event Title</h2>
+                    <p id="modalDateRange">Start Date – End Date</p>
+                    <p id="modalLocation">TBD</p>
+                    <a id="modalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
+                    <a id="icsLink" href="#" class="modal-link hidden">Add to Calendar</a>
+                </div>
+                <div class="modal-main">
+                    <img id="modalImage" src="" alt="Event Image">
+                    <p id="modalDescription">Event Description</p>
+                </div>
+            </div>
         </div>
         <script src="resources/js/events.js"></script>
         <script src="resources/js/calendar.js"></script>
