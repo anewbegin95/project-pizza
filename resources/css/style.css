@@ -837,55 +837,72 @@ img {
 
 .calendar-row {
   display: flex;
+  position: relative; /* Needed for absolute event bars */
+  min-height: 48px;
+}
+
+.calendar-row-bar-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Move bars down below the date number */
+  top: 36px;
+  bottom: 0;
+  width: 100%;
+  height: calc(100% - 36px);
+  pointer-events: none; /* let clicks pass through except on bars */
+  z-index: 2;
 }
 
 .calendar-cell {
   flex: 1;
-  aspect-ratio: 1 / 1; /* Maintain a square aspect ratio */
+  aspect-ratio: 1 / 1;
   min-width: 0;
   min-height: 80px;
   border: 1px solid var(--nyc-light-gray);
   position: relative;
   background: var(--nyc-white);
   transition: background 0.2s;
-  padding: var(--space-xs);
+  /* Reserve space for date and bars at the top */
+  padding-top: 40px;
+  padding-right: var(--space-xs);
+  padding-left: var(--space-xs);
+  padding-bottom: 12px;
   box-sizing: border-box;
-}
-
-.calendar-cell:focus-within, .calendar-cell:focus {
-  outline: 2px solid var(--nyc-fuschia);
-  z-index: 2;
+  overflow: visible;
 }
 
 .calendar-date {
-  font-size: 1em;
-  font-weight: 700;
-  color: var(--nyc-navy);
-  margin-bottom: var(--space-xxs);
-}
-
-.calendar-event-badge {
-  background: var(--nyc-light-pink);
-  color: var(--nyc-navy);
-  margin: var(--space-xxxs) 0;
-  padding: var(--space-xxxs) var(--space-xxs);
-  border-radius: var(--space-xxs);
-  font-size: 14px;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-  font-weight: 400;
-  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  left: 8px;
   display: block;
-  transition: background 0.2s, color 0.2s;
-  box-shadow: 0 1px 4px rgba(216,30,91,0.05);
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0;
+  min-width: 24px;
+  min-height: 20px;
+  z-index: 2;
 }
 
-.calendar-event-badge:hover, .calendar-event-badge:focus {
-  background: var(--nyc-fuschia);
-  color: var(--nyc-white);
-  outline: none;
+.calendar-cell-bar-container {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  min-height: 28px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .calendar-event-bar {
+  position: absolute;
+  left: 0;
+  right: auto;
+  height: 24px;
+  margin-bottom: 4px;
   background: var(--nyc-light-pink);
   color: var(--nyc-navy);
   border-radius: var(--space-xxs);
@@ -893,14 +910,21 @@ img {
   font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 400;
   cursor: pointer;
-  display: block;
-  margin: 2px 0;
   padding: 2px 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: relative;
-  z-index: 1;
+  display: flex;
+  align-items: center;
+  z-index: 3;
+  pointer-events: auto; /* clickable */
+  transition: background 0.2s, color 0.2s;
+}
+
+.calendar-event-bar:hover, .calendar-event-bar:focus {
+  background: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  outline: none;
 }
 
 .calendar-event-bar-continue {
@@ -989,14 +1013,21 @@ button:focus {
     font-size: 18px; /* Scale down font size */
   }
 
-  #calendar-grid {
-    max-width: 100%;
-    font-size: 0.95em;
-  }
-
   .calendar-cell {
     min-height: 60px;
     padding: var(--space-xxs);
+    padding-bottom: 8px;
+  }
+
+  .calendar-cell-bar-container {
+    top: 22px;
+    min-height: 22px;
+  }
+
+  .calendar-event-bar {
+    font-size: 12px;
+    height: 18px;
+    padding: 1px 4px;
   }
 }
 
@@ -1038,18 +1069,20 @@ button:focus {
     font-size: 16px; /* Further scale down font size */
   }
 
-  #calendar-grid {
-    font-size: 0.85em;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
   .calendar-cell {
     min-height: 40px;
     padding: 2px;
+    padding-bottom: 4px;
   }
 
-  .calendar-date {
-    font-size: 0.9em;
+  .calendar-cell-bar-container {
+    top: 16px;
+    min-height: 16px;
+  }
+
+  .calendar-event-bar {
+    font-size: 10px;
+    height: 14px;
+    padding: 0 2px;
   }
 }

@@ -49,20 +49,26 @@ function renderCalendar(month, year) {
     for (let week = 0; week < 6; week++) {
         const row = document.createElement('div'); // Create a row for each week
         row.className = 'calendar-row';
-        for (let d = 0; d < 7; d++, day++) { // Loop through 7 days (Sun-Sat)
-            const cell = document.createElement('div'); // Create a cell for each day
+        // Add a bar layer for event bars spanning the week
+        const barLayer = document.createElement('div');
+        barLayer.className = 'calendar-row-bar-layer';
+        row.appendChild(barLayer);
+        for (let d = 0; d < 7; d++, day++) {
+            const cell = document.createElement('div');
             cell.className = 'calendar-cell';
+            cell.style.gridColumn = (d + 1);
+
             if (day > 0 && day <= daysInMonth) {
-                // This is a valid day in the current month
-                const date = new Date(year, month, day); // Create a Date for this cell
-                cell.setAttribute('data-date', formatDateId(date)); // Set a unique ID for the cell
-                cell.innerHTML = `<div class="calendar-date">${day}</div>`; // Show the day number
-                cell.classList.add('active-day'); // Style as an active day
+                // Valid day in the current month
+                const date = new Date(year, month, day);
+                cell.setAttribute('data-date', formatDateId(date));
+                cell.innerHTML = `<div class="calendar-date">${day}</div>`;
+                cell.classList.add('active-day');
             } else {
-                // This cell is a blank (before the 1st or after the last day)
-                cell.classList.add('inactive-day'); // Style as an inactive day
+                // Blank cell (before 1st or after last day)
+                cell.classList.add('inactive-day');
             }
-            row.appendChild(cell); // Add the cell to the row
+            row.appendChild(cell);
         }
         grid.appendChild(row); // Add the row to the grid
     }
@@ -78,45 +84,71 @@ function renderCalendar(month, year) {
  * @param {number} year - The year (4-digit).
  */
 function placeEventsInGrid(month, year) {
+  // For each event, determine which rows/weeks it spans
+  events.forEach(event => {
+    const start = event.start_datetime ? new Date(event.start_datetime) : null;
+    const end = event.end_datetime ? new Date(event.end_datetime) : start;
+    if (!start) return;
 
-    // Loop through each event loaded from the CSV
-    events.forEach(event => {
+    let eventStart = new Date(start);
+    let eventEnd = new Date(end);
+    if (eventStart.getMonth() < month || eventStart.getFullYear() < year) {
+      eventStart = new Date(year, month, 1);
+    }
+    if (eventEnd.getMonth() > month || eventEnd.getFullYear() > year) {
+      eventEnd = new Date(year, month + 1, 0);
+    }
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startDayOfWeek = firstDayOfMonth.getDay();
+    const eventStartDay = eventStart.getDate();
+    const eventEndDay = eventEnd.getDate();
+    const startCellIndex = startDayOfWeek + eventStartDay - 1;
+    const endCellIndex = startDayOfWeek + eventEndDay - 1;
+    const startRow = Math.floor(startCellIndex / 7);
+    const endRow = Math.floor(endCellIndex / 7);
 
-        // Parse the event's start and end dates
-        const start = event.start_datetime ? new Date(event.start_datetime) : null;
-        const end = event.end_datetime ? new Date(event.end_datetime) : start;
-        if (!start) return; // Skip if no valid start date
+    // For each week the event spans
+    for (let rowIdx = startRow; rowIdx <= endRow; rowIdx++) {
+      const row = document.querySelectorAll('.calendar-row')[rowIdx];
+      if (!row) continue;
+      const barLayer = row.querySelector('.calendar-row-bar-layer');
+      if (!barLayer) continue;
 
-        // Only process events that appear in this month
-        let current = new Date(start);
-        let barStarted = false;
-        while (current <= end) {
-            if (current.getMonth() === month && current.getFullYear() === year) {
+      // Determine start and end column for this week
+      let weekStartCol = 0;
+      let weekEndCol = 6;
+      if (rowIdx === startRow) weekStartCol = startCellIndex % 7;
+      if (rowIdx === endRow) weekEndCol = endCellIndex % 7;
+      const spanLength = weekEndCol - weekStartCol + 1;
 
-                // Find the cell for this date
-                const cell = document.querySelector(`.calendar-cell[data-date="${formatDateId(current)}"]`);
-                if (cell) {
-                    if (!barStarted) {
-                        // Create a badge for the event
-                        const bar = document.createElement('div');
-                        bar.className = 'calendar-event-badge';
-                        bar.textContent = event.name; // Show the event name
-                        bar.tabIndex = 0; // Make badge focusable for accessibility
+      // Stack bars vertically: count how many bars already in this row
+      const barIndex = barLayer.children.length;
+      const bar = document.createElement('div');
+      bar.className = 'calendar-event-bar';
+      if (rowIdx === startRow) bar.textContent = event.name;
+      bar.tabIndex = 0;
+      bar.addEventListener('click', () => openEventModal(event));
 
-                        // When clicked, open the event modal (function from events.js)
-                        bar.addEventListener('click', () => openEventModal(event));
-                        cell.appendChild(bar); // Add the badge to the cell
-                        barStarted = true;
-                    } else {
-                        // Add a continuation bar in subsequent cells
-                        const cont = document.createElement('div');
-                        cont.className = 'calendar-event-bar-continue';
-                        cell.appendChild(cont);
-                    }
-                }
-            }
-        current.setDate(current.getDate() + 1);
-        }
+      // Position and size the bar
+      bar.style.position = 'absolute';
+      bar.style.left = `calc(${weekStartCol} * 100% / 7)`;
+      bar.style.width = `calc(${spanLength} * 100% / 7 - 4px)`;
+      bar.style.top = `${barIndex * 28}px`;
+      bar.style.height = '24px';
+      bar.style.zIndex = 2;
+
+      // Rounded corners only on start/end
+      if (rowIdx === startRow && rowIdx === endRow) {
+        bar.style.borderRadius = 'var(--space-xxs)';
+      } else if (rowIdx === startRow) {
+        bar.style.borderRadius = 'var(--space-xxs) 0 0 var(--space-xxs)';
+      } else if (rowIdx === endRow) {
+        bar.style.borderRadius = '0 var(--space-xxs) var(--space-xxs) 0';
+      } else {
+        bar.style.borderRadius = '0';
+      }
+      barLayer.appendChild(bar);
+    }
   });
 }
 
