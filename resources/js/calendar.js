@@ -85,13 +85,16 @@ function renderCalendar(month, year) {
  */
 function placeEventsInGrid(month, year) {
   const rows = document.querySelectorAll('.calendar-row');
+
   // For each week, build a list of events that touch that week
   for (let week = 0; week < 6; week++) {
     const barLayer = rows[week].querySelector('.calendar-row-bar-layer');
     if (!barLayer) continue;
+
     // Find the first and last cell index for this week
     const weekStartCell = week * 7;
     const weekEndCell = weekStartCell + 6;
+
     // Gather all events that touch this week
     const eventsInWeek = events.map(event => {
       const start = event.start_datetime ? new Date(event.start_datetime) : null;
@@ -99,26 +102,34 @@ function placeEventsInGrid(month, year) {
       if (!start) return null;
       let eventStart = new Date(start);
       let eventEnd = new Date(end);
-      if (eventStart.getMonth() < month || eventStart.getFullYear() < year) {
-        eventStart = new Date(year, month, 1);
-      }
-      if (eventEnd.getMonth() > month || eventEnd.getFullYear() > year) {
-        eventEnd = new Date(year, month + 1, 0);
-      }
+
+      // --- FIX: Only render events that overlap the current month ---
+      const monthStart = new Date(year, month, 1);
+      const monthEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      if (eventEnd < monthStart || eventStart > monthEnd) return null;
+
+      // Clamp eventStart and eventEnd to the visible month
+      if (eventStart < monthStart) eventStart = monthStart;
+      if (eventEnd > monthEnd) eventEnd = monthEnd;
       const firstDayOfMonth = new Date(year, month, 1);
       const startDayOfWeek = firstDayOfMonth.getDay();
       const eventStartDay = eventStart.getDate();
       const eventEndDay = eventEnd.getDate();
+
       // Clamp cell indices to the visible grid (0 to 41)
       let startCellIndex = Math.max(0, startDayOfWeek + eventStartDay - 1);
       let endCellIndex = Math.min(41, startDayOfWeek + eventEndDay - 1);
+
       // If event touches this week
       if (endCellIndex < weekStartCell || startCellIndex > weekEndCell) return null;
+
       // For this week, what columns does it span?
       const weekStartCol = Math.max(0, startCellIndex - weekStartCell);
       const weekEndCol = Math.min(6, endCellIndex - weekStartCell);
+
       // Guard: skip if weekStartCol or weekEndCol is NaN
       if (isNaN(weekStartCol) || isNaN(weekEndCol)) return null;
+
       // Only render if span is valid
       if (weekStartCol > weekEndCol) return null;
       return {
@@ -130,17 +141,22 @@ function placeEventsInGrid(month, year) {
         isMultiDay: (startCellIndex !== endCellIndex)
       };
     }).filter(Boolean);
+
     // Sort: multi-day events first, then single-day
     eventsInWeek.sort((a, b) => {
       if (a.isMultiDay && !b.isMultiDay) return -1;
       if (!a.isMultiDay && b.isMultiDay) return 1;
+      
       // If both are same type, sort by startCellIndex
       return a.startCellIndex - b.startCellIndex;
     });
+
     // Track slots: slots[col][slotIndex] = true if occupied
     const slots = Array(7).fill(0).map(() => []);
+
     // For each event, find the first available slot that is free for all days it spans
     eventsInWeek.forEach(({event, weekStartCol, weekEndCol, isMultiDay, startCellIndex, endCellIndex}) => {
+
       // Skip bars that would have an invalid span (prevents bleed-over)
       if (weekStartCol > weekEndCol) return;
       let slot = 0;
@@ -150,6 +166,7 @@ function placeEventsInGrid(month, year) {
         }
         break;
       }
+
       // Mark all columns as occupied in this slot
       for (let col = weekStartCol; col <= weekEndCol; col++) {
         slots[col][slot] = true;
@@ -157,6 +174,7 @@ function placeEventsInGrid(month, year) {
       // Render the bar
       const bar = document.createElement('div');
       bar.className = 'calendar-event-bar';
+
       // Show event name:
       // - For single-day events, always show the name
       // - For multi-day events, only show on first week and first slot
@@ -173,6 +191,7 @@ function placeEventsInGrid(month, year) {
       bar.style.top = `${slot * 28}px`;
       bar.style.height = '24px';
       bar.style.zIndex = 2;
+
       // Rounded corners only on start/end
       if (week === Math.floor(startCellIndex / 7) && week === Math.floor(endCellIndex / 7)) {
         bar.style.borderRadius = 'var(--space-xxs)';
