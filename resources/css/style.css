@@ -835,6 +835,24 @@ img {
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
 
+#calendar-days-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--nyc-light-gray);
+  color: var(--nyc-navy);
+  font-weight: 600;
+  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-size: 1em;
+  text-align: center;
+  padding: 8px 0 8px 0;
+  border-bottom: 1px solid var(--nyc-light-gray);
+}
+
+.calendar-day-title {
+  padding: 0 4px;
+  letter-spacing: 0.02em;
+}
+
 .calendar-row {
   display: flex;
   position: relative; /* Needed for absolute event bars */
