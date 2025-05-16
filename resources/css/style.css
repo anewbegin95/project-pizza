@@ -2,45 +2,16 @@
 ===============================================================================
 NYC Slice of Life – Global Stylesheet
 Author: Alex Newbegin
-Last Updated: 2025-05-11
+Last Updated: 2025-05-15
 ===============================================================================
-*/
 
-/*
-===============================================================================
-📌 CSS Best Practices:
-
-1. Structure & Organization
-   - Group styles logically: use clear sections (e.g., Variables, Reset, Typography, Layout, Components).
-   - Use consistent indentation (2 or 4 spaces) and spacing between rules for readability.
-   - Place utility and global styles near the top (e.g., variables, resets).
-
-2. Naming Conventions
-   - Use class names that are descriptive and consistent (e.g., .main-header, .card-title).
-   - Follow BEM (Block__Element--Modifier) if working with large-scale components.
-
-3. Use Variables
-   - Define common values like colors and spacing as CSS variables for consistency and easy updates.
-
-4. Keep it DRY
-   - Don’t Repeat Yourself. Reuse classes and variables whenever possible to reduce redundancy.
-
-5. Responsive Design
-   - Use media queries to adapt layouts and text sizes for various screen widths.
-   - Test responsiveness on actual devices when possible.
-
-6. Maintain Accessibility
-   - Ensure color contrasts are readable.
-   - Use focus styles and responsive images/icons to support keyboard and screen reader users.
-
-7. Performance
-   - Avoid overly specific selectors or deep nesting to keep CSS performant and maintainable.
-   - Minimize use of !important unless absolutely necessary.
-
-8. Version Control
-   - Use comments and versioning when making major updates to keep track of changes over time.
-
-Happy Styling! 🎨
+BEST PRACTICES: 
+- Organized by: Imports & Variables, Reset & Base, Typography, Layout, Header, Hero, Buttons & Links, Backgrounds, Forms, Section Dividers, Footer, Images & Icons, Events Grid, Event Modal, Calendar, Accessibility, Responsive Styles
+- All colors, spacing, and font sizes use CSS variables for consistency and easy updates
+- DRY: No duplicate rules, all reusable classes and variables
+- Responsive: Uses media queries for grid and modal layouts
+- Accessibility: Focus styles, color contrast, readable font sizes
+- Annotation: Each section and major block is clearly commented
 ===============================================================================
 */
 
@@ -54,21 +25,18 @@ Happy Styling! 🎨
 
 /* CSS Variables */
 :root {
-  /* Updated Color Palette */
-  --nyc-light-pink: #FFB6C1;   /* Light pink as primary */
-  --nyc-navy: #001B2E;         /* Main text and headings */
-  --nyc-white: #FFFFFF;        /* Primary background */
-
-  --nyc-fuschia: #D81E5B;       /* Fuschia as accent */
-  --nyc-light-blue: #e3f2fd;    /* Light blue for backgrounds (from '+N more' link) */
-  --nyc-blue: #1976d2;          /* Blue for text (from '+N more' link) */
-  --nyc-light-green: #A1C7B6;   /* Success messages and callouts */
-
-  --nyc-light-gray: #F5F5F5;   /* Alternate background */
-  --nyc-medium-gray: #B0B0B0;  /* Secondary text and borders */
-  --nyc-charcoal: #2E2E2E;     /* Dark mode or overlays */
-
-  /* Spacing scale for consistent layout */
+  /* --- COLOR PALETTE --- */
+  --nyc-light-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
+  --nyc-navy: #001B2E;       /* Primary text color, header/footer */
+  --nyc-white: #FFFFFF;      /* Backgrounds, modal, event tiles */
+  --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
+  --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
+  --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
+  --nyc-light-green: #A1C7B6;/* Success messages */
+  --nyc-light-gray: #F5F5F5; /* Calendar, backgrounds, alt sections */
+  --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
+  --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
+  /* --- SPACING SCALE --- */
   --space-xxxs: 2px;
   --space-xxs: 4px;
   --space-xs: 8px;
@@ -78,105 +46,49 @@ Happy Styling! 🎨
   --space-xl: 128px;
   --space-xxl: 192px;
   --space-xxxl: 256px;
+  /* --- FONT SIZES --- */
+  --font-xl: 28px;
+  --font-lg: 24px;
+  --font-md: 18px;
+  --font-sm: 16px;
+  --font-xs: 14px;
 }
 
 /* -----------------------------------------------------------------------------
   RESET & BASE
 ----------------------------------------------------------------------------- */
 
-/* Resets default browser styles */
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;  /* Includes padding and border in width/height */
-}
-
-/* Base styles for html and body */
+/* Reset all elements to box-sizing: border-box and remove default margin/padding */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
   height: 100%;
-  margin: 0;
   font-family: 'Source Sans Pro', 'Arial', sans-serif;
   color: var(--nyc-navy);
   background-color: var(--nyc-white);
   line-height: 1.6;
-  /* display: flex; */
-  /* flex-direction: column; */
 }
 
 /* -----------------------------------------------------------------------------
   TYPOGRAPHY
 ----------------------------------------------------------------------------- */
 
-/* Ensuring uniform font usage across the file */
-
-/* Updated font-family for all text elements */
-body, p, ul, ol, input, textarea, button {
-  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
-}
-
-h1 {
-  font-family: 'Montserrat', 'Arial', sans-serif; /* Heading font */
-  font-size: 40px;
-  font-weight: 700;
-  color: var(--nyc-navy);
-}
-
-h2, h3 {
-  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
-}
-
-h2 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--nyc-navy);
-}
-
-h3 {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--nyc-navy);
-}
-
-/* Paragraph and list text */
-p, ul, ol {
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--nyc-navy);
-  margin-bottom: var(--space-sm);
-}
-
-/* Ensured all other text elements inherit the correct font */
-.modal-content p, .event-text p {
-  font-family: 'Source Sans Pro', 'Arial', sans-serif; /* Default font */
-}
-
-.modal-content h2, .event-text h3 {
-  font-family: 'Work Sans', 'Arial', sans-serif; /* Subheading font */
-}
+/* Headings use Montserrat/Work Sans, body uses Source Sans Pro */
+h1 { font-family: 'Montserrat', 'Arial', sans-serif; font-size: 40px; font-weight: 700; color: var(--nyc-navy); }
+h2, h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
+h2 { font-size: 32px; font-weight: 700; color: var(--nyc-navy); }
+h3 { font-size: 28px; font-weight: 700; color: var(--nyc-navy); }
+p, ul, ol { font-size: 16px; font-weight: 400; color: var(--nyc-navy); margin-bottom: var(--space-sm); }
+.modal-content p, .event-text p { font-family: 'Source Sans Pro', 'Arial', sans-serif; }
+.modal-content h2, .event-text h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
 
 /* -----------------------------------------------------------------------------
   LAYOUT
 ----------------------------------------------------------------------------- */
 
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-sm);
-}
-
-section {
-  margin-bottom: var(--space-lg);
-  background-color: var(--nyc-white);
-}
-
-header {
-  padding: var(--space-md) 0;
-}
-
-footer {
-  padding: var(--space-xs) 0;
-}
+.container { width: 90%; max-width: 1200px; margin: 0 auto; padding: var(--space-sm); }
+section { margin-bottom: var(--space-lg); background-color: var(--nyc-white); }
+header { padding: var(--space-md) 0; }
+footer { padding: var(--space-xs) 0; }
 
 /* -----------------------------------------------------------------------------
   HEADER
@@ -427,8 +339,8 @@ button,
   border: none;
   outline: none;
   border-radius: 5px;
-  font-size: 18px;
-  padding: 12px 24px;
+  font-size: var(--font-md);
+  padding: var(--space-xs) var(--space-md);
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
@@ -449,7 +361,7 @@ button:hover,
   border: none;
   outline: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: var(--font-sm);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -458,7 +370,6 @@ button:hover,
 
 .secondary-btn:hover {
   background-color: var(--nyc-light-blue);
-  outline: none;
   color: var(--nyc-navy);
 }
 
@@ -475,8 +386,8 @@ a:hover {
 
 a:focus,
 button:focus {
-    outline: 3px solid var(--nyc-fuschia);
-    outline-offset: 2px;
+  outline: 3px solid var(--nyc-fuschia);
+  outline-offset: 2px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -582,7 +493,7 @@ img {
   text-align: center;
   margin: var(--space-sm);
   padding: var(--space-sm);
-  border: 1px solid var(--nyc-gray);
+  border: 1px solid var(--nyc-medium-gray);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: var(--nyc-white);
@@ -605,31 +516,31 @@ img {
 
 /* EVENT TEXT BLOCK */
 .event-text {
-  padding: 16px;
+  padding: var(--space-sm);
 }
 
 .event-text h3 {
-  font-size: var(--font-xl); /* You mentioned using CSS variables — adjust if needed */
-  margin: 0 0 8px 0;
-  color: var(--text-dark);
+  font-size: var(--font-xl);
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--nyc-navy);
 }
 
 .event-text p {
   font-size: var(--font-sm);
   margin: 0;
-  color: var(--text-light);
+  color: var(--nyc-navy);
 }
 
 /* Recurring Event Badge */
 .event-tile .recurring-badge {
-    background-color: var(--primary-color);
-    color: white;
-    font-size: var(--space-xs);
-    padding: var(--space-xxs) var(--space-xs);
-    border-radius: var(--space-xxs);
-    position: absolute;
-    top: var(--space-xs);
-    right: var(--space-xs);
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  font-size: var(--font-xs);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: var(--space-xxs);
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
 }
 
 /* -----------------------------------------------------------------------------
@@ -774,6 +685,37 @@ img {
   color: var(--nyc-light-pink);
   background-color: transparent;
   text-decoration: underline;
+}
+
+/* Day Events Modal Return Button & Date Heading Layout */
+.modal-content.show-day-grid {
+  position: relative;
+}
+
+.return-button {
+  /* Reset for modal absolute positioning */
+  position: static;
+  top: auto;
+  left: auto;
+  z-index: auto;
+  display: inline;
+}
+
+.modal-content.show-day-grid .return-button {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-sm);
+  z-index: 10;
+  display: block;
+}
+
+.day-events-grid h2 {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+  justify-self: center;
+  position: relative;
 }
 
 /* Show the modal when it is not hidden */
@@ -934,7 +876,7 @@ img {
   background: var(--nyc-light-pink);
   color: var(--nyc-navy);
   border-radius: var(--space-xxs);
-  font-size: 14px;
+  font-size: var(--font-xs);
   font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 400;
   cursor: pointer;
@@ -973,11 +915,11 @@ img {
 
 .calendar-more-link {
   cursor: pointer;
-  color: var(--color-primary, #1976d2);
+  color: var(--nyc-blue);
   font-size: 0.85em;
   font-weight: 500;
   text-align: center;
-  background: var(--color-bg, #fff);
+  background: var(--nyc-white);
   border-radius: var(--space-xxs);
   padding: 2px 0;
   margin-top: 2px;
@@ -986,7 +928,7 @@ img {
 
 .calendar-more-link:hover,
 .calendar-more-link:focus {
-  background: var(--color-primary-light, #e3f2fd);
+  background: var(--nyc-light-blue);
   outline: none;
 }
 
@@ -999,6 +941,37 @@ img {
   width: calc(100% - 4px);
   box-sizing: border-box;
   pointer-events: auto;
+}
+
+/* DAY EVENTS GRID */
+.day-events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* Always 3 columns on desktop */
+  gap: var(--space-md);
+  padding: var(--space-md);
+  width: 100%;
+  justify-content: center; /* Center grid in modal */
+  justify-items: stretch; /* Tiles fill columns */
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.day-events-grid h2 {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+  justify-self: center;
+  position: relative;
+}
+
+/* Modal content for day grid */
+.modal-content.show-day-grid {
+  grid-template-columns: 1fr;
+  width: 90%;
+  max-width: 1100px;
+  justify-items: center;
+  align-items: start;
 }
 
 /* -----------------------------------------------------------------------------
@@ -1085,6 +1058,26 @@ button:focus {
     font-size: 12px;
     height: 18px;
     padding: 1px 4px;
+  }
+
+  .day-events-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .modal-content.show-day-grid {
+    width: 98%;
+    max-width: 100vw;
+    padding: var(--space-xs);
+  }
+}
+
+@media (max-width: 600px) {
+  .day-events-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-xs);
+  }
+  .day-events-grid h2 {
+    font-size: 1.2em;
   }
 }
 

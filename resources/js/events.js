@@ -295,57 +295,79 @@ function openEventModal(event) {
  */
 function openDayEventsModal(date, eventsForDay) {
     const modal = document.getElementById('eventModal');
+    const modalContent = modal.querySelector('.modal-content');
     // Hide the single-event modal content
     modal.querySelector('.modal-details').style.display = 'none';
     modal.querySelector('.modal-main').style.display = 'none';
+    // Switch modal-content to single-column for day grid
+    modalContent.classList.add('show-day-grid');
 
     // Remove any existing day-events grid
     let dayGrid = modal.querySelector('.day-events-grid');
     if (dayGrid) dayGrid.remove();
 
+    // Update the return button text (no inline style)
+    const returnButton = modal.querySelector('.return-button');
+    if (returnButton) {
+        returnButton.textContent = '← Return to calendar';
+        // Restore modal content and remove day grid/modal class on click
+        returnButton.onclick = () => {
+            if (modal.querySelector('.day-events-grid'))
+                modal.querySelector('.day-events-grid').remove();
+            modalContent.classList.remove('show-day-grid');
+            // Restore modal content (details/main)
+            modal.querySelector('.modal-details').style.display = '';
+            modal.querySelector('.modal-main').style.display = '';
+            // Remove highlight from all bars
+            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            modal.classList.add('hidden');
+        };
+    }
+
     // Create a new grid for the day's events
     dayGrid = document.createElement('div');
     dayGrid.className = 'day-events-grid events-grid';
 
-    // Add a heading for the date
+    // Add a heading for the date (centered at top, no inline style)
     const heading = document.createElement('h2');
     heading.textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-    heading.style.gridColumn = '1 / -1';
+    heading.className = 'day-events-heading';
     dayGrid.appendChild(heading);
 
-    // Add event tiles
+    // Add event tiles, each with a click handler to open the standard event modal
     eventsForDay.forEach(event => {
         const tile = createEventTile(event);
-        if (tile) dayGrid.appendChild(tile);
+        if (tile) {
+            tile.onclick = (e) => {
+                e.stopPropagation();
+                // Remove only the day grid and modal class, restore modal content
+                if (modal.querySelector('.day-events-grid'))
+                    modal.querySelector('.day-events-grid').remove();
+                modalContent.classList.remove('show-day-grid');
+                modal.querySelector('.modal-details').style.display = '';
+                modal.querySelector('.modal-main').style.display = '';
+                openEventModal(event);
+            };
+            dayGrid.appendChild(tile);
+        }
     });
 
-    // Add the grid to the modal
-    modal.querySelector('.modal-content').appendChild(dayGrid);
-    modal.classList.remove('hidden');
-
-    // Return button closes the modal and restores single-event content
-    const returnButton = modal.querySelector('.return-button');
-    if (returnButton) {
-        returnButton.onclick = () => {
-            modal.classList.add('hidden');
-            // Remove the day-events grid
-            if (dayGrid) dayGrid.remove();
-            // Restore single-event modal content
-            modal.querySelector('.modal-details').style.display = '';
-            modal.querySelector('.modal-main').style.display = '';
-            // Remove highlight from all bars when modal closes
-            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
-        };
+    // Instead of clearing modalContent, just append dayGrid (and ensure only one exists)
+    if (!modalContent.contains(dayGrid)) {
+        modalContent.appendChild(dayGrid);
     }
+    modal.classList.remove('hidden');
 
     // Clicking outside closes the modal and restores content
     modal.onclick = (e) => {
         if (e.target === modal) {
-            modal.classList.add('hidden');
-            if (dayGrid) dayGrid.remove();
+            if (modal.querySelector('.day-events-grid'))
+                modal.querySelector('.day-events-grid').remove();
+            modalContent.classList.remove('show-day-grid');
             modal.querySelector('.modal-details').style.display = '';
             modal.querySelector('.modal-main').style.display = '';
             document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            modal.classList.add('hidden');
         }
     };
 }
