@@ -174,13 +174,43 @@ function placeEventsInGrid(month, year) {
       // Render the bar
       const bar = document.createElement('div');
       bar.className = 'calendar-event-bar';
+      bar.setAttribute('data-event-id', event.id || event.name.replace(/\s+/g, '-').toLowerCase());
+
+      function highlightAllSegments() {
+        const eventId = bar.getAttribute('data-event-id');
+        document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
+          el.classList.add('calendar-event-bar--active')
+        );
+      }
+      function unhighlightAllSegments() {
+        const eventId = bar.getAttribute('data-event-id');
+        document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
+          el.classList.remove('calendar-event-bar--active')
+        );
+      }
+
+      // Highlight on hover/focus/click
+      bar.addEventListener('mouseenter', highlightAllSegments);
+      bar.addEventListener('focus', highlightAllSegments);
+      bar.addEventListener('mouseleave', unhighlightAllSegments);
+      bar.addEventListener('blur', unhighlightAllSegments);
+
+      bar.addEventListener('click', (e) => {
+        // Remove highlight from all bars first
+        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+        highlightAllSegments();
+        openEventModal(event);
+      });
 
       // Show event name:
       // - For single-day events, always show the name
       // - For multi-day events, only show on first week and first slot
       if (!isMultiDay) {
         bar.textContent = event.name;
-      } else if (week === Math.floor(startCellIndex / 7) && slot === 0) {
+      } else if (
+        (week === Math.floor(startCellIndex / 7) && weekStartCol === (startCellIndex % 7)) ||
+        weekStartCol === 0
+      ) {
         bar.textContent = event.name;
       }
       bar.tabIndex = 0;

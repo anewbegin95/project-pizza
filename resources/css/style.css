@@ -927,6 +927,13 @@ img {
   outline: none;
 }
 
+.calendar-event-bar--active {
+  background: var(--nyc-fuschia) !important;
+  color: var(--nyc-white) !important;
+  box-shadow: 0 0 0 2px var(--nyc-fuschia);
+  z-index: 10;
+}
+
 .calendar-event-bar-continue {
   background: var(--nyc-light-pink);
   height: 24px; /* Match the bar height */

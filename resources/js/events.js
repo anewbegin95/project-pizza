@@ -382,6 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
         returnButton.addEventListener('click', () => {
             const modal = document.getElementById('eventModal');
             modal.classList.add('hidden');
+            // Remove highlight from all bars when modal closes
+            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         });
     }
 
@@ -390,6 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
+                // Remove highlight from all bars when modal closes
+                document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
             }
         });
     }
