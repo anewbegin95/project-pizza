@@ -60,7 +60,8 @@ Happy Styling! 🎨
   --nyc-white: #FFFFFF;        /* Primary background */
 
   --nyc-fuschia: #D81E5B;       /* Fuschia as accent */
-  --nyc-light-blue: #4D7EA8;    /* Section dividers and subtle backgrounds */
+  --nyc-light-blue: #e3f2fd;    /* Light blue for backgrounds (from '+N more' link) */
+  --nyc-blue: #1976d2;          /* Blue for text (from '+N more' link) */
   --nyc-light-green: #A1C7B6;   /* Success messages and callouts */
 
   --nyc-light-gray: #F5F5F5;   /* Alternate background */
@@ -75,7 +76,8 @@ Happy Styling! 🎨
   --space-md: 32px;
   --space-lg: 64px;
   --space-xl: 128px;
-  --space-xxl: 256px;
+  --space-xxl: 192px;
+  --space-xxxl: 256px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -865,10 +867,10 @@ img {
   right: 0;
   /* Move bars down below the date number */
   top: 36px;
-  bottom: 0;
+  bottom: 40px; /* More space for '+N more' link */
   width: 100%;
-  height: calc(100% - 36px);
-  pointer-events: none; /* let clicks pass through except on bars */
+  height: auto;
+  pointer-events: none; /* Only bars and link are clickable */
   z-index: 2;
 }
 
@@ -884,7 +886,7 @@ img {
   flex: 1;
   aspect-ratio: 1 / 1;
   min-width: 0;
-  min-height: var(--space-xl);
+  min-height: var(--space-xxl);
   border: 1px solid var(--nyc-light-gray);
   position: relative;
   background: var(--nyc-white);
@@ -893,9 +895,9 @@ img {
   padding-top: 40px;
   padding-right: var(--space-xs);
   padding-left: var(--space-xs);
-  padding-bottom: 12px;
+  padding-bottom: 48px; /* More space for '+N more' link */
   box-sizing: border-box;
-  overflow: visible;
+  overflow: visible; /* Ensure absolutely positioned children are visible */
 }
 
 .calendar-date {
@@ -936,14 +938,14 @@ img {
   font-family: 'Work Sans', 'Arial', sans-serif;
   font-weight: 400;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 4px 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: flex;
   align-items: center;
   z-index: 3;
-  pointer-events: auto; /* clickable */
+  pointer-events: auto; /* Bars are clickable */
   transition: background 0.2s, color 0.2s;
 }
 
@@ -969,13 +971,34 @@ img {
   z-index: 0;
 }
 
-.inactive-day {
-  background: var(--nyc-light-gray);
-  color: var(--nyc-medium-gray);
+.calendar-more-link {
+  cursor: pointer;
+  color: var(--color-primary, #1976d2);
+  font-size: 0.85em;
+  font-weight: 500;
+  text-align: center;
+  background: var(--color-bg, #fff);
+  border-radius: var(--space-xxs);
+  padding: 2px 0;
+  margin-top: 2px;
+  transition: background 0.2s;
 }
 
-.active-day {
-  background: var(--nyc-white);
+.calendar-more-link:hover,
+.calendar-more-link:focus {
+  background: var(--color-primary-light, #e3f2fd);
+  outline: none;
+}
+
+.calendar-more-link--absolute {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  z-index: 99; /* Higher than event bars */
+  width: calc(100% - 4px);
+  box-sizing: border-box;
+  pointer-events: auto;
 }
 
 /* -----------------------------------------------------------------------------

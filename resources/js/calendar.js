@@ -151,12 +151,15 @@ function placeEventsInGrid(month, year) {
       return a.startCellIndex - b.startCellIndex;
     });
 
+
+    const maxVisible = 4; // or whatever number you want
+    
+    // Map: col (0-6) => array of {event, slot, ...}
+    const eventsByDay = Array(7).fill(0).map(() => []);
     // Track slots: slots[col][slotIndex] = true if occupied
     const slots = Array(7).fill(0).map(() => []);
-
     // For each event, find the first available slot that is free for all days it spans
     eventsInWeek.forEach(({event, weekStartCol, weekEndCol, isMultiDay, startCellIndex, endCellIndex}) => {
-
       // Skip bars that would have an invalid span (prevents bleed-over)
       if (weekStartCol > weekEndCol) return;
       let slot = 0;
@@ -166,11 +169,22 @@ function placeEventsInGrid(month, year) {
         }
         break;
       }
-
-      // Mark all columns as occupied in this slot
+      // Mark all columns as occupied in this slot and track events per day
       for (let col = weekStartCol; col <= weekEndCol; col++) {
         slots[col][slot] = true;
+        eventsByDay[col].push({ event, slot, weekStartCol, weekEndCol, isMultiDay, startCellIndex, endCellIndex });
       }
+      // Only render the bar if this event is among the first maxVisible for every day it spans
+      let shouldRender = false;
+      for (let col = weekStartCol; col <= weekEndCol; col++) {
+        if (eventsByDay[col].indexOf(eventsByDay[col].find(e => e.event === event && e.slot === slot)) < maxVisible) {
+          shouldRender = true;
+        } else {
+          shouldRender = false;
+          break;
+        }
+      }
+      if (!shouldRender) return;
       // Render the bar
       const bar = document.createElement('div');
       bar.className = 'calendar-event-bar';
@@ -234,6 +248,35 @@ function placeEventsInGrid(month, year) {
       }
       barLayer.appendChild(bar);
     });
+    // After rendering bars, add '+N more' link if needed
+    for (let col = 0; col < 7; col++) {
+      // Debug: log the number of events for this day
+      console.log(`Week ${week}, Col ${col}: eventsByDay[col].length =`, eventsByDay[col].length);
+      if (eventsByDay[col].length > maxVisible) {
+        // Find the cell for this week and column
+        // barLayer is first child, so cell is children[col + 1]
+        const cell = rows[week].children[col + 1];
+        if (!cell.querySelector('.calendar-more-link')) { // Prevent duplicate links
+          // Remove debug background color for production
+          cell.style.backgroundColor = '';
+          const moreLink = document.createElement('div');
+          moreLink.className = 'calendar-more-link calendar-more-link--absolute';
+          moreLink.textContent = `+${eventsByDay[col].length - maxVisible} more`;
+          moreLink.tabIndex = 0;
+          moreLink.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Calculate the date for this cell
+            const firstDayOfMonth = new Date(year, month, 1);
+            const startDayOfWeek = firstDayOfMonth.getDay();
+            const cellDay = week * 7 + col - startDayOfWeek + 1;
+            const cellDate = new Date(year, month, cellDay);
+            // Show all events for this day in a modal (implement openDayEventsModal)
+            openDayEventsModal(cellDate, eventsByDay[col].map(obj => obj.event));
+          });
+          cell.appendChild(moreLink);
+        }
+      }
+    }
   }
 }
 
