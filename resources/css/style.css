@@ -872,11 +872,19 @@ img {
   z-index: 2;
 }
 
+.calendar-row:has(.active-day) {
+  display: flex;
+}
+
+.calendar-row:not(:has(.active-day)) {
+  display: none;
+}
+
 .calendar-cell {
   flex: 1;
   aspect-ratio: 1 / 1;
   min-width: 0;
-  min-height: 80px;
+  min-height: var(--space-xl);
   border: 1px solid var(--nyc-light-gray);
   position: relative;
   background: var(--nyc-white);
@@ -1039,14 +1047,15 @@ button:focus {
   }
 
   .calendar-cell {
-    min-height: 60px;
-    padding: var(--space-xxs);
-    padding-bottom: 8px;
+    min-height: 120px; /* Taller for more events */
+    padding: var(--space-xs);
+    padding-top: 36px;
+    padding-bottom: 10px;
   }
 
   .calendar-cell-bar-container {
-    top: 22px;
-    min-height: 22px;
+    top: 28px;
+    min-height: 28px;
   }
 
   .calendar-event-bar {
@@ -1095,14 +1104,15 @@ button:focus {
   }
 
   .calendar-cell {
-    min-height: 40px;
-    padding: 2px;
-    padding-bottom: 4px;
+    min-height: 120px; /* Still taller than before */
+    padding: 6px;
+    padding-top: 28px;
+    padding-bottom: 6px;
   }
 
   .calendar-cell-bar-container {
-    top: 16px;
-    min-height: 16px;
+    top: 20px;
+    min-height: 20px;
   }
 
   .calendar-event-bar {
