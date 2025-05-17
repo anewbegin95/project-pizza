@@ -225,8 +225,9 @@ function createEventTile(event) {
 
     const tile = document.createElement('div');
     tile.className = 'event-tile';
-
+    
     const img = document.createElement('img');
+    console.log('event.img:', event.img);
     img.src = event.img || 'resources/images/images/default-event-image.jpeg';
     img.alt = `${event.name} image`;
     img.className = 'event-img';
