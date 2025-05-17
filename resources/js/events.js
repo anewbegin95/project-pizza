@@ -32,7 +32,7 @@ function parseCSV(csvText) {
                 event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
             });
             event['recurring'] = event['recurring'] || 'FALSE';
-            event['display'] = event['display'] || 'TRUE';
+            event['master_display'] = event['master_display'] || 'TRUE';
             event['link'] = event['link'] || '';
             events.push(event);
             currentRow = [];
@@ -221,12 +221,13 @@ function formatEventDate(start, end, allDay, recurring) {
  * @returns {HTMLElement|null} - The event tile element or null if the event should not be displayed.
  */
 function createEventTile(event) {
-    if (event.display === 'FALSE') return null;
+    if (String(event.master_display).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
     tile.className = 'event-tile';
-
+    
     const img = document.createElement('img');
+    console.log('event.img:', event.img);
     img.src = event.img || 'resources/images/images/default-event-image.jpeg';
     img.alt = `${event.name} image`;
     img.className = 'event-img';
@@ -251,8 +252,8 @@ function createEventTile(event) {
  * @param {Object} event - Event object containing event details.
  */
 function openEventModal(event) {
-    // Prevent modal access if display is FALSE
-    if (event.display === 'FALSE') {
+    // Prevent modal access if master_display is FALSE
+    if (String(event.master_display).toUpperCase() === 'FALSE') {
         return;
     }
 
@@ -286,6 +287,90 @@ function openEventModal(event) {
     }
 
     modal.classList.remove('hidden');
+}
+
+/**
+ * Opens a modal showing all events for a given day in a grid (like the events page).
+ * @param {Date} date - The date for which to show events.
+ * @param {Array<Object>} eventsForDay - Array of event objects for the day.
+ */
+function openDayEventsModal(date, eventsForDay) {
+    const modal = document.getElementById('eventModal');
+    const modalContent = modal.querySelector('.modal-content');
+    // Hide the single-event modal content
+    modal.querySelector('.modal-details').style.display = 'none';
+    modal.querySelector('.modal-main').style.display = 'none';
+    // Switch modal-content to single-column for day grid
+    modalContent.classList.add('show-day-grid');
+
+    // Remove any existing day-events grid
+    let dayGrid = modal.querySelector('.day-events-grid');
+    if (dayGrid) dayGrid.remove();
+
+    // Update the return button text (no inline style)
+    const returnButton = modal.querySelector('.return-button');
+    if (returnButton) {
+        returnButton.textContent = '← Return to calendar';
+        // Restore modal content and remove day grid/modal class on click
+        returnButton.onclick = () => {
+            if (modal.querySelector('.day-events-grid'))
+                modal.querySelector('.day-events-grid').remove();
+            modalContent.classList.remove('show-day-grid');
+            // Restore modal content (details/main)
+            modal.querySelector('.modal-details').style.display = '';
+            modal.querySelector('.modal-main').style.display = '';
+            // Remove highlight from all bars
+            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            modal.classList.add('hidden');
+        };
+    }
+
+    // Create a new grid for the day's events
+    dayGrid = document.createElement('div');
+    dayGrid.className = 'day-events-grid events-grid';
+
+    // Add a heading for the date (centered at top, no inline style)
+    const heading = document.createElement('h2');
+    heading.textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    heading.className = 'day-events-heading';
+    dayGrid.appendChild(heading);
+
+    // Add event tiles, each with a click handler to open the standard event modal
+    eventsForDay.forEach(event => {
+        const tile = createEventTile(event);
+        if (tile) {
+            tile.onclick = (e) => {
+                e.stopPropagation();
+                // Remove only the day grid and modal class, restore modal content
+                if (modal.querySelector('.day-events-grid'))
+                    modal.querySelector('.day-events-grid').remove();
+                modalContent.classList.remove('show-day-grid');
+                modal.querySelector('.modal-details').style.display = '';
+                modal.querySelector('.modal-main').style.display = '';
+                openEventModal(event);
+            };
+            dayGrid.appendChild(tile);
+        }
+    });
+
+    // Instead of clearing modalContent, just append dayGrid (and ensure only one exists)
+    if (!modalContent.contains(dayGrid)) {
+        modalContent.appendChild(dayGrid);
+    }
+    modal.classList.remove('hidden');
+
+    // Clicking outside closes the modal and restores content
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            if (modal.querySelector('.day-events-grid'))
+                modal.querySelector('.day-events-grid').remove();
+            modalContent.classList.remove('show-day-grid');
+            modal.querySelector('.modal-details').style.display = '';
+            modal.querySelector('.modal-main').style.display = '';
+            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            modal.classList.add('hidden');
+        }
+    };
 }
 
 // === ICS FILE GENERATION ===
@@ -353,7 +438,7 @@ function loadAndDisplayEvents() {
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(response => response.text())
         .then(csvText => {
-            const events = parseCSV(csvText);
+            const events = parseCSV(csvText).filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
             const grid = document.createElement('div');
             grid.className = 'events-grid';
 
@@ -372,13 +457,18 @@ function loadAndDisplayEvents() {
 // === EVENT LISTENERS ===
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadAndDisplayEvents();
+    // Only run on events.html
+    if (document.getElementById('eventsGrid')) {
+        loadAndDisplayEvents();
+    }
 
     const returnButton = document.querySelector('.return-button');
     if (returnButton) {
         returnButton.addEventListener('click', () => {
             const modal = document.getElementById('eventModal');
             modal.classList.add('hidden');
+            // Remove highlight from all bars when modal closes
+            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         });
     }
 
@@ -387,6 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
+                // Remove highlight from all bars when modal closes
+                document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
             }
         });
     }
