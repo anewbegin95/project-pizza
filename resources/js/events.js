@@ -33,6 +33,7 @@ function parseCSV(csvText) {
             });
             event['recurring'] = event['recurring'] || 'FALSE';
             event['master_display'] = event['master_display'] || 'TRUE';
+            event['events_page'] = event['events_page'] || 'TRUE';
             event['link'] = event['link'] || '';
             events.push(event);
             currentRow = [];
@@ -222,6 +223,7 @@ function formatEventDate(start, end, allDay, recurring) {
  */
 function createEventTile(event) {
     if (String(event.master_display).toUpperCase() === 'FALSE') return null;
+    if (String(event.events_page).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
     tile.className = 'event-tile';
@@ -254,6 +256,11 @@ function createEventTile(event) {
 function openEventModal(event) {
     // Prevent modal access if master_display is FALSE
     if (String(event.master_display).toUpperCase() === 'FALSE') {
+        return;
+    }
+
+    // Prevent modal access if events_page is FALSE
+    if (String(event.events_page).toUpperCase() === 'FALSE') {
         return;
     }
 
@@ -435,10 +442,25 @@ function downloadICS(event) {
  * Fetches events from the CSV URL, parses them, and displays them in the events grid.
  */
 function loadAndDisplayEvents() {
+    // Detect if we're on the events page (example: check URL or a DOM flag)
+    const isEventsPage = window.location.pathname.includes('events'); // adjust as needed
+
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(response => response.text())
         .then(csvText => {
-            const events = parseCSV(csvText).filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
+            const events = parseCSV(csvText).filter(e => {
+                const masterDisplay = String(e.master_display).toUpperCase() === 'TRUE';
+                const eventsPageFlag = String(e.events_page).toUpperCase() === 'TRUE';
+
+                if (isEventsPage) {
+                    // Show if both master_display and events_page true on events page
+                    return masterDisplay && eventsPageFlag;
+                } else {
+                    // Show if master_display true on other pages regardless of events_page
+                    return masterDisplay;
+                }
+            });
+
             const grid = document.createElement('div');
             grid.className = 'events-grid';
 
