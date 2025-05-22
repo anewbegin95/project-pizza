@@ -325,6 +325,8 @@ social-icons .icon:hover {
 
 .hero p {
   font-size: 1.5rem;
+  font-style: italic;
+  color: var(--nyc-white);
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
 
@@ -476,6 +478,35 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
+  SOCIAL MEDIA CONTENT
+----------------------------------------------------------------------------- */
+#instagram-videos {
+  display: grid;
+  grid-template-columns: 4fr 4fr 4fr 4fr; /* Four equal columns */
+  justify-content: center;         /* Center all thumbnails horizontally */
+  gap: 20px;                        /* Equal spacing between thumbnails */
+  flex-wrap: wrap;                 /* Allow wrapping on smaller screens */
+  padding: 20px 0;
+}
+
+.insta-thumbnail {
+  width: 50px;                    /* Or adjust based on design */
+  height: 50px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.insta-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.insta-thumbnail::selection {
+  outline: none; /* Remove default selection outline */
+}
+
+/* -----------------------------------------------------------------------------
   EVENTS GRID
 ----------------------------------------------------------------------------- */
 /* EVENTS GRID STYLING */
@@ -483,8 +514,8 @@ img {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
+  gap: var(--space-sm);
+  padding: var(--space-sm);
 }
 
 /* EVENT TILE */
