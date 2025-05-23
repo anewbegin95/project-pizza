@@ -480,6 +480,54 @@ img {
 /* -----------------------------------------------------------------------------
   SOCIAL MEDIA CONTENT
 ----------------------------------------------------------------------------- */
+/* Center the social media CTA section and style like header icons */
+.centered-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: var(--space-lg) auto;
+  padding: var(--space-lg) 0;
+  background: var(--nyc-light-pink);
+  border-radius: 12px;
+  max-width: 600px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.social-media-title {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  color: var(--nyc-navy);
+  font-size: var(--font-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.social-media-subtitle {
+  color: var(--nyc-navy);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-md);
+}
+
+.centered-cta .social-icons {
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: 0;
+}
+
+.centered-cta .icon {
+  background: var(--nyc-white);
+  border-radius: 50%;
+  padding: var(--space-xs);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: background 0.2s, filter 0.2s;
+}
+
+.centered-cta a:hover .icon,
+.centered-cta a:focus .icon {
+  background: var(--nyc-fuschia);
+  filter: brightness(1.2);
+}
+
 /* Instagram Embed Grid Styles */
 .instagram-embed-grid {
   display: grid;
