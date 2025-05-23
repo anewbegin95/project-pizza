@@ -480,30 +480,27 @@ img {
 /* -----------------------------------------------------------------------------
   SOCIAL MEDIA CONTENT
 ----------------------------------------------------------------------------- */
-#instagram-videos {
+/* Instagram Embed Grid Styles */
+.instagram-embed-grid {
   display: grid;
-  grid-template-columns: 4fr 4fr 4fr 4fr; /* Four equal columns */
-  justify-content: center;         /* Center all thumbnails horizontally */
-  gap: 20px;                        /* Equal spacing between thumbnails */
-  flex-wrap: wrap;                 /* Allow wrapping on smaller screens */
-  padding: 20px 0;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md, 32px);
+  justify-items: center;
+  margin: var(--space-lg, 64px) auto;
+  max-width: 1200px;
+  width: 100%;
 }
 
-.insta-thumbnail {
-  width: 50px;                    /* Or adjust based on design */
-  height: 50px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
-
-.insta-thumbnail:hover {
-  transform: scale(1.05);
-}
-
-.insta-thumbnail::selection {
-  outline: none; /* Remove default selection outline */
+.instagram-embed-grid iframe {
+  border-radius: var(--space-xs, 8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: var(--nyc-white, #fff);
+  width: 100%;
+  max-width: 320px;
+  min-height: 400px;
+  aspect-ratio: 4/5;
+  margin: 0 auto;
+  display: block;
 }
 
 /* -----------------------------------------------------------------------------

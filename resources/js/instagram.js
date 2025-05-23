@@ -1,84 +1,65 @@
 // === CONSTANTS ===
 
 /**
- * Array of Instagram Reel URLs you want thumbnails for
+ * Fetch Instagram post URLs from Google Sheets CSV and embed them as videos
  */
-const reelUrls = [
-  "https://www.instagram.com/reel/DI9lbdeSkdQ/?hl=en",
-  "https://www.instagram.com/reel/DItr8LqMOLe/?hl=en",
-  "https://www.instagram.com/reel/DG9dhdxMSdg/?hl=en",
-  "https://www.instagram.com/reel/DF8FqXuOZQG/?hl=en"
-];
 
-/** 
- * Manually define thumbnails or fetch them dynamically (Instagram doesn't have a public API for this easily).
- * For simplicity, I use the image URL from your example.
- * You can automate fetching thumbnails by scraping oEmbed or using an API, but here they are hardcoded.
- */
-const thumbnails = {
-  "DI9lbdeSkdQ": "https://i.postimg.cc/qvgYVqLs/Screenshot-2025-05-21-at-8-28-20-PM.png",
-  "DItr8LqMOLe": "https://i.postimg.cc/HW8v2n2R/Screenshot-2025-05-21-at-8-35-23-PM.png",
-  "DG9dhdxMSdg": "https://i.postimg.cc/zfLTrbV1/Screenshot-2025-05-21-at-8-36-27-PM.png",
-  "DF8FqXuOZQG": "https://i.postimg.cc/g01wVGmy/Screenshot-2025-05-21-at-8-46-17-PM.png"
-};
+const INSTAGRAM_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=1211399873&single=true&output=csv';
 
 // === UTILITY FUNCTIONS ===
 
 /**
- * Extracts the Reel ID from a given Instagram URL.
- * @param {string} url - The Instagram Reel URL.
- * @returns {string|null} - The extracted Reel ID or null if not found.
+  * Extracts the Instagram Reel ID from a given URL.
  */
-function getReelId(url) {
-  const match = url.match(/\/reel\/([^\/]+)\//);
-  return match ? match[1] : null;
+
+function fetchInstagramPosts() {
+  fetch(INSTAGRAM_CSV_URL)
+    .then(response => response.text())
+    .then(csv => {
+      // Split CSV into lines, skip header
+      const lines = csv.trim().split('\n').slice(1);
+      const urls = lines.map(line => line.replace(/"/g, '').trim()).filter(Boolean);
+      renderInstagramEmbeds(urls);
+    })
+    .catch(err => {
+      document.getElementById('instagram-videos').innerHTML = '<p>Could not load Instagram posts.</p>';
+      console.error('Failed to fetch Instagram CSV:', err);
+    });
 }
 
 /**
- * Creates a thumbnail element for the Instagram Reel.
- * @param {string} videoId - The ID of the Instagram Reel.
- * @param {string} videoUrl - The URL of the Instagram Reel.
- * @param {string} thumbnailUrl - The URL of the thumbnail image.
- * @returns {HTMLElement} - The thumbnail element.
+  * Renders Instagram embeds in a grid layout.
+  * @param {Array} urls - Array of Instagram post URLs.
+  * @returns {void}
  */
-function createThumbnailElement(videoId, videoUrl, thumbnailUrl) {
-  const container = document.createElement("div");
-  container.className = "video-thumbnail";
+function renderInstagramEmbeds(urls) {
+  const container = document.getElementById('instagram-videos');
+  container.innerHTML = ''; // Clear any previous content
 
-  const link = document.createElement("a");
-  link.href = videoUrl;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.title = "Watch Instagram Reel";
+  const grid = document.createElement('div');
+  grid.className = 'instagram-embed-grid';
 
-  const img = document.createElement("img");
-  img.src = thumbnailUrl;
-  img.alt = "Instagram Reel thumbnail";
-  img.style.cursor = "pointer";
-  img.style.maxWidth = "100%";
-  img.style.borderRadius = "8px";
-  img.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
-
-  link.appendChild(img);
-  container.appendChild(link);
-  return container;
-}
-
-// === MAIN FUNCTIONALITY ===
-/**
- * Initializes the Instagram thumbnails by creating and appending them to the container.
- * This function is called when the DOM is fully loaded.
- */
-function initInstagramThumbnails() {
-  const container = document.getElementById("instagram-videos");
-  reelUrls.forEach(url => {
-    const id = getReelId(url);
-    if (id && thumbnails[id]) {
-      const thumbnailEl = createThumbnailElement(id, `https://www.instagram.com/reel/${id}/embed/`, thumbnails[id]);
-      container.appendChild(thumbnailEl);
+  urls.forEach(url => {
+    // Extract post ID from URL (e.g., https://www.instagram.com/p/POST_ID/)
+    const match = url.match(/instagram\.com\/p\/([^/]+)/);
+    if (match) {
+      const postId = match[1];
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.instagram.com/p/${postId}/embed?hidecaption=true`;
+      iframe.width = 320;
+      iframe.height = 400;
+      iframe.frameBorder = 0;
+      iframe.scrolling = 'no';
+      iframe.allowTransparency = true;
+      iframe.style.background = 'var(--nyc-white, #fff)';
+      iframe.style.borderRadius = 'var(--space-xs, 8px)';
+      iframe.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)';
+      grid.appendChild(iframe);
     }
   });
+
+  container.appendChild(grid);
 }
 
-// Initialize on page load
-document.addEventListener("DOMContentLoaded", initInstagramThumbnails);
+// Run on page load
+fetchInstagramPosts();
