@@ -30,7 +30,7 @@ function filterCarouselEvents(events) {
  * @param {Object} event - Event object containing event details.
  * @returns {HTMLElement} - The carousel slide element.
  */
-function createCarouselSlide(event) {
+function createCarouselSlide(event, dotBar) {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
 
@@ -39,14 +39,20 @@ function createCarouselSlide(event) {
     img.alt = `${event.name} image`;
     img.className = 'carousel-image';
 
+    // Create overlay for event name and dots
+    const overlay = document.createElement('div');
+    overlay.className = 'carousel-event-overlay';
+
     const nameOverlay = document.createElement('div');
     nameOverlay.className = 'carousel-event-name';
     nameOverlay.textContent = event.name;
 
-    slide.appendChild(img);
-    slide.appendChild(nameOverlay);
+    overlay.appendChild(nameOverlay);
+    overlay.appendChild(dotBar);
 
-    // Clicking the slide opens the event modal (reuse from events.js)
+    slide.appendChild(img);
+    slide.appendChild(overlay);
+
     slide.addEventListener('click', () => openEventModal(event));
 
     return slide;
@@ -97,11 +103,9 @@ function initCarousel(events) {
      */
     function renderCarousel() {
         container.innerHTML = '';
-        const slide = createCarouselSlide(featuredEvents[currentIndex]);
         const dots = createCarouselDots(featuredEvents.length, currentIndex, goToSlide);
-
+        const slide = createCarouselSlide(featuredEvents[currentIndex], dots);
         container.appendChild(slide);
-        container.appendChild(dots);
     }
 
     /**
