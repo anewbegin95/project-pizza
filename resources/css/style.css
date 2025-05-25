@@ -872,6 +872,7 @@ img {
   height: 480px; /* Match #eventsCarousel */
   position: relative;
   overflow: visible;
+  cursor: pointer;
 }
 
 #eventsCarousel {
