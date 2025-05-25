@@ -99,21 +99,55 @@ function initCarousel(events) {
     let intervalId = null;
 
     /**
-     * Renders the current slide and dot bar.
+     * Renders the carousel with the current slide and dots.
+     * @param {number} nextIndex - Index of the next slide.
+     * @param {string} direction - Direction of the slide animation ('left' or 'right').
      */
-    function renderCarousel() {
-        container.innerHTML = '';
-        const dots = createCarouselDots(featuredEvents.length, currentIndex, goToSlide);
-        const slide = createCarouselSlide(featuredEvents[currentIndex], dots);
+    function renderCarousel(nextIndex = null, direction = 'right') {
+        // Remove old slides after animation
+        const oldSlide = container.querySelector('.carousel-slide');
+        const dots = createCarouselDots(featuredEvents.length, nextIndex !== null ? nextIndex : currentIndex, goToSlide);
+        const slide = createCarouselSlide(featuredEvents[nextIndex !== null ? nextIndex : currentIndex], dots);
+
+        // Set up initial class for animation
+        if (direction === 'right') {
+            slide.classList.add('slide-in-right');
+        } else {
+            slide.classList.add('slide-in-left');
+        }
         container.appendChild(slide);
+
+        // Force reflow to trigger transition
+        void slide.offsetWidth;
+
+        // Animate slide in
+        slide.classList.add('active');
+
+        // Animate old slide out
+        if (oldSlide) {
+            if (direction === 'right') {
+                oldSlide.classList.add('slide-out-left', 'exit');
+            } else {
+                oldSlide.classList.add('slide-out-right', 'exit');
+            }
+            oldSlide.addEventListener('transitionend', () => {
+                if (oldSlide.parentNode) oldSlide.parentNode.removeChild(oldSlide);
+            }, { once: true });
+        }
+
+        // Clean up classes after animation
+        slide.addEventListener('transitionend', () => {
+            slide.classList.remove('slide-in-right', 'slide-in-left', 'active');
+        }, { once: true });
     }
 
     /**
      * Advances to the next slide.
      */
     function nextSlide() {
-        currentIndex = (currentIndex + 1) % featuredEvents.length;
-        renderCarousel();
+        const nextIndex = (currentIndex + 1) % featuredEvents.length;
+        renderCarousel(nextIndex, 'right');
+        currentIndex = nextIndex;
     }
 
     /**
@@ -121,8 +155,9 @@ function initCarousel(events) {
      * @param {number} index - Index of the slide to show.
      */
     function goToSlide(index) {
+        const direction = index > currentIndex ? 'right' : 'left';
+        renderCarousel(index, direction);
         currentIndex = index;
-        renderCarousel();
         resetInterval();
     }
 
