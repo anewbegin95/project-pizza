@@ -845,6 +845,7 @@ img {
   text-align: center;
   margin: var(--space-md) auto;
   padding: var(--space-md) 0;
+  padding-bottom: var(--space-lg);
   background: var(--nyc-light-pink);
   border-radius: 12px;
   max-width: 95%;

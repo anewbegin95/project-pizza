@@ -134,6 +134,15 @@ function initCarousel(events) {
         intervalId = setInterval(nextSlide, CAROUSEL_ROTATION_INTERVAL);
     }
 
+    const title = document.querySelector('.carousel-title');
+    if (title) {
+        title.style.cursor = 'pointer';
+        title.addEventListener('click', () => {
+            // Open the modal for the currently displayed event
+            openEventModal(featuredEvents[currentIndex]);
+        });
+    }
+
     // Initial render and start rotation
     renderCarousel();
     resetInterval();
