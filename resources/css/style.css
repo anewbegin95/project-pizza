@@ -26,9 +26,10 @@ BEST PRACTICES:
 /* CSS Variables */
 :root {
   /* --- COLOR PALETTE --- */
-  --nyc-light-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
+  --nyc-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
   --nyc-navy: #001B2E;       /* Primary text color, header/footer */
   --nyc-white: #FFFFFF;      /* Backgrounds, modal, event tiles */
+  --nyc-light-pink: #ffe2e7; /* Used for backgrounds, buttons, highlights */
   --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
   --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
   --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
@@ -314,7 +315,7 @@ footer { padding: var(--space-xs) 0; }
 
 .hero h1 {
   font-size: 48px;
-  color: var(--nyc-light-pink);
+  color: var(--nyc-pink);
   margin-bottom: var(--space-sm);
   font-family: 'Montserrat', 'Arial', sans-serif;
 }
@@ -334,7 +335,7 @@ footer { padding: var(--space-xs) 0; }
 .contact-btn,
 button,
 .btn {
-  background-color: var(--nyc-light-pink);
+  background-color: var(--nyc-pink);
   color: var(--nyc-fuschia);
   border: none;
   outline: none;
@@ -738,7 +739,7 @@ img {
   display: inline-block; /* Ensure the button takes up only as much space as needed */
   padding: var(--space-xs) var(--space-md);
 
-  background-color: var(--nyc-light-pink);
+  background-color: var(--nyc-pink);
   color: var(--nyc-fuschia);
   text-decoration: none;
   font-size: 16px;
@@ -770,7 +771,7 @@ img {
 }
 
 #icsLink:hover {
-    color: var(--nyc-light-pink); /* Change color on hover */
+    color: var(--nyc-pink); /* Change color on hover */
 }
 
 
@@ -791,7 +792,7 @@ img {
 }
 
 .return-button:hover {
-  color: var(--nyc-light-pink);
+  color: var(--nyc-pink);
   background-color: transparent;
   text-decoration: underline;
 }
@@ -837,19 +838,17 @@ img {
 ----------------------------------------------------------------------------- */
 /* === Carousel Styles === */
 #featured-events-carousel, #events-carousel {
-  width: 100%;
-  max-width: 700px;
-  margin: var(--space-lg) auto;
-  position: relative;
-  min-height: 340px; /* Ensures space is reserved even before images load */
-  background: var(--nyc-light-gray);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  margin: var(--space-md) auto;
+  padding: var(--space-md) 0;
+  background: var(--nyc-light-pink);
+  border-radius: 12px;
+  max-width: 95%;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
 .carousel-title {
@@ -869,7 +868,7 @@ img {
 
 .carousel-slide {
   width: 100%;
-  height: 320px;
+  height: 480px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -880,7 +879,7 @@ img {
 
 .carousel-image {
   width: 100%;
-  height: 320px;
+  height: 480px;
   object-fit: cover;
   border-radius: 12px 12px 0 0;
   display: block;
@@ -1078,7 +1077,7 @@ img {
   right: auto;
   height: 24px;
   margin-bottom: 4px;
-  background: var(--nyc-light-pink);
+  background: var(--nyc-pink);
   color: var(--nyc-navy);
   border-radius: var(--space-xxs);
   font-size: 12px;
@@ -1110,7 +1109,7 @@ img {
 }
 
 .calendar-event-bar-continue {
-  background: var(--nyc-light-pink);
+  background: var(--nyc-pink);
   height: 24px; /* Match the bar height */
   border-radius: 0 var(--space-xxs) var(--space-xxs) 0;
   margin: 2px 0;
