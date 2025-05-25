@@ -54,6 +54,11 @@ function createCarouselSlide(event, dotBar) {
     slide.appendChild(overlay);
 
     slide.addEventListener('click', () => openEventModal(event));
+    slide.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            openEventModal(event); // Handle Enter key for keyboard users
+        }
+    });
 
     return slide;
 }
