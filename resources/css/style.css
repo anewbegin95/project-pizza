@@ -386,8 +386,8 @@ a:hover {
 
 a:focus,
 button:focus {
-  outline: 3px solid var(--nyc-fuschia);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: none;
 }
 
 /* -----------------------------------------------------------------------------
@@ -530,8 +530,8 @@ img {
 /* Make CTA social buttons behave like primary buttons on hover */
 .centered-cta .social-icons a:hover,
 .centered-cta .social-icons a:focus {
-  background-color: var(--nyc-white);
-  color: var(--nyc-navy);
+  background-color: var(--nyc-navy);
+  color: var(--nyc-white);
   outline: none;
   text-decoration: none;
   box-shadow: 0 4px 16px rgba(216,30,91,0.15); /* Optional: add a subtle shadow like your .btn:hover */
@@ -561,11 +561,12 @@ img {
 /* Instagram Embed Grid Styles */
 .instagram-embed-grid {
   display: grid;
+  grid-template-columns: 4fr; /* Single column for mobile, adjust as needed */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-, 32px);
+  gap: var(--space-sm, 32px);
   justify-items: center;
   margin: var(--space-lg, 64px) auto;
-  max-width: 1200px;
+  max-width: 1400px;
   width: 100%;
 }
 
@@ -1088,8 +1089,8 @@ img {
 
 a:focus,
 button:focus {
-  outline: 3px solid var(--nyc-fuschia);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: none;
 }
 
 @media (prefers-contrast: high) {
