@@ -3,7 +3,7 @@
 /**
  * Selector for the carousel container on the homepage.
  */
-const CAROUSEL_CONTAINER_SELECTOR = '.featured-events-carousel';
+const CAROUSEL_CONTAINER_SELECTOR = '#events-carousel';
 
 /**
  * Time (in milliseconds) between automatic carousel rotations.
