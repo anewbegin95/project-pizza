@@ -852,6 +852,21 @@ img {
   justify-content: center;
 }
 
+.carousel-title {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  color: var(--nyc-navy);
+  font-size: var(--font-lg);
+  margin-bottom: var(--space-xs);
+  text-align: center;
+}
+
+.carousel-subtitle {
+  color: var(--nyc-navy);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
 .carousel-slide {
   width: 100%;
   height: 320px;
