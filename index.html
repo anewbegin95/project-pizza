@@ -13,10 +13,19 @@
                     <p>Your guide to New York City's best pop-ups, date ideas, and weekend plans!</p>
                 </div>
             </section>
-            <section>
-                <h2>🏗️ Page under construction. Excuse our mess!</h2>
-                <p>Refer to our <a href="https://phase-geography-eca.notion.site/NYC-Slice-of-Life-13efe92c0240806f984ff5d669e50505" target="_blank">Notion Page</a> for information about upcoming events.</p>
-            </section>      
+            <section id="events-carousel">
+                <div class="events-carousel-section-title">
+                    <h2 class="carousel-title">✨ Featured Events ✨</h2>
+                    <p class="carousel-subtitle">Click on an event to learn more!</p>
+                </div>
+                <div class="carousel-container">
+                    <div class="carousel" id="eventsCarousel">
+                        <!-- Carousel items will be dynamically injected via JavaScript -->
+                    </div>
+                </div>
+            </section>
+        <script src="resources/js/events.js"></script>
+        <script src="resources/js/carousel.js"></script>
             <section class="social-media-cta centered-cta">
                 <h2 class="social-media-title">✨ Stay Connected ✨</h2>
                 <p class="social-media-subtitle">Follow us for the latest pop-ups and date ideas!</p>
@@ -35,6 +44,23 @@
                 <script src="resources/js/instagram.js"></script>
             </section>
         </main>
+        <!-- Modal for popping up event details -->
+        <div id="eventModal" class="modal hidden">
+            <div class="modal-content">
+                <button class="return-button">← Return to home page</button>
+                <div class="modal-details">
+                    <h2 id="modalTitle">Event Title</h2>
+                    <p id="modalDateRange">Start Date – End Date</p>
+                    <p id="modalLocation">TBD</p>
+                    <a id="modalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
+                    <a id="icsLink" href="#" class="modal-link hidden">Add to Calendar</a>
+                </div>
+                <div class="modal-main">
+                    <img id="modalImage" class="event-img" src="" alt="Event Image">
+                    <p id="modalDescription">Event Description</p>
+                </div>
+            </div>
+        </div>
         <!-- Footer will be dynamically loaded -->
     </body>
 </html>

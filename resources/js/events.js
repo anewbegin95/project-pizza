@@ -505,3 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/events.js
+window.openEventModal = openEventModal;
