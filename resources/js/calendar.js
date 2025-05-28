@@ -215,7 +215,7 @@ function placeEventsInGrid(month, year) {
         // Remove highlight from all bars first
         document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         highlightAllSegments();
-        console.log('Clicked event:', event);
+        // Removed console.log to avoid unintended logging in production.
         openEventModal(event);
       });
 
