@@ -1,4 +1,4 @@
-.privacy-section#privacy-policy {
+.contact-section#contact-us {
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -7,13 +7,13 @@
   gap: 2rem;
 }
 
-.privacy-text {
+.contact-text {
   flex: 1;
   font-size: 1.08rem;
   line-height: 1.7;
 }
 
-.privacy-text h3 {
+.contact-text h3 {
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   font-size: 1.15em;
@@ -21,13 +21,13 @@
 }
 
 @media (max-width: 700px) {
-  .privacy-section#privacy-policy {
+  .contact-section#contact-us {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
     padding: 0 1rem;
   }
-  .privacy-text {
+  .contact-text {
     text-align: left;
     width: 100%;
   }
