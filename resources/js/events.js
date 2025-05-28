@@ -180,7 +180,7 @@ function formatEventDate(start, end, allDay, recurring) {
      * Output (Modal): "Next on Fri, May 16, 5:30 – 8:30 PM"
      */
     if (recurring === 'TRUE') {
-        return `Next on ${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`
+        return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`
     }
 
     /*
@@ -256,11 +256,6 @@ function createEventTile(event) {
 function openEventModal(event) {
     // Prevent modal access if master_display is FALSE
     if (String(event.master_display).toUpperCase() === 'FALSE') {
-        return;
-    }
-
-    // Prevent modal access if events_page is FALSE
-    if (String(event.events_page).toUpperCase() === 'FALSE') {
         return;
     }
 

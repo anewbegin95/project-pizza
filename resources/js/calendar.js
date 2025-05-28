@@ -214,6 +214,7 @@ function placeEventsInGrid(month, year) {
         // Remove highlight from all bars first
         document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         highlightAllSegments();
+        console.log('Clicked event:', event);
         openEventModal(event);
       });
 
@@ -229,7 +230,6 @@ function placeEventsInGrid(month, year) {
         bar.textContent = event.name;
       }
       bar.tabIndex = 0;
-      bar.addEventListener('click', () => openEventModal(event));
       bar.style.position = 'absolute';
       bar.style.left = `calc(${weekStartCol} * 100% / 7)`;
       bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - 4px)`;
