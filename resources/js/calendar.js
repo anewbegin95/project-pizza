@@ -191,6 +191,7 @@ function placeEventsInGrid(month, year) {
       const sanitizedStartDatetime = event.start_datetime.replace(/[:]/g, '-');
       const uniqueId = `${event.name.replace(/\s+/g, '-').toLowerCase()}-${sanitizedStartDatetime}`;
       bar.setAttribute('data-event-id', uniqueId);
+      event._calendarUniqueId = uniqueId;
 
       function highlightAllSegments() {
         const eventId = bar.getAttribute('data-event-id');
@@ -253,7 +254,7 @@ function placeEventsInGrid(month, year) {
     // After rendering bars, add '+N more' link if needed
     for (let col = 0; col < 7; col++) {
       // Debug: log the number of events for this day
-      console.log(`Week ${week}, Col ${col}: eventsByDay[col].length =`, eventsByDay[col].length);
+      // console.log(`Week ${week}, Col ${col}: eventsByDay[col].length =`, eventsByDay[col].length);
       if (eventsByDay[col].length > maxVisible) {
         // Find the cell for this week and column
         // barLayer is first child, so cell is children[col + 1]
@@ -272,8 +273,23 @@ function placeEventsInGrid(month, year) {
             const startDayOfWeek = firstDayOfMonth.getDay();
             const cellDay = week * 7 + col - startDayOfWeek + 1;
             const cellDate = new Date(year, month, cellDay);
-            // Show all events for this day in a modal (implement openDayEventsModal)
-            openDayEventsModal(cellDate, eventsByDay[col].map(obj => obj.event));
+            // Find all events (from global events array) that occur on this date
+            const cellDateId = formatDateId(cellDate);
+            const eventsForDay = events.filter(event => {
+              // Parse event start/end
+              const start = event.start_datetime ? new Date(event.start_datetime) : null;
+              const end = event.end_datetime ? new Date(event.end_datetime) : start;
+              if (!start) return false;
+              // Clamp event end to event start if missing
+              const eventStart = new Date(start);
+              const eventEnd = end ? new Date(end) : eventStart;
+              // Check if cellDate is between eventStart and eventEnd (inclusive, by day)
+              const cellYMD = cellDateId;
+              const startYMD = formatDateId(eventStart);
+              const endYMD = formatDateId(eventEnd);
+              return cellYMD >= startYMD && cellYMD <= endYMD;
+            });
+            openDayEventsModal(cellDate, eventsForDay);
           });
           cell.appendChild(moreLink);
         }
