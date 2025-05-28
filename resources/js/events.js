@@ -34,6 +34,7 @@ function parseCSV(csvText) {
             event['recurring'] = event['recurring'] || 'FALSE';
             event['master_display'] = event['master_display'] || 'TRUE';
             event['events_page'] = event['events_page'] || 'TRUE';
+            event['calendar'] = event['calendar'] || 'TRUE';
             event['link'] = event['link'] || '';
             events.push(event);
             currentRow = [];
