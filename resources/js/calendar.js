@@ -188,7 +188,8 @@ function placeEventsInGrid(month, year) {
       // Render the bar
       const bar = document.createElement('div');
       bar.className = 'calendar-event-bar';
-      bar.setAttribute('data-event-id', event.id || event.name.replace(/\s+/g, '-').toLowerCase());
+      const uniqueId = `${event.name.replace(/\s+/g, '-').toLowerCase()}-${event.start_datetime}`;
+      bar.setAttribute('data-event-id', uniqueId);
 
       function highlightAllSegments() {
         const eventId = bar.getAttribute('data-event-id');
