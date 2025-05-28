@@ -188,7 +188,9 @@ function placeEventsInGrid(month, year) {
       // Render the bar
       const bar = document.createElement('div');
       bar.className = 'calendar-event-bar';
-      bar.setAttribute('data-event-id', event.id || event.name.replace(/\s+/g, '-').toLowerCase());
+      const sanitizedStartDatetime = event.start_datetime.replace(/[:]/g, '-');
+      const uniqueId = `${event.name.replace(/\s+/g, '-').toLowerCase()}-${sanitizedStartDatetime}`;
+      bar.setAttribute('data-event-id', uniqueId);
 
       function highlightAllSegments() {
         const eventId = bar.getAttribute('data-event-id');
@@ -213,6 +215,7 @@ function placeEventsInGrid(month, year) {
         // Remove highlight from all bars first
         document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         highlightAllSegments();
+        // Removed console.log to avoid unintended logging in production.
         openEventModal(event);
       });
 
@@ -228,7 +231,6 @@ function placeEventsInGrid(month, year) {
         bar.textContent = event.name;
       }
       bar.tabIndex = 0;
-      bar.addEventListener('click', () => openEventModal(event));
       bar.style.position = 'absolute';
       bar.style.left = `calc(${weekStartCol} * 100% / 7)`;
       bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - 4px)`;

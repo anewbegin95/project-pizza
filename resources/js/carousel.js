@@ -80,7 +80,10 @@ function createCarouselDots(count, activeIndex, onDotClick) {
         dot.setAttribute('aria-label', `Go to event ${i + 1}`);
         dot.type = 'button';
         if (i === activeIndex) dot.setAttribute('aria-current', 'true');
-        dot.addEventListener('click', () => onDotClick(i));
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onDotClick(i);
+        });
         dotBar.appendChild(dot);
     }
 
