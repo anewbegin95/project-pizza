@@ -708,7 +708,7 @@ img {
 /* Description under ICS links */
 #modalDescription {
   margin-top: var(--space-xs);
-  font-size: 16px;
+  font-size: var(--font-size-md);
   color: var(--nyc-navy);
 }
 
