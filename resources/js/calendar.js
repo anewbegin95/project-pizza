@@ -312,7 +312,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(csv => {
                 // Parse the CSV and filter out hidden events
                 events = parseCSV(csv)
-                    .filter(e => String(e.master_display).toUpperCase() !== 'FALSE');
+                    .filter(e =>
+                        isTrueString(e.master_display) &&
+                        isTrueString(e.calendar)
+                    );
                 // Render the calendar for the current month and year
                 renderCalendar(currentMonth, currentYear);
             });
