@@ -724,13 +724,13 @@ img {
 #modalDateRange {
   font-size: 20px;
   color: var(--nyc-navy);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
 }
 
 #modalLocation {
   font-size: 20px;
   color: var(--nyc-navy);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 .modal-content img {
   max-width: 100%;
@@ -757,7 +757,7 @@ img {
 .modal-button {
   display: inline-block; /* Ensure the button takes up only as much space as needed */
   padding: var(--space-xs) var(--space-md);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
   background-color: var(--nyc-pink);
   color: var(--nyc-fuschia);
   text-decoration: none;
@@ -783,6 +783,7 @@ img {
 #icsLink,
 .ics-links-container {
   margin-top: var(--space-xs); /* or use --space-sm for a smaller gap */
+  margin-bottom: var(--space-sm); /* or use --space-sm for a smaller gap */
 }
 
 #icsLink {
