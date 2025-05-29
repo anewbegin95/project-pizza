@@ -215,6 +215,24 @@ function formatEventDate(start, end, allDay, recurring) {
     }
 }
 
+/*
+* Checks if an event is a multi-day event, in the style of Example 4 above
+* @param {Object} event - Event object containing start_datetime and end_datetime.
+* @returns {boolean} - True if the event is a multi-day event, false otherwise.
+*/
+function isMultiDayEvent(event) {
+    if (!event.start_datetime || !event.end_datetime) return false;
+    const start = new Date(event.start_datetime);
+    const end = new Date(event.end_datetime);
+    return (
+        start.toDateString() !== end.toDateString() &&
+        event.start_datetime.includes(':') &&
+        event.end_datetime.includes(':') &&
+        String(event.all_day).toUpperCase() === 'FALSE' &&
+        String(event.recurring).toUpperCase() === 'FALSE'
+    );
+}
+
 // === UI RENDERING FUNCTIONS ===
 
 /**
@@ -378,13 +396,58 @@ function openDayEventsModal(date, eventsForDay) {
 
 // === ICS FILE GENERATION ===
 /**
- * Generates an ICS file for the event.
+ * Generates an ICS file content for a given event.
+  * Handles both single events and multi-day events.
+  * For multi-day events, it creates a VEVENT for each day with the same start and end time.
  * @param {Object} event - Event object containing event details.
  * @returns {string} - The ICS file content as a string.
  */
 function generateICS(event) {
-    // Format the start and end dates in UTC
-    const formatDate = (dateString, allDay) => {
+    // Helper to format date/time for ICS
+    const formatDate = (dateObj, timeStr) => {
+        const [h, m, s] = timeStr.split(':');
+        const dt = new Date(dateObj);
+        dt.setHours(Number(h), Number(m), Number(s || 0), 0);
+        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    if (isMultiDayEvent(event)) {
+        const startDate = new Date(event.start_datetime);
+        const endDate = new Date(event.end_datetime);
+
+        const startTime = event.start_datetime.split(' ')[1];
+        const endTime = event.end_datetime.split(' ')[1];
+
+        let vevents = '';
+        for (
+            let d = new Date(startDate);
+            d <= endDate;
+            d.setDate(d.getDate() + 1)
+        ) {
+            // For each day, use the same start/end time but on that day
+            const dtStart = formatDate(d, startTime);
+            const dtEnd = formatDate(d, endTime);
+
+            vevents += `
+BEGIN:VEVENT
+SUMMARY:${event.name}
+DTSTART:${dtStart}
+DTEND:${dtEnd}
+LOCATION:${event.location || ''}
+DESCRIPTION:${event.long_desc || ''}
+END:VEVENT
+`.trim() + '\n';
+        }
+
+        return `
+BEGIN:VCALENDAR
+VERSION:2.0
+${vevents}END:VCALENDAR
+`.trim();
+    }
+
+    // Default: single event logic (existing)
+    const formatDateSingle = (dateString, allDay) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (allDay === 'TRUE') {
@@ -393,10 +456,9 @@ function generateICS(event) {
         return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'; // YYYYMMDDTHHMMSSZ
     };
 
-    const dtStart = formatDate(event.start_datetime, event.all_day);
-    const dtEnd = formatDate(event.end_datetime, event.all_day);
+    const dtStart = formatDateSingle(event.start_datetime, event.all_day);
+    const dtEnd = formatDateSingle(event.end_datetime, event.all_day);
 
-    // Generate the ICS content
     return `
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -408,7 +470,7 @@ LOCATION:${event.location || ''}
 DESCRIPTION:${event.long_desc || ''}
 END:VEVENT
 END:VCALENDAR
-    `.trim();
+`.trim();
 }
 
 /**
