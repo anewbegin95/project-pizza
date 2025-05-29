@@ -698,8 +698,27 @@ img {
 }
 
 .modal-details {
-  grid-column: 1 / 2; /* Place in the first column */
-  text-align: left; /* Align text to the left */
+  grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  text-align: left;
+}
+
+/* Description under ICS links */
+#modalDescription {
+  margin-top: var(--space-xs);
+  font-size: 16px;
+  color: var(--nyc-navy);
+}
+
+/* Right column: image only */
+.modal-main {
+  grid-column: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 #modalDateRange {
@@ -763,7 +782,7 @@ img {
 
 #icsLink,
 .ics-links-container {
-  margin-top: var(--space-md); /* or use --space-sm for a smaller gap */
+  margin-top: var(--space-xs); /* or use --space-sm for a smaller gap */
 }
 
 #icsLink {
