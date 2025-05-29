@@ -300,11 +300,47 @@ function openEventModal(event) {
     // Handle the ICS link
     const icsLink = document.getElementById('icsLink');
     if (icsLink) {
-        icsLink.classList.remove('hidden'); // Show the ICS link
-        icsLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            downloadICS(event);
-        });
+        // Remove any previous links if present
+        const prevContainer = document.querySelector('.ics-links-container');
+        if (prevContainer) prevContainer.remove();
+        if (isMultiDayEvent(event)) {
+            // Hide the single ICS link completely (not just visually)
+            icsLink.style.display = 'none';
+            // Create a container for multiple ICS links
+            const startDate = new Date(event.start_datetime);
+            const endDate = new Date(event.end_datetime);
+            const numDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const icsLinksContainer = document.createElement('div');
+            icsLinksContainer.className = 'ics-links-container';
+            const startTime = event.start_datetime.split(' ')[1];
+            const endTime = event.end_datetime.split(' ')[1];
+            for (let i = 0; i < numDays; i++) {
+                // Always create a new Date object for each day to avoid mutation bugs
+                const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+                const dateLabel = currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = `Add ${dateLabel} to Calendar`;
+                link.className = 'modal-link';
+                link.style.display = 'block';
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    // Defensive: always pass correct times for each day
+                    downloadICS(event, currentDay, startTime, endTime);
+                };
+                icsLinksContainer.appendChild(link);
+            }
+            // Insert after icsLink, and ensure only one container is present
+            icsLink.parentNode.insertBefore(icsLinksContainer, icsLink.nextSibling);
+        } else {
+            // Show the single ICS link for single-day events
+            icsLink.style.display = '';
+            icsLink.classList.remove('hidden');
+            icsLink.onclick = (e) => {
+                e.preventDefault();
+                downloadICS(event);
+            };
+        }
     }
 
     modal.classList.remove('hidden');
@@ -395,102 +431,192 @@ function openDayEventsModal(date, eventsForDay) {
 }
 
 // === ICS FILE GENERATION ===
-/**
- * Generates an ICS file content for a given event.
-  * Handles both single events and multi-day events.
-  * For multi-day events, it creates a VEVENT for each day with the same start and end time.
- * @param {Object} event - Event object containing event details.
- * @returns {string} - The ICS file content as a string.
- */
-function generateICS(event) {
-    // Helper to format date/time for ICS
+// Utility to escape newlines and special chars for ICS fields
+function escapeICSText(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/\\/g, '\\\\') // escape backslashes
+        .replace(/\n|\r\n|\r/g, '\\n') // escape newlines
+        .replace(/,/g, '\\,') // escape commas
+        .replace(/;/g, '\\;'); // escape semicolons
+}
+
+// Utility to fold lines longer than 75 octets (bytes) per RFC 5545
+function foldICSLines(ics) {
+    return ics.split('\r\n').map(line => {
+        let out = '';
+        while (line.length > 75) {
+            out += line.slice(0, 75) + '\r\n ';
+            line = line.slice(75);
+        }
+        out += line;
+        return out;
+    }).join('\r\n');
+}
+
+// Utility to get date-time in America/New_York as YYYYMMDDTHHmmss
+function toEasternICSDateTime(dateObj) {
+    // Convert to America/New_York
+    const options = {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    };
+    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(dateObj);
+    const get = (type) => parts.find(p => p.type === type).value;
+    return `${get('year')}${get('month')}${get('day')}T${get('hour')}${get('minute')}${get('second')}`;
+}
+
+function generateSingleDayICS(event, day, startTime, endTime) {
+    // Set start and end times for the specific day
     const formatDate = (dateObj, timeStr) => {
         const [h, m, s] = timeStr.split(':');
-        const dt = new Date(dateObj);
-        dt.setHours(Number(h), Number(m), Number(s || 0), 0);
-        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        // Construct a date in America/New_York local time, not UTC!
+        // This ensures 10:00 means 10:00 in NYC, not 10:00 UTC
+        const dt = new Date(
+            dateObj.getFullYear(),
+            dateObj.getMonth(),
+            dateObj.getDate(),
+            Number(h),
+            Number(m),
+            Number(s || 0),
+            0
+        );
+        // Format as local time (no Z, with TZID)
+        return `${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}T${String(dt.getHours()).padStart(2,'0')}${String(dt.getMinutes()).padStart(2,'0')}${String(dt.getSeconds()).padStart(2,'0')}`;
     };
+    const dtStart = formatDate(day, startTime);
+    const dtEnd = formatDate(day, endTime);
+    const now = new Date();
+    const dtStamp = toEasternICSDateTime(now);
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//NYC Slice of Life//EN',
+        'CALSCALE:GREGORIAN',
+        'X-WR-TIMEZONE:America/New_York',
+        'BEGIN:VEVENT',
+        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
+        `SUMMARY:${escapeICSText(event.name)}`,
+        `DTSTART;TZID=America/New_York:${dtStart}`,
+        `DTEND;TZID=America/New_York:${dtEnd}`,
+        `DTSTAMP;TZID=America/New_York:${dtStamp}`,
+        `LOCATION:${escapeICSText(event.location || '')}`,
+        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+    return foldICSLines(ics);
+}
 
-    if (isMultiDayEvent(event)) {
-        const startDate = new Date(event.start_datetime);
-        const endDate = new Date(event.end_datetime);
-
-        const startTime = event.start_datetime.split(' ')[1];
-        const endTime = event.end_datetime.split(' ')[1];
-
-        let vevents = '';
-        for (
-            let d = new Date(startDate);
-            d <= endDate;
-            d.setDate(d.getDate() + 1)
-        ) {
-            // For each day, use the same start/end time but on that day
-            const dtStart = formatDate(d, startTime);
-            const dtEnd = formatDate(d, endTime);
-
-            vevents += `
-BEGIN:VEVENT
-SUMMARY:${event.name}
-DTSTART:${dtStart}
-DTEND:${dtEnd}
-LOCATION:${event.location || ''}
-DESCRIPTION:${event.long_desc || ''}
-END:VEVENT
-`.trim() + '\n';
-        }
-
-        return `
-BEGIN:VCALENDAR
-VERSION:2.0
-${vevents}END:VCALENDAR
-`.trim();
-    }
-
-    // Default: single event logic (existing)
+function generateICS(event) {
     const formatDateSingle = (dateString, allDay) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (allDay === 'TRUE') {
-            return date.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD for all-day events
+            // All-day events: just date
+            const options = { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' };
+            const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
+            const get = (type) => parts.find(p => p.type === type).value;
+            return `${get('year')}${get('month')}${get('day')}`;
         }
-        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'; // YYYYMMDDTHHMMSSZ
+        return toEasternICSDateTime(date);
     };
-
     const dtStart = formatDateSingle(event.start_datetime, event.all_day);
     const dtEnd = formatDateSingle(event.end_datetime, event.all_day);
-
-    return `
-BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:${event.name}
-DTSTART:${dtStart}
-DTEND:${dtEnd}
-LOCATION:${event.location || ''}
-DESCRIPTION:${event.long_desc || ''}
-END:VEVENT
-END:VCALENDAR
-`.trim();
+    const now = new Date();
+    const dtStamp = toEasternICSDateTime(now);
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//NYC Slice of Life//EN',
+        'CALSCALE:GREGORIAN',
+        'X-WR-TIMEZONE:America/New_York',
+        'BEGIN:VEVENT',
+        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
+        `SUMMARY:${escapeICSText(event.name)}`,
+        event.all_day === 'TRUE'
+            ? `DTSTART;VALUE=DATE:${dtStart}`
+            : `DTSTART;TZID=America/New_York:${dtStart}`,
+        event.all_day === 'TRUE'
+            ? `DTEND;VALUE=DATE:${dtEnd}`
+            : `DTEND;TZID=America/New_York:${dtEnd}`,
+        `DTSTAMP;TZID=America/New_York:${dtStamp}`,
+        `LOCATION:${escapeICSText(event.location || '')}`,
+        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+    return foldICSLines(ics);
 }
 
 /**
- * Downloads the ICS file for the event.
+ * Generates an ICS file content for a single day of a multi-day event.
  * @param {Object} event - Event object containing event details.
+ * @param {Date} day - The date for this instance.
+ * @param {string} startTime - "HH:MM:SS" from event.start_datetime
+ * @param {string} endTime - "HH:MM:SS" from event.end_datetime
+ * @returns {string} - The ICS file content as a string.
  */
-function downloadICS(event) {
-    const icsContent = generateICS(event);
+function generateSingleDayICS(event, day, startTime, endTime) {
+    const formatDate = (dateObj, timeStr) => {
+        const [h, m, s] = timeStr.split(':');
+        const dt = new Date(
+            day.getFullYear(),
+            day.getMonth(),
+            day.getDate(),
+            Number(h),
+            Number(m),
+            Number(s || 0),
+            0
+        );
+        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+    const dtStart = formatDate(day, startTime);
+    const dtEnd = formatDate(day, endTime);
+    const now = new Date();
+    const dtStamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//NYC Slice of Life//EN',
+        'CALSCALE:GREGORIAN',
+        'BEGIN:VEVENT',
+        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
+        `SUMMARY:${escapeICSText(event.name)}`,
+        `DTSTART:${dtStart}`,
+        `DTEND:${dtEnd}`,
+        `DTSTAMP:${dtStamp}`,
+        `LOCATION:${escapeICSText(event.location || '')}`,
+        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+    return foldICSLines(ics);
+}
+
+function downloadICS(event, specificDay, startTime, endTime) {
+    let icsContent, filename;
+    if (isMultiDayEvent(event) && specificDay) {
+        icsContent = generateSingleDayICS(event, specificDay, startTime, endTime);
+        filename = `${event.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
+    } else {
+        icsContent = generateICS(event);
+        filename = `${event.name.replace(/\s+/g, '_')}.ics`;
+    }
     const blob = new Blob([icsContent], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
-
-    // Create a temporary link element
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${event.name.replace(/\s+/g, '_')}.ics`; // Use event name as the file name
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // Revoke the object URL to free up memory
     URL.revokeObjectURL(url);
 }
 
