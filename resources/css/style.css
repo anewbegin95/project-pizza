@@ -738,7 +738,7 @@ img {
 .modal-button {
   display: inline-block; /* Ensure the button takes up only as much space as needed */
   padding: var(--space-xs) var(--space-md);
-
+  margin-bottom: var(--space-sm);
   background-color: var(--nyc-pink);
   color: var(--nyc-fuschia);
   text-decoration: none;
@@ -761,9 +761,13 @@ img {
   color: var(--nyc-white);
 }
 
+#icsLink,
+.ics-links-container {
+  margin-top: var(--space-md); /* or use --space-sm for a smaller gap */
+}
+
 #icsLink {
     display: block; /* Ensure the link appears on its own line */
-    margin-top: var(--space-md); /* Add a small margin above the link */
     font-size: 14px; /* Adjust font size for consistency */
     color: var(--nyc-fuschia); /* Match the link color */
     text-decoration: underline; /* Ensure it looks like a link */
