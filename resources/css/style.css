@@ -510,6 +510,7 @@ img {
   justify-content: center;
   gap: var(--space-md);
   margin: 0 auto;
+  padding-right: 0;
 }
 
 .centered-cta .social-icons a {
