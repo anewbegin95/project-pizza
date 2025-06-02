@@ -19,6 +19,15 @@ function getQueryParam(name) {
  * @throws {Error} If the event data cannot be loaded or parsed.
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // Add return button handler
+    const returnBtn = document.querySelector('.return-button');
+    if (returnBtn) {
+        returnBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.history.back();
+        });
+    }
+
     const eventId = getQueryParam('id');
     if (!eventId) {
         document.body.innerHTML = '<main><section><h2>Event not found</h2><p>No event ID provided in the URL.</p></section></main>';

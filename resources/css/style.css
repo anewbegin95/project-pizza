@@ -1267,17 +1267,8 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
-  EVENT DETAIL PAGE (EXACT MODAL STYLES, UPDATED LAYOUT & BACKDROP)
+  EVENT DETAIL PAGE
 ----------------------------------------------------------------------------- */
-.event-detail-backdrop {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7); /* Modal-style shadowed grey */
-  z-index: 0;
-}
-
 .event-detail-hero {
   display: grid;
   grid-template-columns: 1fr 2fr;
