@@ -53,10 +53,12 @@ function createCarouselSlide(event, dotBar) {
     slide.appendChild(img);
     slide.appendChild(overlay);
 
-    slide.addEventListener('click', () => openEventModal(event));
+    slide.addEventListener('click', () => {
+        window.location.href = `event.html?id=${event.id}`;
+    });
     slide.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            openEventModal(event); // Handle Enter key for keyboard users
+            window.location.href = `event.html?id=${event.id}`;
         }
     });
 
