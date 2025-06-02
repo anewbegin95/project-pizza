@@ -30,6 +30,15 @@
                     <div class="calendar-day-title">Sat</div>
                 </div>
                 <div id="calendar-grid"></div>
+                <!-- Calendar Day Overflow Modal (for '+N more' link) -->
+                <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                  <div class="modal-content">
+                    <button class="return-button" id="modalReturnButton" aria-label="Close" tabindex="0">← Return</button>
+                    <!-- These are only for single-event modal, but must be present for day grid modal logic to work -->
+                    <div class="modal-details" style="display:none;"></div>
+                    <div class="modal-main" style="display:none;"></div>
+                  </div>
+                </div>
             </section>
         </main>
         <script src="resources/js/events.js"></script>
