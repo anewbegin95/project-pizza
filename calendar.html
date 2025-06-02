@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" data-title="Calendar">
+    <head>
+        <link rel="stylesheet" href="resources/css/style.css">  
+        <!-- The head, header, and footer content will be dynamically loaded using script below-->
+        <script src="resources/js/partials-loader.js"></script>
+    </head>
+    <body>
+        <!-- The header content will be dynamically loaded -->
+        <main>
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Events Calendar</h1>
+                </div>
+            </section>
+            <section id="calendar-section">
+                <div id="calendar-header">
+                    <button id="prev-month" aria-label="Previous Month">←</button>
+                    <span id="calendar-month-year"></span>
+                    <button id="next-month" aria-label="Next Month">→</button>
+                </div>
+                <div id="calendar-days-row">
+                    <div class="calendar-day-title">Sun</div>
+                    <div class="calendar-day-title">Mon</div>
+                    <div class="calendar-day-title">Tue</div>
+                    <div class="calendar-day-title">Wed</div>
+                    <div class="calendar-day-title">Thu</div>
+                    <div class="calendar-day-title">Fri</div>
+                    <div class="calendar-day-title">Sat</div>
+                </div>
+                <div id="calendar-grid"></div>
+            </section>
+        </main>
+        <!-- Modal for popping up event details (shared with events.html) -->
+        <div id="eventModal" class="modal hidden">
+            <div class="modal-content">
+                <button class="return-button">← Return to all events</button>
+                <div class="modal-details">
+                    <h2 id="modalTitle">Event Title</h2>
+                    <p id="modalDateRange">Start Date – End Date</p>
+                    <p id="modalLocation">TBD</p>
+                    <a id="icsLink" href="#" class="modal-link hidden">Add to Calendar</a>
+                    <p id="modalDescription">Event Description</p>
+                    <a id="modalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
+                </div>
+                <div class="modal-main">
+                    <img id="modalImage" src="" alt="Event Image">
+                </div>
+            </div>
+        </div>
+        <script src="resources/js/events.js"></script>
+        <script src="resources/js/calendar.js"></script>
+    </body>
+</html>

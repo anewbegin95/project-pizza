@@ -1,37 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title="NYC Slice of Life">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Discover NYC's best pop-ups and free events with NYC Slice of Life.">
-        <title>NYC Slice of Life</title>
         <link rel="stylesheet" href="resources/css/style.css">
+        <!-- The head, header, and footer content will be dynamically loaded using script below-->
+        <script src="resources/js/partials-loader.js"></script>
     </head>
     <body>
-        <header>
-            <h1>Welcome to NYC Slice of Life 🍕</h1>
-            <p>Your guide to NYC's best pop-ups, date ideas, and weekend plans!</p>
-        </header>
+        <!-- The header content will be dynamically loaded -->
         <main>
-            <section>
-                <h2>🏗️ Page under construction. Excuse our mess!</h2>
-                <p>Refer to our <a href="https://phase-geography-eca.notion.site/NYC-Slice-of-Life-13efe92c0240806f984ff5d669e50505" target="_blank">Notion Page</a> for information about upcoming events.</p>
-            </section>      
-            <section id="stay-connected">
-                <h2>Stay Connected</h2>
-                <p>Follow us on social media!</p>
-                <ul>
-                    <li><a href="https://www.instagram.com/nycsliceoflife/" target="_blank">Instagram</a></li>
-                    <li><a href="https://www.tiktok.com/@nycsliceoflife" target="_blank">TikTok</a></li>
-                    <li><a href="mailto:NYCSliceofLife@gmail.com">Email: NYCSliceofLife@gmail.com</a></li>
-                </ul>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Welcome to NYC Slice of Life!</h1>
+                    <p>Your guide to New York City's best pop-ups, date ideas, and weekend plans!</p>
+                </div>
+            </section>
+            <section id="events-carousel">
+                <div class="events-carousel-section-title">
+                    <h2 class="carousel-title">✨ Featured Events ✨</h2>
+                    <p class="carousel-subtitle">Click on an event to learn more!</p>
+                </div>
+                <div class="carousel-container">
+                    <div class="carousel" id="eventsCarousel">
+                        <!-- Carousel items will be dynamically injected via JavaScript -->
+                    </div>
+                </div>
+            </section>
+        <script src="resources/js/events.js"></script>
+        <script src="resources/js/carousel.js"></script>
+            <section class="social-media-cta centered-cta">
+                <h2 class="social-media-title">✨ Stay Connected ✨</h2>
+                <p class="social-media-subtitle">Follow us for the latest pop-ups and date ideas!</p>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/nycsliceoflife/" target="_blank" rel="noopener noreferrer" class="social-icon-link instagram" aria-label="Instagram">
+                        <img src="resources/images/icons/instagram-white.svg" alt="" class="icon" />
+                    </a>
+                    <a href="https://www.tiktok.com/@nycsliceoflife" target="_blank" rel="noopener noreferrer" class="social-icon-link tiktok" aria-label="TikTok">
+                        <img src="resources/images/icons/tiktok-white.svg" alt="" class="icon" />
+                    </a>
+                    <a href="mailto:NYCSliceofLife@gmail.com" class="social-icon-link email" aria-label="Email">
+                    <img src="resources/images/icons/email-white.svg" alt="" class="icon" />
+                    </a>
+                </div>
+                <div id="instagram-videos"></div>
+                <script src="resources/js/instagram.js"></script>
             </section>
         </main>
-        <footer>
-            <p>&copy; 2025 NYC Slice of Life. All rights reserved.</p>
-            <p>For inquiries: <a href="mailto:NYCSliceofLife@gmail.com">NYCSliceofLife@gmail.com</a></p>
-            <p>Follow us on <a href="https://www.instagram.com/nycsliceoflife/">Instagram</a> | <a href="https://www.tiktok.com/@nycsliceoflife">TikTok</a></p>
-            <p><a href="privacy_policy.html">Privacy Policy</a> | <a href="contact_us.html">Contact Us</a></p>
-        </footer>
+        <!-- Modal for popping up event details -->
+        <div id="eventModal" class="modal hidden">
+            <div class="modal-content">
+                <button class="return-button">← Return to home page</button>
+                <div class="modal-details">
+                    <h2 id="modalTitle">Event Title</h2>
+                    <p id="modalDateRange">Start Date – End Date</p>
+                    <p id="modalLocation">TBD</p>
+                    <a id="icsLink" href="#" class="modal-link hidden">Add to Calendar</a>
+                    <p id="modalDescription">Event Description</p>
+                    <a id="modalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
+                </div>
+                <div class="modal-main">
+                    <img id="modalImage" src="" alt="Event Image" class="event-img">
+                </div>
+            </div>
+        </div>
+        <!-- Footer will be dynamically loaded -->
     </body>
 </html>
