@@ -135,12 +135,23 @@ function renderEventDetail(event) {
             icsLink.classList.remove('hidden');
             // Generate ICS content and Blob URL
             const icsContent = generateICS(event);
-            const blob = new Blob([icsContent], { type: 'text/calendar' });
-            const blobUrl = URL.createObjectURL(blob);
-            icsLink.href = blobUrl;
-            icsLink.setAttribute('download', `${event.id || 'event'}.ics`);
-            icsLink.target = '_blank'; // Open in new tab on mobile
-            icsLink.onclick = null; // Remove JS download handler for better mobile support
+            // --- MOBILE-FRIENDLY: Use data URI for iOS, Blob for others ---
+            let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                // Use data URI for iOS to trigger share sheet
+                const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+                icsLink.href = dataUri;
+                icsLink.removeAttribute('download');
+                icsLink.target = '_blank';
+            } else {
+                // Use Blob for others
+                const blob = new Blob([icsContent], { type: 'text/calendar' });
+                const blobUrl = URL.createObjectURL(blob);
+                icsLink.href = blobUrl;
+                icsLink.setAttribute('download', `${event.id || 'event'}.ics`);
+                icsLink.target = '_blank';
+            }
+            icsLink.onclick = null;
         }
     }
     // Add iOS instruction if on iOS
