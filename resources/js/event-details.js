@@ -133,16 +133,26 @@ function renderEventDetail(event) {
             // Show the single ICS link for single-day events
             icsLink.style.display = '';
             icsLink.classList.remove('hidden');
-            // Generate ICS content and Blob URL
+            // Generate ICS content
             const icsContent = generateICS(event);
-            // --- MOBILE-FRIENDLY: Use data URI for iOS, Blob for others ---
             let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             if (isIOS) {
-                // Use data URI for iOS to trigger share sheet
-                const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
-                icsLink.href = dataUri;
+                // For iOS, open a new window with the ICS data as text/calendar
                 icsLink.removeAttribute('download');
-                icsLink.target = '_blank';
+                icsLink.href = '#';
+                icsLink.target = '_self';
+                icsLink.onclick = function(e) {
+                    e.preventDefault();
+                    // Create a new window and write the ICS content with correct MIME type
+                    const win = window.open();
+                    if (win) {
+                        win.document.open('text/calendar', 'replace');
+                        win.document.write('<pre>' + icsContent.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
+                        win.document.close();
+                    } else {
+                        alert('Unable to open calendar file. Please check your popup blocker settings.');
+                    }
+                };
             } else {
                 // Use Blob for others
                 const blob = new Blob([icsContent], { type: 'text/calendar' });
@@ -150,8 +160,8 @@ function renderEventDetail(event) {
                 icsLink.href = blobUrl;
                 icsLink.setAttribute('download', `${event.id || 'event'}.ics`);
                 icsLink.target = '_blank';
+                icsLink.onclick = null;
             }
-            icsLink.onclick = null;
         }
     }
     // Add iOS instruction if on iOS
