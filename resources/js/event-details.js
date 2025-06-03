@@ -184,11 +184,24 @@ function renderEventDetail(event) {
                 safariBtn.style.cursor = 'pointer';
                 safariBtn.onclick = function(e) {
                     e.preventDefault();
-                    // Use the iOS Safari deep link to open in Safari
+                    // Fallback: Show instructions to copy the link and open in Safari manually
                     const url = window.location.href.replace(/^http:/, 'https:');
-                    // This will prompt the user to open in Safari (works in most in-app browsers and Chrome)
-                    window.location = 'safari://' + url.replace(/^https?:\/\//, '');
+                    // Try to use the native share sheet if available (iOS 13+)
+                    if (navigator.share) {
+                        navigator.share({
+                            title: document.title,
+                            url: url
+                        }).catch(() => {
+                            // If user cancels or share fails, show fallback
+                            showCopyInstruction(url);
+                        });
+                    } else {
+                        showCopyInstruction(url);
+                    }
                 };
+                function showCopyInstruction(url) {
+                    alert('1. Tap and hold the address bar above,\n2. Copy the link,\n3. Open Safari,\n4. Paste the link and go.');
+                }
                 iosMsg.appendChild(safariBtn);
             }
         } else {
