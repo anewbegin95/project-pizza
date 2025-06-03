@@ -82,10 +82,46 @@ function renderEventDetail(event) {
     // ICS link
     const icsLink = document.getElementById('eventICSLink');
     if (icsLink) {
-        icsLink.classList.remove('hidden');
-        icsLink.onclick = (e) => {
-            e.preventDefault();
-            downloadICS(event);
-        };
+        // Remove any previous links if present
+        const prevContainer = document.querySelector('.ics-links-container');
+        if (prevContainer) prevContainer.remove();
+        if (isMultiDayEvent(event)) {
+            // Hide the single ICS link completely (not just visually)
+            icsLink.style.display = 'none';
+            // Create a container for multiple ICS links
+            const startDate = new Date(event.start_datetime);
+            const endDate = new Date(event.end_datetime);
+            const numDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const icsLinksContainer = document.createElement('div');
+            icsLinksContainer.className = 'ics-links-container';
+            const startTime = event.start_datetime.split(' ')[1];
+            const endTime = event.end_datetime.split(' ')[1];
+            for (let i = 0; i < numDays; i++) {
+                // Always create a new Date object for each day to avoid mutation bugs
+                const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+                const dateLabel = currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = `Add ${dateLabel} to Calendar`;
+                link.className = 'modal-link';
+                link.style.display = 'block';
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    // Defensive: always pass correct times for each day
+                    downloadICS(event, currentDay, startTime, endTime);
+                };
+                icsLinksContainer.appendChild(link);
+            }
+            // Insert after icsLink, and ensure only one container is present
+            icsLink.parentNode.insertBefore(icsLinksContainer, icsLink.nextSibling);
+        } else {
+            // Show the single ICS link for single-day events
+            icsLink.style.display = '';
+            icsLink.classList.remove('hidden');
+            icsLink.onclick = (e) => {
+                e.preventDefault();
+                downloadICS(event);
+            };
+        }
     }
 }
