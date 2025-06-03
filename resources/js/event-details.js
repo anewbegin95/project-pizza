@@ -137,22 +137,12 @@ function renderEventDetail(event) {
             const icsContent = generateICS(event);
             let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             if (isIOS) {
-                // For iOS, open a new window with the ICS data as text/calendar
+                // Use data URI for iOS, which allows tap-and-hold > Share > Calendar
+                const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+                icsLink.href = dataUri;
                 icsLink.removeAttribute('download');
-                icsLink.href = '#';
-                icsLink.target = '_self';
-                icsLink.onclick = function(e) {
-                    e.preventDefault();
-                    // Create a new window and write the ICS content with correct MIME type
-                    const win = window.open();
-                    if (win) {
-                        win.document.open('text/calendar', 'replace');
-                        win.document.write('<pre>' + icsContent.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
-                        win.document.close();
-                    } else {
-                        alert('Unable to open calendar file. Please check your popup blocker settings.');
-                    }
-                };
+                icsLink.target = '_blank';
+                icsLink.onclick = null;
             } else {
                 // Use Blob for others
                 const blob = new Blob([icsContent], { type: 'text/calendar' });
