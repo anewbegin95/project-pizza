@@ -233,8 +233,9 @@ function placeEventsInGrid(month, year) {
       }
       bar.tabIndex = 0;
       bar.style.position = 'absolute';
-      bar.style.left = `calc(${weekStartCol} * 100% / 7)`;
-      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - 4px)`;
+      const horizontalMargin = 2; // px
+      bar.style.left = `calc(${weekStartCol} * 100% / 7 + ${horizontalMargin}px)`;
+      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - ${horizontalMargin * 2}px)`;
       bar.style.top = `${slot * 28}px`;
       bar.style.height = '24px';
       bar.style.zIndex = 2;

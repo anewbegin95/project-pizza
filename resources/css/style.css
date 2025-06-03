@@ -1164,6 +1164,10 @@ img {
   z-index: 1;
 }
 
+#eventTitle {
+  margin-top: var(--space-sm);
+}
+
 .event-detail-content {
   grid-column: 1 / 2;
   display: flex;
@@ -1189,8 +1193,9 @@ img {
 
 #eventExternalLink {
   display: inline-block;
-  margin-right: var(--space-sm);
-  margin-bottom: var(--space-xs);
+  margin-right: 0;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
   font-size: 16px;
   padding: var(--space-xs) var(--space-md);
   border-radius: 5px;
@@ -1214,10 +1219,10 @@ img {
   margin-top: var(--space-xs);
   font-size: 16px;
   color: var(--nyc-navy);
-  background: var(--nyc-light-pink);
+  /* background: var(--nyc-light-pink); */
   border-radius: 8px;
-  padding: var(--space-md);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  padding: var(--space-xs);
+  /* box-shadow: 0 1px 6px rgba(0,0,0,0.04); */
 }
 
 .event-detail-description p {
