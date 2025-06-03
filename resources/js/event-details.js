@@ -187,7 +187,7 @@ function renderEventDetail(event) {
                     // Try to use the Safari deep link if in-app, fallback to open in new tab
                     const url = window.location.href.replace(/^http:/, 'https:');
                     // Try universal link (works in some in-app browsers)
-                    window.location = url;
+                    window.location = 'x-web-search://?url=' + encodeURIComponent(url);
                     setTimeout(function() {
                         window.open(url, '_blank');
                     }, 500);
