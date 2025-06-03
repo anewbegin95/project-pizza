@@ -154,17 +154,22 @@ function renderEventDetail(event) {
             }
         }
     }
-    // Add iOS instruction if on iOS
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-        let iosMsg = document.getElementById('ios-calendar-instruction');
-        if (!iosMsg) {
-            iosMsg = document.createElement('div');
-            iosMsg.id = 'ios-calendar-instruction';
-            iosMsg.style.fontSize = '0.95em';
-            iosMsg.style.marginTop = '0.5em';
-            iosMsg.style.color = '#666';
+    // Add iOS/Chrome-on-iOS instruction if on iOS
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const isChromeIOS = isIOS && /CriOS/.test(ua);
+    let iosMsg = document.getElementById('ios-calendar-instruction');
+    if (!iosMsg && isIOS) {
+        iosMsg = document.createElement('div');
+        iosMsg.id = 'ios-calendar-instruction';
+        iosMsg.style.fontSize = '0.95em';
+        iosMsg.style.marginTop = '0.5em';
+        iosMsg.style.color = '#666';
+        if (isChromeIOS) {
+            iosMsg.innerText = "On iPhone/iPad, Chrome cannot add events to your calendar. Please open this page in Safari and tap and hold 'Add to Calendar' to add the event.";
+        } else {
             iosMsg.innerText = "On iPhone/iPad, tap and hold 'Add to Calendar' and choose 'Share' → 'Calendar'.";
-            icsLink.parentNode.insertBefore(iosMsg, icsLink.nextSibling);
         }
+        icsLink.parentNode.insertBefore(iosMsg, icsLink.nextSibling);
     }
 }
