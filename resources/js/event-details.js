@@ -184,13 +184,10 @@ function renderEventDetail(event) {
                 safariBtn.style.cursor = 'pointer';
                 safariBtn.onclick = function(e) {
                     e.preventDefault();
-                    // Try to use the Safari deep link if in-app, fallback to open in new tab
+                    // Try to open in Safari using a universal link (best effort)
                     const url = window.location.href.replace(/^http:/, 'https:');
-                    // Try universal link (works in some in-app browsers)
-                    window.location = 'x-web-search://?url=' + encodeURIComponent(url);
-                    setTimeout(function() {
-                        window.open(url, '_blank');
-                    }, 500);
+                    // Use window.open directly, which works in most in-app browsers
+                    window.open(url, '_blank');
                 };
                 iosMsg.appendChild(safariBtn);
             }
