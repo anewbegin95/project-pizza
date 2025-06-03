@@ -184,11 +184,15 @@ function renderEventDetail(event) {
                 safariBtn.style.cursor = 'pointer';
                 safariBtn.onclick = function(e) {
                     e.preventDefault();
-                    // Use the iOS Safari deep link to open in Safari
+                    // Try to use the universal link hack to open in Safari
                     const url = window.location.href.replace(/^http:/, 'https:');
-                    // This will prompt the user to open in Safari (works in most in-app browsers and Chrome)
-                    window.location = 'safari://' + url.replace(/^https?:\/\//, '');
+                    // This will prompt the user to open in Safari, but we must use the full URL, not as a search
+                    // Use window.location with the full URL (best effort)
+                    window.location = url;
                 };
+                function showCopyInstruction(url) {
+                    alert('1. Tap and hold the address bar above,\n2. Copy the link,\n3. Open Safari,\n4. Paste the link and go.');
+                }
                 iosMsg.appendChild(safariBtn);
             }
         } else {
