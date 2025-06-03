@@ -75,6 +75,13 @@ function renderCalendar(month, year) {
 
     // After building the grid, place event badges in the correct cells
     placeEventsInGrid(month, year);
+
+    // Reveal the calendar section after calendar is rendered
+    const calendarSection = document.getElementById('calendar-section');
+    if (calendarSection) {
+        calendarSection.classList.remove('hidden');
+        calendarSection.style.display = '';
+    }
 }
 
 /**
@@ -214,10 +221,10 @@ function placeEventsInGrid(month, year) {
 
       bar.addEventListener('click', (e) => {
         // Remove highlight from all bars first
-        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('.calendar-event-bar--active'));
         highlightAllSegments();
-        // Removed console.log to avoid unintended logging in production.
-        openEventModal(event);
+        e.stopPropagation();
+        window.location.href = `event.html?id=${event.id}`;
       });
 
       // Show event name:
@@ -233,8 +240,9 @@ function placeEventsInGrid(month, year) {
       }
       bar.tabIndex = 0;
       bar.style.position = 'absolute';
-      bar.style.left = `calc(${weekStartCol} * 100% / 7)`;
-      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - 4px)`;
+      const horizontalMargin = 2; // px
+      bar.style.left = `calc(${weekStartCol} * 100% / 7 + ${horizontalMargin}px)`;
+      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - ${horizontalMargin * 2}px)`;
       bar.style.top = `${slot * 28}px`;
       bar.style.height = '24px';
       bar.style.zIndex = 2;

@@ -14,7 +14,7 @@
                     <h1>Events Calendar</h1>
                 </div>
             </section>
-            <section id="calendar-section">
+            <section id="calendar-section" class="hidden" style="display:none;">
                 <div id="calendar-header">
                     <button id="prev-month" aria-label="Previous Month">←</button>
                     <span id="calendar-month-year"></span>
@@ -30,25 +30,17 @@
                     <div class="calendar-day-title">Sat</div>
                 </div>
                 <div id="calendar-grid"></div>
+                <!-- Calendar Day Overflow Modal (for '+N more' link) -->
+                <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                  <div class="modal-content">
+                    <button class="return-button" id="modalReturnButton" aria-label="Close" tabindex="0">← Return</button>
+                    <!-- These are only for single-event modal, but must be present for day grid modal logic to work -->
+                    <div class="modal-details" style="display:none;"></div>
+                    <div class="modal-main" style="display:none;"></div>
+                  </div>
+                </div>
             </section>
         </main>
-        <!-- Modal for popping up event details (shared with events.html) -->
-        <div id="eventModal" class="modal hidden">
-            <div class="modal-content">
-                <button class="return-button">← Return to all events</button>
-                <div class="modal-details">
-                    <h2 id="modalTitle">Event Title</h2>
-                    <p id="modalDateRange">Start Date – End Date</p>
-                    <p id="modalLocation">TBD</p>
-                    <a id="icsLink" href="#" class="modal-link hidden">Add to Calendar</a>
-                    <p id="modalDescription">Event Description</p>
-                    <a id="modalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
-                </div>
-                <div class="modal-main">
-                    <img id="modalImage" src="" alt="Event Image">
-                </div>
-            </div>
-        </div>
         <script src="resources/js/events.js"></script>
         <script src="resources/js/calendar.js"></script>
     </body>

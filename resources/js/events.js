@@ -41,7 +41,23 @@ function parseCSV(csvText) {
         }
     });
 
+    // Assign event.id using the new generateEventId (event name only)
+    events.forEach(event => {
+        event.id = generateEventId(event);
+    });
+
     return events;
+}
+
+/**
+ * Generates a unique event ID (slug) from event name only.
+ * Example output: "pizza-pop-up"
+ * @param {Object} event - Event object containing name.
+ * @returns {string} - Unique event ID.
+ */
+function generateEventId(event) {
+    // Use event name only, lowercased and slugified
+    return (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 /**
@@ -259,91 +275,16 @@ function createEventTile(event) {
     const dateText = document.createElement('p');
     dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
 
-    tile.addEventListener('click', () => openEventModal(event));
+    // Instead of opening the modal, navigate to the event detail page with the event id
+    tile.addEventListener('click', () => {
+        window.location.href = `event.html?id=${event.id}`;
+    });
 
     tile.appendChild(img);
     tile.appendChild(title);
     tile.appendChild(dateText);
 
     return tile;
-}
-
-/**
- * Opens the event modal and populates it with event details.
- * @param {Object} event - Event object containing event details.
- */
-function openEventModal(event) {
-    // Prevent modal access if master_display is FALSE
-    if (String(event.master_display).toUpperCase() === 'FALSE') {
-        return;
-    }
-
-    const modal = document.getElementById('eventModal');
-    document.getElementById('modalTitle').textContent = event.name;
-    document.getElementById('modalImage').src = event.img || 'resources/images/images/default-event-image.jpeg';
-    document.getElementById('modalImage').alt = `${event.name} image`;
-    document.getElementById('modalDateRange').textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
-    document.getElementById('modalLocation').textContent = event.location || 'TBD';
-    document.getElementById('modalDescription').innerHTML = event.long_desc.replace(/\n/g, '<br>') || 'No description available.';
-
-    // Handle the modal CTA button
-    const modalLink = document.getElementById('modalLink');
-    if (event.link && event.link.trim() !== '') {
-        modalLink.href = event.link;
-        modalLink.textContent = event.link_text || 'Learn More';
-        modalLink.classList.remove('hidden');
-    } else {
-        modalLink.href = '#';
-        modalLink.classList.add('hidden');
-    }
-
-    // Handle the ICS link
-    const icsLink = document.getElementById('icsLink');
-    if (icsLink) {
-        // Remove any previous links if present
-        const prevContainer = document.querySelector('.ics-links-container');
-        if (prevContainer) prevContainer.remove();
-        if (isMultiDayEvent(event)) {
-            // Hide the single ICS link completely (not just visually)
-            icsLink.style.display = 'none';
-            // Create a container for multiple ICS links
-            const startDate = new Date(event.start_datetime);
-            const endDate = new Date(event.end_datetime);
-            const numDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-            const icsLinksContainer = document.createElement('div');
-            icsLinksContainer.className = 'ics-links-container';
-            const startTime = event.start_datetime.split(' ')[1];
-            const endTime = event.end_datetime.split(' ')[1];
-            for (let i = 0; i < numDays; i++) {
-                // Always create a new Date object for each day to avoid mutation bugs
-                const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
-                const dateLabel = currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const link = document.createElement('a');
-                link.href = '#';
-                link.textContent = `Add ${dateLabel} to Calendar`;
-                link.className = 'modal-link';
-                link.style.display = 'block';
-                link.onclick = (e) => {
-                    e.preventDefault();
-                    // Defensive: always pass correct times for each day
-                    downloadICS(event, currentDay, startTime, endTime);
-                };
-                icsLinksContainer.appendChild(link);
-            }
-            // Insert after icsLink, and ensure only one container is present
-            icsLink.parentNode.insertBefore(icsLinksContainer, icsLink.nextSibling);
-        } else {
-            // Show the single ICS link for single-day events
-            icsLink.style.display = '';
-            icsLink.classList.remove('hidden');
-            icsLink.onclick = (e) => {
-                e.preventDefault();
-                downloadICS(event);
-            };
-        }
-    }
-
-    modal.classList.remove('hidden');
 }
 
 /**
