@@ -102,7 +102,6 @@ function renderEventDetail(event) {
         const prevContainer = document.querySelector('.ics-links-container');
         if (prevContainer) prevContainer.remove();
         if (isMultiDayEvent(event)) {
-            // Hide the single ICS link completely (not just visually)
             icsLink.style.display = 'none';
             // Create a container for multiple ICS links
             const startDate = new Date(event.start_datetime);
@@ -134,10 +133,27 @@ function renderEventDetail(event) {
             // Show the single ICS link for single-day events
             icsLink.style.display = '';
             icsLink.classList.remove('hidden');
-            icsLink.onclick = (e) => {
-                e.preventDefault();
-                downloadICS(event);
-            };
+            // Generate ICS content and Blob URL
+            const icsContent = generateICS(event);
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const blobUrl = URL.createObjectURL(blob);
+            icsLink.href = blobUrl;
+            icsLink.setAttribute('download', `${event.id || 'event'}.ics`);
+            icsLink.target = '_blank'; // Open in new tab on mobile
+            icsLink.onclick = null; // Remove JS download handler for better mobile support
+        }
+    }
+    // Add iOS instruction if on iOS
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+        let iosMsg = document.getElementById('ios-calendar-instruction');
+        if (!iosMsg) {
+            iosMsg = document.createElement('div');
+            iosMsg.id = 'ios-calendar-instruction';
+            iosMsg.style.fontSize = '0.95em';
+            iosMsg.style.marginTop = '0.5em';
+            iosMsg.style.color = '#666';
+            iosMsg.innerText = "On iPhone/iPad, tap and hold 'Add to Calendar' and choose 'Share' → 'Calendar'.";
+            icsLink.parentNode.insertBefore(iosMsg, icsLink.nextSibling);
         }
     }
 }
