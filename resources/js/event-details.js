@@ -159,17 +159,52 @@ function renderEventDetail(event) {
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     const isChromeIOS = isIOS && /CriOS/.test(ua);
     let iosMsg = document.getElementById('ios-calendar-instruction');
+    let safariBtn = document.getElementById('open-in-safari-btn');
     if (!iosMsg && isIOS) {
         iosMsg = document.createElement('div');
         iosMsg.id = 'ios-calendar-instruction';
         iosMsg.style.fontSize = '0.95em';
         iosMsg.style.marginTop = '0.5em';
         iosMsg.style.color = '#666';
-        if (isChromeIOS) {
-            iosMsg.innerText = "On iPhone/iPad, Chrome cannot add events to your calendar. Please open this page in Safari and tap and hold 'Add to Calendar' to add the event.";
+        if (isChromeIOS || isInAppBrowser()) {
+            iosMsg.innerText = "On iPhone/iPad, this browser cannot add events to your calendar. Please open this page in Safari and tap and hold 'Add to Calendar' to add the event.";
+            // Add 'Open in Safari' button
+            if (!safariBtn) {
+                safariBtn = document.createElement('button');
+                safariBtn.id = 'open-in-safari-btn';
+                safariBtn.textContent = 'Open in Safari';
+                safariBtn.style.display = 'block';
+                safariBtn.style.margin = '0.5em 0 0 0';
+                safariBtn.style.padding = '0.5em 1em';
+                safariBtn.style.background = '#eee';
+                safariBtn.style.border = '1px solid #ccc';
+                safariBtn.style.borderRadius = '6px';
+                safariBtn.style.fontSize = '1em';
+                safariBtn.style.cursor = 'pointer';
+                safariBtn.onclick = function() {
+                    window.location = window.location.href.replace(/^http:/, 'https:'); // ensure https
+                    setTimeout(function() {
+                        window.open(window.location.href, '_blank');
+                    }, 100);
+                };
+                iosMsg.appendChild(safariBtn);
+            }
         } else {
             iosMsg.innerText = "On iPhone/iPad, tap and hold 'Add to Calendar' and choose 'Share' → 'Calendar'.";
         }
         icsLink.parentNode.insertBefore(iosMsg, icsLink.nextSibling);
+    }
+
+    // Helper to detect in-app browsers (Instagram, Facebook, etc.)
+    function isInAppBrowser() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return (
+            ua.indexOf('Instagram') > -1 ||
+            ua.indexOf('FBAN') > -1 ||
+            ua.indexOf('FBAV') > -1 ||
+            ua.indexOf('Line/') > -1 ||
+            ua.indexOf('Twitter') > -1 ||
+            ua.indexOf('Snapchat') > -1
+        );
     }
 }
