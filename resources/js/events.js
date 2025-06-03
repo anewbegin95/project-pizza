@@ -36,35 +36,28 @@ function parseCSV(csvText) {
             event['events_page'] = event['events_page'] || 'TRUE';
             event['calendar'] = event['calendar'] || 'TRUE';
             event['link'] = event['link'] || '';
-            event['id'] = generateEventId(event);
             events.push(event);
             currentRow = [];
         }
+    });
+
+    // Assign event.id using the new generateEventId (event name only)
+    events.forEach(event => {
+        event.id = generateEventId(event);
     });
 
     return events;
 }
 
 /**
- * Generates a unique event ID (slug) from event name and start date/time.
- * Example output: "pizza-pop-up-2025-07-04-1800"
- * @param {Object} event - Event object containing name and start_datetime.
+ * Generates a unique event ID (slug) from event name only.
+ * Example output: "pizza-pop-up"
+ * @param {Object} event - Event object containing name.
  * @returns {string} - Unique event ID.
  */
 function generateEventId(event) {
-    // Use event name, start date, and start time for uniqueness
-    const namePart = (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const dateObj = event.start_datetime ? new Date(event.start_datetime) : null;
-    let datePart = '';
-    if (dateObj && !isNaN(dateObj)) {
-        const yyyy = dateObj.getFullYear();
-        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const dd = String(dateObj.getDate()).padStart(2, '0');
-        const hh = String(dateObj.getHours()).padStart(2, '0');
-        const min = String(dateObj.getMinutes()).padStart(2, '0');
-        datePart = `${yyyy}-${mm}-${dd}-${hh}${min}`;
-    }
-    return [namePart, datePart].filter(Boolean).join('-');
+    // Use event name only, lowercased and slugified
+    return (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 /**

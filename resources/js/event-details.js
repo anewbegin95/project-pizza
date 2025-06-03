@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.text())
         .then(csv => {
             const events = parseCSV(csv);
+            // Assign event.id using the new generateEventId (event name only)
+            events.forEach(event => {
+                event.id = (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            });
             const event = events.find(e => e.id === eventId);
             if (!event) {
                 document.body.innerHTML = '<main><section><h2>Event not found</h2><p>No event matches this ID.</p></section></main>';
