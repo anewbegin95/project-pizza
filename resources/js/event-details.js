@@ -28,6 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Hide the hero section until data loads
+    const heroSection = document.querySelector('.event-detail-hero');
+    if (heroSection) {
+        heroSection.classList.add('hidden');
+        heroSection.style.display = 'none';
+    }
+
     const eventId = getQueryParam('id');
     if (!eventId) {
         document.body.innerHTML = '<main><section><h2>Event not found</h2><p>No event ID provided in the URL.</p></section></main>';
@@ -49,6 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             renderEventDetail(event);
+            // Reveal the hero section after data loads
+            if (heroSection) {
+                heroSection.classList.remove('hidden');
+                heroSection.style.display = '';
+            }
         })
         .catch(err => {
             document.body.innerHTML = '<main><section><h2>Error</h2><p>Could not load event data.</p></section></main>';
