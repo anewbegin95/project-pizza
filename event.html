@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-title="Event Details">
+    <head>
+        <meta charset="UTF-8">
+        <title>Event Details | NYC Slice of Life</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="resources/css/style.css">
+        <script src="resources/js/partials-loader.js"></script>
+        <script src="resources/js/events.js"></script>
+        <!-- Optionally add Open Graph/Twitter meta tags here for sharing -->
+    </head>
+    <body>
+        <!-- Header will be dynamically loaded -->
+        <main>
+            <div class="event-detail-backdrop"></div>
+            <section class="event-detail-hero hidden" style="display:none;">
+                <div class="event-detail-content">
+                    <button class="return-button">← Return to all events</button>
+                    <h1 id="eventTitle">Event Title</h1>
+                    <p id="eventDateRange">Date</p>
+                    <p id="eventLocation">Location</p>
+                    <a id="eventICSLink" href="#" class="modal-link hidden">Add to Calendar</a>
+                    <a id="eventExternalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
+                    <div class="event-detail-description">
+                        <p id="eventDescription">Event Description</p>
+                    </div>
+                </div>
+                <div class="event-detail-image">
+                    <img id="eventImage" src="" alt="Event Image" class="event-img">
+                </div>
+            </section>
+        </main>
+        <!-- Footer will be dynamically loaded -->
+        <script src="resources/js/event-details.js"></script>
+    </body>
+</html>
