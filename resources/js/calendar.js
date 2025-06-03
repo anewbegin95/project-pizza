@@ -75,6 +75,13 @@ function renderCalendar(month, year) {
 
     // After building the grid, place event badges in the correct cells
     placeEventsInGrid(month, year);
+
+    // Reveal the calendar section after calendar is rendered
+    const calendarSection = document.getElementById('calendar-section');
+    if (calendarSection) {
+        calendarSection.classList.remove('hidden');
+        calendarSection.style.display = '';
+    }
 }
 
 /**
@@ -214,7 +221,7 @@ function placeEventsInGrid(month, year) {
 
       bar.addEventListener('click', (e) => {
         // Remove highlight from all bars first
-        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('.calendar-event-bar--active'));
         highlightAllSegments();
         e.stopPropagation();
         window.location.href = `event.html?id=${event.id}`;
