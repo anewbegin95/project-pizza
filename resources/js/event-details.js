@@ -184,15 +184,51 @@ function renderEventDetail(event) {
                 safariBtn.style.cursor = 'pointer';
                 safariBtn.onclick = function(e) {
                     e.preventDefault();
-                    // Try to use the Safari deep link if in-app, fallback to open in new tab
+                    // Try to open in a new tab (may not work in all in-app browsers)
                     const url = window.location.href.replace(/^http:/, 'https:');
-                    // Try universal link (works in some in-app browsers)
-                    window.location = 'x-web-search://?url=' + encodeURIComponent(url);
-                    setTimeout(function() {
-                        window.open(url, '_blank');
-                    }, 500);
+                    window.open(url, '_blank');
                 };
                 iosMsg.appendChild(safariBtn);
+                // Add 'Copy Link' button
+                const copyBtn = document.createElement('button');
+                copyBtn.id = 'copy-link-btn';
+                copyBtn.textContent = 'Copy Link';
+                copyBtn.style.display = 'block';
+                copyBtn.style.margin = '0.5em 0 0 0';
+                copyBtn.style.padding = '0.5em 1em';
+                copyBtn.style.background = '#eee';
+                copyBtn.style.border = '1px solid #ccc';
+                copyBtn.style.borderRadius = '6px';
+                copyBtn.style.fontSize = '1em';
+                copyBtn.style.cursor = 'pointer';
+                copyBtn.onclick = function(e) {
+                    e.preventDefault();
+                    const url = window.location.href.replace(/^http:/, 'https:');
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(url).then(function() {
+                            copyBtn.textContent = 'Copied!';
+                            setTimeout(() => { copyBtn.textContent = 'Copy Link'; }, 1500);
+                        });
+                    } else {
+                        // Fallback for older browsers
+                        const tempInput = document.createElement('input');
+                        tempInput.value = url;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => { copyBtn.textContent = 'Copy Link'; }, 1500);
+                    }
+                };
+                iosMsg.appendChild(copyBtn);
+                // Add fallback instruction
+                const fallbackMsg = document.createElement('div');
+                fallbackMsg.style.fontSize = '0.92em';
+                fallbackMsg.style.marginTop = '0.5em';
+                fallbackMsg.style.color = '#888';
+                fallbackMsg.textContent = "If 'Open in Safari' doesn't work, tap 'Copy Link', then open Safari and paste the link.";
+                iosMsg.appendChild(fallbackMsg);
             }
         } else {
             iosMsg.innerText = "On iPhone/iPad, tap and hold 'Add to Calendar' and choose 'Share' → 'Calendar'.";
