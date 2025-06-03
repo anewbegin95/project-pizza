@@ -154,10 +154,11 @@ function renderEventDetail(event) {
             }
         }
     }
-    // Add iOS/Chrome-on-iOS instruction if on iOS
+    // Add iOS/Chrome-on-iOS/in-app browser instruction if on iOS
     const ua = navigator.userAgent;
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     const isChromeIOS = isIOS && /CriOS/.test(ua);
+    const isInApp = isIOS && isInAppBrowser();
     let iosMsg = document.getElementById('ios-calendar-instruction');
     let safariBtn = document.getElementById('open-in-safari-btn');
     if (!iosMsg && isIOS) {
@@ -166,7 +167,7 @@ function renderEventDetail(event) {
         iosMsg.style.fontSize = '0.95em';
         iosMsg.style.marginTop = '0.5em';
         iosMsg.style.color = '#666';
-        if (isChromeIOS || isInAppBrowser()) {
+        if (isChromeIOS || isInApp) {
             iosMsg.innerText = "On iPhone/iPad, this browser cannot add events to your calendar. Please open this page in Safari and tap and hold 'Add to Calendar' to add the event.";
             // Add 'Open in Safari' button
             if (!safariBtn) {
@@ -181,11 +182,15 @@ function renderEventDetail(event) {
                 safariBtn.style.borderRadius = '6px';
                 safariBtn.style.fontSize = '1em';
                 safariBtn.style.cursor = 'pointer';
-                safariBtn.onclick = function() {
-                    window.location = window.location.href.replace(/^http:/, 'https:'); // ensure https
+                safariBtn.onclick = function(e) {
+                    e.preventDefault();
+                    // Try to use the Safari deep link if in-app, fallback to open in new tab
+                    const url = window.location.href.replace(/^http:/, 'https:');
+                    // Try universal link (works in some in-app browsers)
+                    window.location = 'x-web-search://?url=' + encodeURIComponent(url);
                     setTimeout(function() {
-                        window.open(window.location.href, '_blank');
-                    }, 100);
+                        window.open(url, '_blank');
+                    }, 500);
                 };
                 iosMsg.appendChild(safariBtn);
             }
@@ -199,12 +204,7 @@ function renderEventDetail(event) {
     function isInAppBrowser() {
         const ua = navigator.userAgent || navigator.vendor || window.opera;
         return (
-            ua.indexOf('Instagram') > -1 ||
-            ua.indexOf('FBAN') > -1 ||
-            ua.indexOf('FBAV') > -1 ||
-            ua.indexOf('Line/') > -1 ||
-            ua.indexOf('Twitter') > -1 ||
-            ua.indexOf('Snapchat') > -1
+            /Instagram|FBAN|FBAV|Line\/|Twitter|Snapchat|LinkedIn|Pinterest|Messenger|WhatsApp|TikTok/i.test(ua)
         );
     }
 }
