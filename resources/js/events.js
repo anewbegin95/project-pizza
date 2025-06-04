@@ -9,89 +9,43 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 // === UTILITY FUNCTIONS ===
 
 /**
- * Robust CSV parser that handles quoted fields, embedded commas, and newlines (RFC 4180 compliant)
  * Parses a CSV string into an array of event objects.
  * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
  * @param {string} csvText - The raw CSV string.
  * @returns {Array<Object>} - Array of parsed event objects.
  */
 function parseCSV(csvText) {
-    const rows = [];
-    let current = '';
-    let insideQuotes = false;
-    let i = 0;
-    while (i < csvText.length) {
-        const char = csvText[i];
-        if (char === '"') {
-            if (insideQuotes && csvText[i + 1] === '"') {
-                // Escaped quote
-                current += '"';
-                i++;
-            } else {
-                insideQuotes = !insideQuotes;
-            }
-        } else if (char === '\n' && !insideQuotes) {
-            rows.push(current);
-            current = '';
-        } else {
-            current += char;
-        }
-        i++;
-    }
-    if (current) rows.push(current);
-    // Now split each row into fields
-    const headerLine = rows[0];
-    const headers = [];
-    let field = '';
-    insideQuotes = false;
-    for (let i = 0; i < headerLine.length; i++) {
-        const char = headerLine[i];
-        if (char === '"') {
-            insideQuotes = !insideQuotes;
-        } else if (char === ',' && !insideQuotes) {
-            headers.push(field.trim());
-            field = '';
-        } else {
-            field += char;
-        }
-    }
-    headers.push(field.trim());
+    const rows = csvText.trim().split('\n');
+    const headers = rows[0].split(',').map(h => h.trim());
     const events = [];
-    for (let r = 1; r < rows.length; r++) {
-        const row = rows[r];
-        const fields = [];
-        let f = '';
-        insideQuotes = false;
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-            if (char === '"') {
-                if (insideQuotes && row[i + 1] === '"') {
-                    f += '"';
-                    i++;
-                } else {
-                    insideQuotes = !insideQuotes;
-                }
-            } else if (char === ',' && !insideQuotes) {
-                fields.push(f);
-                f = '';
-            } else {
-                f += char;
-            }
-        }
-        fields.push(f);
-        // Only add if at least one field is non-empty
-        if (fields.some(x => x.trim() !== '')) {
+    let currentRow = [];
+
+    rows.slice(1).forEach(row => {
+        currentRow.push(row);
+        const combinedRow = currentRow.join('\n');
+        const quoteCount = (combinedRow.match(/"/g) || []).length;
+
+        if (quoteCount % 2 === 0) {
+            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
             const event = {};
-            for (let h = 0; h < headers.length; h++) {
-                event[headers[h]] = fields[h] ? fields[h].replace(/^"|"$/g, '').replace(/""/g, '"') : '';
-            }
+            headers.forEach((header, i) => {
+                event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
+            });
+            event['recurring'] = event['recurring'] || 'FALSE';
+            event['master_display'] = event['master_display'] || 'TRUE';
+            event['events_page'] = event['events_page'] || 'TRUE';
+            event['calendar'] = event['calendar'] || 'TRUE';
+            event['link'] = event['link'] || '';
             events.push(event);
+            currentRow = [];
         }
-    }
+    });
+
     // Assign event.id using the new generateEventId (event name only)
     events.forEach(event => {
-        event.id = (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        event.id = generateEventId(event);
     });
+
     return events;
 }
 
