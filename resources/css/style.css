@@ -588,10 +588,6 @@ img {
   EVENTS GRID
 ----------------------------------------------------------------------------- */
 
-.event-section-title {
-  text-align: center;
-}
-
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
