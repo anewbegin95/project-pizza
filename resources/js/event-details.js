@@ -80,9 +80,19 @@ function renderEventDetail(event) {
     document.getElementById('eventDateRange').textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
     document.getElementById('eventLocation').textContent = event.location || 'TBD';
     document.getElementById('eventDescription').innerHTML = (event.long_desc || '').replace(/\n/g, '<br>');
-    const img = document.getElementById('eventImage');
-    img.src = event.img || 'resources/images/images/default-event-image.jpeg';
-    img.alt = `${event.name} image`;
+    // Set both mobile and desktop images
+    var imgMobile = document.getElementById('eventImage');
+    var imgDesktop = document.getElementById('eventImageDesktop');
+    var imgSrc = event.img || 'resources/images/images/default-event-image.jpeg';
+    var imgAlt = `${event.name} image`;
+    if (imgMobile) {
+        imgMobile.src = imgSrc;
+        imgMobile.alt = imgAlt;
+    }
+    if (imgDesktop) {
+        imgDesktop.src = imgSrc;
+        imgDesktop.alt = imgAlt;
+    }
 
     // External link
     const extLink = document.getElementById('eventExternalLink');

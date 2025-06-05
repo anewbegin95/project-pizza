@@ -1284,10 +1284,27 @@ img {
   text-align: left;
 }
 
+/* --- Ensure event date & location formatting is consistent on all screens --- */
 #eventDateRange, #eventLocation {
-  font-size: 20px;
-  color: var(--nyc-navy);
-  margin-bottom: var(--space-xs);
+  font-size: 1.1em;
+  color: #444;
+  font-weight: 500;
+  margin: 0.5em 0 0.5em 0;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  #eventDateRange, #eventLocation {
+    font-size: 1.1em; /* Match desktop */
+    color: #444;      /* Match desktop */
+    font-weight: 500; /* Match desktop */
+    margin: 0.5em 0 0.5em 0;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    display: block;
+  }
 }
 
 #eventExternalLink {
@@ -1318,9 +1335,8 @@ img {
   margin-top: var(--space-xs);
   font-size: 16px;
   color: var(--nyc-navy);
-  /* background: var(--nyc-light-pink); */
   border-radius: 8px;
-  padding: var(--space-xs);
+  padding: 0; /* Remove padding to make it flush left */
   /* box-shadow: 0 1px 6px rgba(0,0,0,0.04); */
 }
 
@@ -1372,13 +1388,93 @@ img {
     font-size: 22px;
   }
   .event-detail-description {
-    padding: var(--space-sm);
+    padding: 0;
     font-size: 14px;
   }
   .event-detail-image img {
     max-width: 100vw;
     border-radius: 8px;
   }
+}
+
+@media (max-width: 800px) {
+  .event-detail-hero {
+    display: block !important;
+    padding: var(--space-sm);
+    background: var(--nyc-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin: var(--space-xs) auto;
+    max-width: 98vw;
+  }
+  .event-detail-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+    padding: 0;
+    width: 100%;
+  }
+  .event-detail-content .return-button {
+    position: static;
+    margin-bottom: var(--space-xs);
+    align-self: flex-start;
+    z-index: 2;
+  }
+  .event-detail-content h1#eventTitle {
+    font-size: 1.5em;
+    margin: 0 0 var(--space-xs) 0;
+    text-align: left;
+  }
+  .event-detail-image {
+    width: 100%;
+    margin: 0 0 var(--space-sm) 0;
+    display: block;
+    text-align: center;
+  }
+  .event-detail-image img {
+    width: 100%;
+    max-width: 100vw;
+    height: auto;
+    border-radius: 12px;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  #eventDateRange, #eventLocation {
+    font-size: 1em;
+    margin: 0 0 var(--space-xs) 0;
+    text-align: left;
+  }
+  .event-detail-description {
+    margin: 0 0 var(--space-xs) 0;
+    padding: 0;
+  }
+  .event-detail-description p {
+    font-size: 1em;
+    margin: 0;
+  }
+  #eventICSLink, #eventExternalLink {
+    display: block;
+    width: 100%;
+    margin: var(--space-xs) 0 0 0;
+    text-align: center;
+    font-size: 1.1em;
+    border-radius: 8px;
+    padding: var(--space-xs) 0;
+  }
+  #eventICSLink {
+    margin-bottom: var(--space-xs);
+  }
+}
+
+/* Show mobile event image only on mobile (<=800px) and desktop image only on desktop (>800px) */
+@media (max-width: 800px) {
+  .event-detail-image--desktop { display: none !important; }
+  .event-detail-image--mobile { display: block !important; }
+}
+@media (min-width: 801px) {
+  .event-detail-image--desktop { display: block !important; }
+  .event-detail-image--mobile { display: none !important; }
 }
 
 /* -----------------------------------------------------------------------------
@@ -1488,62 +1584,6 @@ button:focus {
   }
 }
 
-@media (max-width: 480px) {
-  .container {
-    width: 100%;
-    padding: var(--space-sm);
-  }
-
-  .main-nav,
-  .header-actions {
-      display: none; /* Hide main navigation and header actions */
-  }
-
-  .menu-toggle {
-      display: block; /* Show the menu toggle button */
-  }
-
-  /* Further adjust contact button for very small screens */
-  .contact-btn,
-  button,
-  .btn {
-    font-size: 12px; /* Further reduce font size */
-    padding: var(--space-xxs); /* Minimal padding */
-    height: auto; /* Allow height to adjust dynamically */
-    width: auto; /* Allow width to adjust dynamically */
-  }
-
-  .hero {
-    height: 30vh; /* Further reduce height for very small screens */
-  }
-
-  .hero h1 {
-    font-size: 28px; /* Further scale down font size */
-    margin-bottom: var(--space-xxs); /* Adjust spacing */
-  }
-
-  .hero p {
-    font-size: 16px; /* Further scale down font size */
-  }
-
-  .calendar-cell {
-    min-height: 120px; /* Still taller than before */
-    padding: 6px;
-    padding-top: 28px;
-    padding-bottom: 6px;
-  }
-
-  .calendar-cell-bar-container {
-    top: 20px;
-    min-height: 20px;
-  }
-
-  .calendar-event-bar {
-    font-size: 10px;
-    height: 14px;
-    padding: 0 2px;
-  }
-}
 /* Responsive styles for the centered social media CTA */
 @media (max-width: 600px) {
   .centered-cta {
