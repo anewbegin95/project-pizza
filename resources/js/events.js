@@ -261,28 +261,39 @@ function createEventTile(event) {
     if (String(event.events_page).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
-    tile.className = 'event-tile';
-    
+    tile.className = 'event-tile horizontal-tile';
+
+    // Left: Image
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'event-img-container';
     const img = document.createElement('img');
-    console.log('event.img:', event.img);
     img.src = event.img || 'resources/images/images/default-event-image.jpeg';
     img.alt = `${event.name} image`;
     img.className = 'event-img';
+    imgContainer.appendChild(img);
 
+    // Right: Details
+    const details = document.createElement('div');
+    details.className = 'event-details';
     const title = document.createElement('h3');
     title.textContent = event.name;
-
     const dateText = document.createElement('p');
+    dateText.className = 'event-date';
     dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
+    const location = document.createElement('p');
+    location.className = 'event-location';
+    location.textContent = event.location || '';
 
-    // Instead of opening the modal, navigate to the event detail page with the event id
+    details.appendChild(title);
+    details.appendChild(dateText);
+    details.appendChild(location);
+
+    tile.appendChild(imgContainer);
+    tile.appendChild(details);
+
     tile.addEventListener('click', () => {
         window.location.href = `event.html?id=${event.id}`;
     });
-
-    tile.appendChild(img);
-    tile.appendChild(title);
-    tile.appendChild(dateText);
 
     return tile;
 }
