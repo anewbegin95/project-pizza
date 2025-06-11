@@ -69,16 +69,15 @@ function generateEventId(event) {
  * @returns {string} - Formatted date string.
  */
 function formatEventDate(start, end, allDay, recurring) {
+    const startDate = parseEventDate(start);
+    const endDate = parseEventDate(end);
+
     // Ensure start and end are defined
     if (!start) start = '';
     if (!end) end = '';
 
     console.log('formatEventDate called with:', { start, end, allDay, recurring }); // Debugging log
     // Parse dates explicitly to handle the format correctly
-    const startDate = new Date(Date.parse(start));
-    const endDate = new Date(Date.parse(end));
-
-    // Adjust dates to Eastern Time (US) explicitly
     const startDateEastern = new Date(startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
     const endDateEastern = new Date(endDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
@@ -231,17 +230,61 @@ function formatEventDate(start, end, allDay, recurring) {
     }
 }
 
+/**
+ * Robustly parse a date string from the CMS, accepting:
+ * - YYYY-MM-DD HH:MM:SS
+ * - YYYY-M-D H:MM:SS
+ * - M/D/YYYY H:MM:SS
+ * - MM/DD/YYYY HH:MM:SS
+ * - and similar variants (with or without leading zeros)
+ * Returns a Date object or null if invalid.
+ */
+function parseEventDate(str) {
+    if (!str) return null;
+    // Try native Date first
+    let d = new Date(str.replace(/-/g, '/'));
+    if (!isNaN(d)) return d;
+    // Try M/D/YYYY H:MM:SS or M/D/YYYY
+    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (match) {
+        let [, month, day, year, hour, min, sec] = match;
+        if (year.length === 2) year = '20' + year;
+        return new Date(
+            Number(year),
+            Number(month) - 1,
+            Number(day),
+            Number(hour || 0),
+            Number(min || 0),
+            Number(sec || 0)
+        );
+    }
+    // Try YYYY-MM-DD H:MM:SS (no leading zero)
+    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (match) {
+        let [, year, month, day, hour, min, sec] = match;
+        return new Date(
+            Number(year),
+            Number(month) - 1,
+            Number(day),
+            Number(hour || 0),
+            Number(min || 0),
+            Number(sec || 0)
+        );
+    }
+    return null;
+}
+
 /*
 * Checks if an event is a multi-day event, in the style of Example 4 above
 * @param {Object} event - Event object containing start_datetime and end_datetime.
 * @returns {boolean} - True if the event is a multi-day event, false otherwise.
 */
 function isMultiDayEvent(event) {
+    const startDate = parseEventDate(event.start_datetime);
+    const endDate = parseEventDate(event.end_datetime);
     if (!event.start_datetime || !event.end_datetime) return false;
-    const start = new Date(event.start_datetime);
-    const end = new Date(event.end_datetime);
     return (
-        start.toDateString() !== end.toDateString() &&
+        startDate.toDateString() !== endDate.toDateString() &&
         event.start_datetime.includes(':') &&
         event.end_datetime.includes(':') &&
         String(event.all_day).toUpperCase() === 'FALSE' &&
