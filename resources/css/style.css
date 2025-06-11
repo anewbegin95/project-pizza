@@ -1193,6 +1193,16 @@ img {
   transition: background 0.2s;
 }
 
+@media (max-width: 615px) {
+  .calendar-more-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    display: block;
+  }
+}
+
 .calendar-more-link:hover,
 .calendar-more-link:focus {
   background: var(--nyc-light-blue);

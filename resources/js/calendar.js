@@ -19,6 +19,13 @@ function formatDateId(date) {
     return date.toISOString().split('T')[0];
 }
 
+/**
+ * This function determines how many event bars are visible in the calendar grid
+ */
+function getMaxVisible() {
+  return window.innerWidth <= 860 ? 2 : 4;
+}
+
 // === UI RENDERING FUNCTIONS ===
 
 /**
@@ -158,8 +165,7 @@ function placeEventsInGrid(month, year) {
       return a.startCellIndex - b.startCellIndex;
     });
 
-
-    const maxVisible = 4; // or whatever number you want
+    const maxVisible = getMaxVisible();
     
     // Map: col (0-6) => array of {event, slot, ...}
     const eventsByDay = Array(7).fill(0).map(() => []);
@@ -346,5 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             renderCalendar(currentMonth, currentYear); // Re-render with new month
         };
+        // Re-render calendar on window resize to update maxVisible
+        window.addEventListener('resize', () => {
+            renderCalendar(currentMonth, currentYear);
+        });
     }
 });
