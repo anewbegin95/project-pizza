@@ -599,10 +599,8 @@ img {
 
 /* Remove extra margin and padding from the events grid section */
 section.events-grid {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   background: none !important;
 }
 
