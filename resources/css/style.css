@@ -597,6 +597,22 @@ img {
   padding: var(--space-sm);
 }
 
+/* Remove extra margin and padding from the events grid section */
+section.events-grid {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  background: none !important;
+}
+
+/* Prevent empty grid from taking up space */
+#eventsGrid:empty {
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 @media (max-width: 1100px) {
   .events-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1191,16 +1207,6 @@ img {
   padding: 2px 0;
   margin-top: 2px;
   transition: background 0.2s;
-}
-
-@media (max-width: 615px) {
-  .calendar-more-link {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    display: block;
-  }
 }
 
 .calendar-more-link:hover,
