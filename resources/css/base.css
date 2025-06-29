@@ -33,10 +33,11 @@
   --space-xxxl: 256px;
 
   /* --- FONT SIZES --- */
-  --font-xl: 40px;
-  --font-lg: 32px;
+  --font-xxl: 40px; /* h1 */
+  --font-xl: 32px;  /* h2 */
+  --font-lg: 28px;  /* h3 */
   --font-md: 24px;
-  --font-sm: 16px;
+  --font-sm: 16px;  /* body, p, ul, ol */
   --font-xs: 8px;
 }
 
@@ -59,13 +60,37 @@ html, body {
 ----------------------------------------------------------------------------- */
 
 /* Headings use Montserrat/Work Sans, body uses Work Sans */
-h1 { font-family: 'Montserrat', 'Arial', sans-serif; font-size: 40px; font-weight: 700; color: var(--nyc-navy); }
-h2, h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
-h2 { font-size: 32px; font-weight: 700; color: var(--nyc-navy); }
-h3 { font-size: 28px; font-weight: 700; color: var(--nyc-navy); }
-p, ul, ol { font-size: 16px; font-weight: 400; color: var(--nyc-navy); margin-bottom: var(--space-sm); }
-.modal-content p, .event-text p { font-family: 'Work Sans', 'Arial', sans-serif; }
-.modal-content h2, .event-text h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-size: var(--font-xxl, 40px); /* Use variable, fallback to px */
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif;
+}
+h2 {
+  font-size: var(--font-xl, 32px);
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+h3 {
+  font-size: var(--font-lg, 28px);
+  font-weight: 700;
+  color: var(--nyc-navy);
+}
+p, ul, ol {
+  font-size: var(--font-sm, 16px);
+  font-weight: 400;
+  color: var(--nyc-navy);
+  margin-bottom: var(--space-sm);
+}
+.modal-content p, .event-text p {
+  font-family: 'Work Sans', 'Arial', sans-serif;
+}
+.modal-content h2, .event-text h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif;
+}
 
 /* -----------------------------------------------------------------------------
   UTILITIES
