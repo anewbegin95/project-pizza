@@ -18,10 +18,6 @@ BEST PRACTICES:
 /* -----------------------------------------------------------------------------
   LAYOUT
 ----------------------------------------------------------------------------- */
-.container { width: 90%; max-width: 1200px; margin: 0 auto; padding: var(--space-sm); }
-section { margin-bottom: var(--space-lg); background-color: var(--nyc-white); }
-header { padding: var(--space-md) 0; }
-footer { padding: var(--space-xs) 0; }
 
 /* -----------------------------------------------------------------------------
   HEADER
