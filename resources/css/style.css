@@ -16,78 +16,8 @@ BEST PRACTICES:
 */
 
 /* -----------------------------------------------------------------------------
-  IMPORTS & VARIABLES
------------------------------------------------------------------------------ */
-
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap');
-/* → Loads three fonts from Google Fonts to use across the site */
-
-/* CSS Variables */
-:root {
-  /* --- COLOR PALETTE --- */
-  --nyc-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
-  --nyc-navy: #001B2E;       /* Primary text color, header/footer */
-  --nyc-white: #FFFFFF;      /* Backgrounds, modal, event tiles */
-  --nyc-light-pink: #ffe2e7; /* Used for backgrounds, buttons, highlights */
-  --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
-  --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
-  --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
-  --nyc-light-green: #A1C7B6;/* Success messages */
-  --nyc-light-gray: #F5F5F5; /* Calendar, backgrounds, alt sections */
-  --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
-  --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
-
-  /* --- SPACING SCALE --- */
-  --space-xxxs: 2px;
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 16px;
-  --space-md: 32px;
-  --space-lg: 64px;
-  --space-xl: 128px;
-  --space-xxl: 192px;
-  --space-xxxl: 256px;
-
-  /* --- FONT SIZES --- */
-  --font-xl: 40px;
-  --font-lg: 32px;
-  --font-md: 24px;
-  --font-sm: 16px;
-  --font-xs: 8px;
-}
-
-/* -----------------------------------------------------------------------------
-  RESET & BASE
------------------------------------------------------------------------------ */
-
-/* Reset all elements to box-sizing: border-box and remove default margin/padding */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html, body {
-  height: 100%;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-  color: var(--nyc-navy);
-  background-color: var(--nyc-white);
-  line-height: 1.6;
-}
-
-/* -----------------------------------------------------------------------------
-  TYPOGRAPHY
------------------------------------------------------------------------------ */
-
-/* Headings use Montserrat/Work Sans, body uses Work Sans */
-h1 { font-family: 'Montserrat', 'Arial', sans-serif; font-size: 40px; font-weight: 700; color: var(--nyc-navy); }
-h2, h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
-h2 { font-size: 32px; font-weight: 700; color: var(--nyc-navy); }
-h3 { font-size: 28px; font-weight: 700; color: var(--nyc-navy); }
-p, ul, ol { font-size: 16px; font-weight: 400; color: var(--nyc-navy); margin-bottom: var(--space-sm); }
-.modal-content p, .event-text p { font-family: 'Work Sans', 'Arial', sans-serif; }
-.modal-content h2, .event-text h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
-
-/* -----------------------------------------------------------------------------
   LAYOUT
 ----------------------------------------------------------------------------- */
-
 .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: var(--space-sm); }
 section { margin-bottom: var(--space-lg); background-color: var(--nyc-white); }
 header { padding: var(--space-md) 0; }
