@@ -39,6 +39,12 @@
   --font-md: 24px;
   --font-sm: 16px;  /* body, p, ul, ol */
   --font-xs: 8px;
+
+  /* --- FONT WEIGHTS --- */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
 
 /* -----------------------------------------------------------------------------
@@ -63,7 +69,7 @@ html, body {
 h1 {
   font-family: 'Montserrat', 'Arial', sans-serif;
   font-size: var(--font-xxl, 40px); /* Use variable, fallback to px */
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
 }
 h2, h3 {
@@ -71,17 +77,17 @@ h2, h3 {
 }
 h2 {
   font-size: var(--font-xl, 32px);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
 }
 h3 {
   font-size: var(--font-lg, 28px);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
 }
 p, ul, ol {
   font-size: var(--font-sm, 16px);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   color: var(--nyc-navy);
   margin-bottom: var(--space-sm);
 }
