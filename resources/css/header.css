@@ -1,1 +1,163 @@
-/* Site header, navigation, menu toggle */
+/* -----------------------------------------------------------------------------
+  HEADER & NAVIGATION
+  ----------------------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--nyc-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Site Title */
+.site-title {
+  flex-shrink: 0;
+}
+.site-title h1 {
+  font-size: 24px;
+  margin: 0;
+  white-space: nowrap;
+}
+.site-title h1 a {
+  text-decoration: none;
+  color: var(--nyc-navy);
+}
+.site-title h1 a:hover {
+  color: var(--nyc-fuschia);
+}
+
+/* Main Navigation */
+.main-nav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+}
+.main-nav ul li a {
+  color: var(--nyc-navy);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: 16px;
+  transition: color 0.3s;
+}
+.main-nav ul li a:hover {
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Social Icons (Header only) */
+.social-icons {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  padding-right: var(--space-md);
+}
+.social-icons a {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+.social-icons .icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  object-fit: contain;
+  transition: filter 0.3s;
+  filter: none;
+  box-shadow: none;
+}
+.social-icons a[href*="instagram"] .icon {
+  width: 32px;
+  height: 32px;
+}
+.social-icons a[href*="tiktok"] .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  color: var(--nyc-navy);
+  cursor: pointer;
+  display: none;
+  z-index: 1001;
+}
+.menu-toggle:hover {
+  background-color: transparent;
+  color: var(--nyc-fuschia);
+}
+.menu-toggle:focus {
+  outline: none;
+}
+
+/* Collapsible Menu */
+.collapsible-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--nyc-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+  overflow: hidden;
+}
+.collapsible-menu.open {
+  transform: translateX(0);
+}
+.collapsible-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+.collapsible-menu ul li {
+  margin: var(--space-sm) 0;
+}
+.collapsible-menu ul li a {
+  font-size: 20px;
+  color: var(--nyc-navy);
+  text-decoration: none;
+  transition: color 0.3s, text-decoration 0.3s;
+  outline: none;
+}
+.collapsible-menu ul li a:hover {
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+.collapsible-menu ul li a:focus {
+  outline: none;
+}
