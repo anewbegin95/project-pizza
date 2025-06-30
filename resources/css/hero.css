@@ -31,15 +31,13 @@
 }
 
 .hero h1 {
-  font-size: 48px;
+  font-size: var(--font-hero, 48px);
   color: var(--nyc-pink);
   margin-bottom: var(--space-sm);
-  font-family: 'Montserrat', 'Arial', sans-serif;
 }
 
 .hero p {
-  font-size: 1.5rem;
+  font-size: var(--font-hero-p, 24px);
   font-style: italic;
   color: var(--nyc-white);
-  font-family: 'Work Sans', 'Arial', sans-serif;
 }
