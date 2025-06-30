@@ -26,49 +26,8 @@ BEST PRACTICES:
 
 /* -----------------------------------------------------------------------------
   HERO SECTION
------------------------------------------------------------------------------ */
-.hero {
-  background-image: url('../images/banners/midtown_manhattan_skyline.jpeg'); /* Ensure the path is correct */
-  background-size: cover;
-  background-position: center;
-  height: 50vh; /* Full viewport height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: var(--nyc-white);
-  position: relative;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay for better text visibility */
-  z-index: 1;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2; /* Ensures the text is above the overlay */
-}
-
-.hero h1 {
-  font-size: 48px;
-  color: var(--nyc-pink);
-  margin-bottom: var(--space-sm);
-  font-family: 'Montserrat', 'Arial', sans-serif;
-}
-
-.hero p {
-  font-size: 1.5rem;
-  font-style: italic;
-  color: var(--nyc-white);
-  font-family: 'Work Sans', 'Arial', sans-serif;
-}
+  ----------------------------------------------------------------------------- */
+/* (moved to hero.css) */
 
 /* -----------------------------------------------------------------------------
   BUTTONS & LINKS
