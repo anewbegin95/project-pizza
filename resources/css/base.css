@@ -37,6 +37,7 @@
   --font-xl: 32px;  /* h2 */
   --font-lg: 28px;  /* h3 */
   --font-md: 24px;
+  --font-md-lg: 20px; /* nav, collapsible menu */
   --font-sm: 16px;  /* body, p, ul, ol */
   --font-xs: 8px;
 

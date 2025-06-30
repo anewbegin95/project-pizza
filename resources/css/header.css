@@ -22,7 +22,7 @@
   flex-shrink: 0;
 }
 .site-title h1 {
-  font-size: 24px;
+  font-size: var(--font-md, 24px);
   margin: 0;
   white-space: nowrap;
 }
@@ -54,7 +54,7 @@
   color: var(--nyc-navy);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
-  font-size: 16px;
+  font-size: var(--font-sm, 16px);
   transition: color 0.3s;
 }
 .main-nav ul li a:hover {
@@ -102,7 +102,7 @@
 .menu-toggle {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-md, 24px);
   font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
   cursor: pointer;
@@ -148,7 +148,7 @@
   margin: var(--space-sm) 0;
 }
 .collapsible-menu ul li a {
-  font-size: 20px;
+  font-size: var(--font-md-lg, 20px);
   color: var(--nyc-navy);
   text-decoration: none;
   transition: color 0.3s, text-decoration 0.3s;
