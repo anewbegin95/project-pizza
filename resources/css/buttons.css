@@ -13,7 +13,7 @@ button,
   outline: none;
   border-radius: 5px;
   font-size: var(--font-sm);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-regular);
   padding: var(--space-xs) var(--space-md);
   text-decoration: none;
   cursor: pointer;
@@ -36,7 +36,7 @@ button:hover,
   outline: none;
   border-radius: 5px;
   font-size: var(--font-sm);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-regular);
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
