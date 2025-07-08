@@ -148,7 +148,7 @@
   margin: var(--space-sm) 0;
 }
 .collapsible-menu ul li a {
-  font-size: var(--font-md-lg, 20px);
+  font-size: var(--font-md-sm, 20px);
   color: var(--nyc-navy);
   text-decoration: none;
   transition: color 0.3s, text-decoration 0.3s;
