@@ -1,1 +1,76 @@
-/* All button and link styles */
+/* =============================================================================
+   BUTTONS & LINKS
+   All button and link styles for consistent, accessible UI
+============================================================================= */
+
+/* Primary Buttons */
+.contact-btn,
+button,
+.btn {
+  background-color: var(--nyc-pink);
+  color: var(--nyc-fuschia);
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) var(--space-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.contact-btn:hover,
+button:hover,
+.btn:hover {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  outline: none;
+}
+
+/* Secondary Buttons */
+.secondary-btn {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.secondary-btn:hover {
+  background-color: var(--nyc-light-blue);
+  color: var(--nyc-navy);
+}
+
+/* Links */
+a {
+  color: var(--nyc-fuschia);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: color 0.3s;
+}
+a:hover {
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+a:focus,
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Responsive: Adjust button size for smaller screens */
+@media (max-width: 860px) {
+  .contact-btn,
+  button,
+  .btn {
+    font-size: var(--font-xs-sm);
+    padding: var(--space-xxs) var(--space-xs);
+    height: auto;
+    width: auto;
+  }
+}

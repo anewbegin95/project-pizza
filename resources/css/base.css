@@ -40,6 +40,7 @@
   --font-md: 24px;
   --font-md-sm: 20px; /* nav, collapsible menu */
   --font-sm: 16px;  /* body, p, ul, ol */
+  --font-xs-sm: 14px; /* Small font for responsive buttons/labels */
   --font-xs: 8px;
 
   /* --- FONT WEIGHTS --- */
