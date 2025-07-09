@@ -85,10 +85,6 @@ section.events-grid {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.event-tile--horizontal {
-  /* Modifier for horizontal layout */
-}
-
 .event-tile:hover {
   box-shadow: 0 8px 24px rgba(216,30,91,0.18);
   transform: translateY(-2px) scale(1.01);
