@@ -28,6 +28,7 @@
   --space-xl: 128px;
   --space-lg: 64px;
   --space-md: 32px;
+  --space-sm-md: 24px;
   --space-sm: 16px;
   --space-xs: 8px;
   --space-xxs: 4px;
@@ -40,7 +41,7 @@
   --font-lg: 28px;  /* h3 */
   --font-md: 24px;
   --font-md-sm: 20px; /* nav, collapsible menu */
-  --font-sm: 16px;  /* body, p, ul, ol */
+  --font-sm: 16px;  /* body, p, ul, ol, small text, etc. */
   --font-xs-sm: 14px; /* Small font for responsive buttons/labels */
   --font-xs: 8px;
 
@@ -65,28 +66,10 @@
   --radius-round: 50%;
   --radius-pill: 999px;
 
-  /* --- ICON & IMAGE SIZES --- */
-  --icon-size-lg: 32px;
-  --icon-size-md: 24px;
-  --profile-img-size: 180px;
-
   /* --- CONTAINER WIDTHS --- */
   --container-max-width: 1200px;
   --container-width: 90%;
   --section-max-width: 900px;
-
-  /* --- GAP & MARGIN SIZES --- */
-  --gap-lg: 2rem;
-  --gap-md: 1.5rem;
-  --gap-sm: 1rem;
-  --gap-xs: 0.5rem;
-
-  /* --- MISC --- */
-  --font-size-1-08: 1.08rem;
-  --font-size-1-15: 1.15em;
-  --margin-2rem: 2rem;
-  --margin-1-5em: 1.5em;
-  --margin-0-5em: 0.5em;
 }
 
 /* -----------------------------------------------------------------------------

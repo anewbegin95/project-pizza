@@ -81,8 +81,8 @@
   margin: 0;
 }
 .social-icons .icon {
-  width: var(--icon-size-lg);
-  height: var(--icon-size-lg);
+  width: var(--space-lg);
+  height: var(--space-lg);
   display: inline-block;
   object-fit: contain;
   transition: filter 0.3s;
@@ -90,12 +90,12 @@
   box-shadow: none;
 }
 .social-icons a[href*="instagram"] .icon {
-  width: var(--icon-size-lg);
-  height: var(--icon-size-lg);
+  width: var(--space-md);
+  height: var(--space-md);
 }
 .social-icons a[href*="tiktok"] .icon {
-  width: var(--icon-size-md);
-  height: var(--icon-size-md);
+  width: var(--space-sm-md);
+  height: var(--space-sm-md);
 }
 
 /* Menu Toggle Button */

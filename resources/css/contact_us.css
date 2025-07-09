@@ -4,20 +4,20 @@
   align-items: flex-start;
   justify-content: center;
   max-width: var(--section-max-width);
-  margin: var(--margin-2rem) auto;
-  gap: var(--gap-lg);
+  margin: var(--space-lg) auto;
+  gap: var(--space-lg);
 }
 
 .contact-text {
   flex: 1;
-  font-size: var(--font-size-1-08);
+  font-size: var(--font-sm);
   line-height: 1.7;
 }
 
 .contact-text h3 {
-  margin-top: var(--margin-1-5em);
-  margin-bottom: var(--margin-0-5em);
-  font-size: var(--font-size-1-15);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-sm);
   color: var(--nyc-navy, #1a2238);
 }
 
@@ -25,8 +25,8 @@
   .contact-section#contact-us {
     flex-direction: column;
     align-items: center;
-    gap: var(--gap-md);
-    padding: 0 var(--gap-sm);
+    gap: var(--space-md);
+    padding: 0 var(--space-sm);
   }
   .contact-text {
     text-align: left;
