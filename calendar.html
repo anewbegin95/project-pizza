@@ -24,13 +24,13 @@
                     <h1>Events Calendar</h1>
                 </div>
             </section>
-            <section id="calendar-section" class="hidden" style="display:none;">
-                <div id="calendar-header">
-                    <button id="prev-month" aria-label="Previous Month">←</button>
-                    <span id="calendar-month-year"></span>
-                    <button id="next-month" aria-label="Next Month">→</button>
+            <section class="calendar-section hidden" style="display:none;">
+                <div class="calendar-header">
+                    <button class="calendar-header__prev-month" aria-label="Previous Month">←</button>
+                    <span class="calendar-month-year"></span>
+                    <button class="calendar-header__next-month" aria-label="Next Month">→</button>
                 </div>
-                <div id="calendar-days-row">
+                <div class="calendar-days-row">
                     <div class="calendar-day-title">Sun</div>
                     <div class="calendar-day-title">Mon</div>
                     <div class="calendar-day-title">Tue</div>
@@ -39,7 +39,7 @@
                     <div class="calendar-day-title">Fri</div>
                     <div class="calendar-day-title">Sat</div>
                 </div>
-                <div id="calendar-grid"></div>
+                <div class="calendar-grid"></div>
                 <!-- Calendar Day Overflow Modal (for '+N more' link) -->
                 <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
                   <div class="modal-content">

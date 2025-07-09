@@ -207,6 +207,10 @@ section.events-grid {
   text-align: left;
 }
 
+.event-detail__content > h1#eventTitle + .return-button {
+  margin-top: var(--space-xxl);
+}
+
 .event-detail__date,
 .event-detail__location {
   font-size: var(--font-md-sm);
@@ -391,3 +395,7 @@ section.events-grid {
 }
 
 /* Migration: All event-related class names now use BEM/component style per standards.md */
+
+.mt-sm {
+  margin-top: var(--space-sm) !important;
+}

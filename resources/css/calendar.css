@@ -2,7 +2,7 @@
   CALENDAR (migrated from style.css)
   ----------------------------------------------------------------------------- */
 /* Center the whole calendar section and set width */
-#calendar-section {
+.calendar-section {
   width: 70vw;
   max-width: var(--container-max-width);
   min-width: 320px;
@@ -11,7 +11,7 @@
   padding: 0;
 }
 
-#calendar-header {
+.calendar-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -27,7 +27,7 @@
   margin: 0;
 }
 
-#calendar-grid {
+.calendar-grid {
   width: 100%;
   margin: 0;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
@@ -36,14 +36,15 @@
   overflow: hidden;
 }
 
-#prev-month {
+.calendar-header__prev-month {
   justify-self: end;
 }
 
-#next-month {
+.calendar-header__next-month {
   justify-self: start;
 }
-#calendar-month-year {
+
+.calendar-month-year {
   grid-column: 2;
   min-width: 160px;
   text-align: center;
@@ -51,7 +52,7 @@
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
 
-#calendar-days-row {
+.calendar-days-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: var(--nyc-light-gray);
