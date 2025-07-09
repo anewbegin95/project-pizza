@@ -22,15 +22,15 @@
   --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
 
   /* --- SPACING SCALE --- */
-  --space-xxxs: 2px;
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 16px;
-  --space-md: 32px;
-  --space-lg: 64px;
-  --space-xl: 128px;
-  --space-xxl: 192px;
   --space-xxxl: 256px;
+  --space-xxl: 192px;
+  --space-xl: 128px;
+  --space-lg: 64px;
+  --space-md: 32px;
+  --space-sm: 16px;
+  --space-xs: 8px;
+  --space-xxs: 4px;
+  --space-xxxs: 2px;
 
   /* --- FONT SIZES --- */
   --font-xxxl: 48px; /* hero h1 */
