@@ -11,7 +11,7 @@ button,
   color: var(--nyc-fuschia);
   border: none;
   outline: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-sm);
   font-weight: var(--font-weight-regular);
   padding: var(--space-xs) var(--space-md);
@@ -34,7 +34,7 @@ button:hover,
   color: var(--nyc-white);
   border: none;
   outline: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-sm);
   font-weight: var(--font-weight-regular);
   text-decoration: none;

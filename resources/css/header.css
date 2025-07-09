@@ -7,7 +7,7 @@
   align-items: center;
   padding: var(--space-sm) var(--space-md);
   background-color: var(--nyc-white);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-container {
@@ -81,8 +81,8 @@
   margin: 0;
 }
 .social-icons .icon {
-  width: 32px;
-  height: 32px;
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
   display: inline-block;
   object-fit: contain;
   transition: filter 0.3s;
@@ -90,12 +90,12 @@
   box-shadow: none;
 }
 .social-icons a[href*="instagram"] .icon {
-  width: 32px;
-  height: 32px;
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 .social-icons a[href*="tiktok"] .icon {
-  width: 24px;
-  height: 24px;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
 }
 
 /* Menu Toggle Button */

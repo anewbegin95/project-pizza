@@ -20,6 +20,7 @@
   --nyc-light-gray: #F5F5F5; /* Calendar, backgrounds, alt sections */
   --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
   --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
+  --nyc-overlay: rgba(0, 0, 0, 0.5); /* Overlay for hero, modals, etc. */
 
   /* --- SPACING SCALE --- */
   --space-xxxl: 256px;
@@ -48,6 +49,44 @@
   --font-weight-semibold: 600;
   --font-weight-medium: 500;
   --font-weight-regular: 400;
+
+  /* --- BOX SHADOWS --- */
+  --shadow-xs: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.10);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-xl: 0 4px 16px rgba(0,0,0,0.20);
+
+  /* --- BORDER RADII --- */
+  --radius-xs: 4px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-round: 50%;
+  --radius-pill: 999px;
+
+  /* --- ICON & IMAGE SIZES --- */
+  --icon-size-lg: 32px;
+  --icon-size-md: 24px;
+  --profile-img-size: 180px;
+
+  /* --- CONTAINER WIDTHS --- */
+  --container-max-width: 1200px;
+  --container-width: 90%;
+  --section-max-width: 900px;
+
+  /* --- GAP & MARGIN SIZES --- */
+  --gap-lg: 2rem;
+  --gap-md: 1.5rem;
+  --gap-sm: 1rem;
+  --gap-xs: 0.5rem;
+
+  /* --- MISC --- */
+  --font-size-1-08: 1.08rem;
+  --font-size-1-15: 1.15em;
+  --margin-2rem: 2rem;
+  --margin-1-5em: 1.5em;
+  --margin-0-5em: 0.5em;
 }
 
 /* -----------------------------------------------------------------------------

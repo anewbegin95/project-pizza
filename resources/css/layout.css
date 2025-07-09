@@ -2,8 +2,8 @@
   LAYOUT (Containers & Sections)
   ----------------------------------------------------------------------------- */
 .container {
-  width: 90%;
-  max-width: 1200px;
+  width: var(--container-width);
+  max-width: var(--container-max-width);
   margin: 0 auto;
   padding: var(--space-sm);
 }
