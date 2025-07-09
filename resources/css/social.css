@@ -1,1 +1,103 @@
-/* Social icons, CTA, Instagram embeds */
+/* Center the social media CTA section and style like header icons */
+.centered-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: var(--space-md) auto;
+  padding: var(--space-md) 0;
+  background: var(--nyc-light-blue);
+  border-radius: 12px;
+  max-width: 95%;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.social-media-title {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  color: var(--nyc-navy);
+  font-size: var(--font-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.social-media-subtitle {
+  color: var(--nyc-navy);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-md);
+}
+
+.centered-cta .social-icons {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin: 0 auto;
+  padding-right: 0;
+}
+
+.centered-cta .social-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nyc-navy);
+  background-color: var(--nyc-blue);
+  border-radius: 8px;
+  padding: 0;
+  margin: 0;
+  min-width: 120px;
+  max-width: 300px;
+  height: 56px;
+  min-height: 56px;
+  overflow: hidden;
+}
+
+.centered-cta .social-icons a:hover,
+.centered-cta .social-icons a:focus {
+  background-color: var(--nyc-navy);
+  color: var(--nyc-white);
+  outline: none;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(216,30,91,0.15);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.2s;
+}
+
+.centered-cta .icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  margin-right: var(--space-xs);
+  display: inline-block;
+  object-fit: contain;
+  transition: filter 0.3s, fill 0.3s;
+  fill: currentColor;
+}
+
+.centered-cta a[href*="instagram"] .icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.instagram-embed-grid {
+  display: grid;
+  grid-template-columns: 4fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-sm, 32px);
+  justify-items: center;
+  margin: var(--space-lg, 64px) auto;
+  max-width: 1400px;
+  width: 100%;
+}
+
+.instagram-embed-grid iframe {
+  border-radius: var(--space-xs, 8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: var(--nyc-white, #fff);
+  width: 100%;
+  max-width: 320px;
+  min-height: 400px;
+  aspect-ratio: 4/5;
+  margin: 0 auto;
+  display: block;
+}
