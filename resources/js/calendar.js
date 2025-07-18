@@ -36,7 +36,7 @@ function getMaxVisible() {
  */
 function renderCalendar(month, year) {
     // Get the grid container element from the DOM
-    const grid = document.getElementById('calendar-grid');
+    const grid = document.querySelector('.calendar-grid');
     // Clear any previous calendar grid content
     grid.innerHTML = '';
 
@@ -47,7 +47,7 @@ function renderCalendar(month, year) {
     const daysInMonth = lastDay.getDate(); // Number of days in the month
 
     // Set the calendar header to show the current month and year
-    document.getElementById('calendar-month-year').textContent =
+    document.querySelector('.calendar-month-year').textContent =
         firstDay.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
     // The calendar grid is always 6 rows of 7 days (to cover all possible month layouts)
@@ -84,11 +84,29 @@ function renderCalendar(month, year) {
     placeEventsInGrid(month, year);
 
     // Reveal the calendar section after calendar is rendered
-    const calendarSection = document.getElementById('calendar-section');
+    const calendarSection = document.querySelector('.calendar-section');
     if (calendarSection) {
         calendarSection.classList.remove('hidden');
         calendarSection.style.display = '';
     }
+
+    // Inject the footer after calendar is rendered
+    fetch('partials/footer.html')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load footer.html: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then((footerContent) => {
+        const placeholder = document.getElementById('footer-placeholder');
+        if (placeholder) {
+          placeholder.innerHTML = footerContent;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 }
 
 /**
@@ -318,8 +336,8 @@ function placeEventsInGrid(month, year) {
 // This ensures all DOM elements are available
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Only run on calendar.html (where #calendar-grid exists)
-    if (document.getElementById('calendar-grid')) {
+    // Only run on calendar.html (where .calendar-grid exists)
+    if (document.querySelector('.calendar-grid')) {
         // Fetch the event data from the Google Sheet CSV (URL is defined in events.js)
         fetch(GOOGLE_SHEET_CSV_URL)
             .then(res => res.text()) // Get the CSV as text
@@ -333,9 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Render the calendar for the current month and year
                 renderCalendar(currentMonth, currentYear);
             });
-
         // Set up the previous month button
-        document.getElementById('prev-month').onclick = () => {
+        document.querySelector('.calendar-header__prev-month').onclick = () => {
             currentMonth--;
             if (currentMonth < 0) {
                 currentMonth = 11; // Wrap to December
@@ -344,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCalendar(currentMonth, currentYear); // Re-render with new month
         };
         // Set up the next month button
-        document.getElementById('next-month').onclick = () => {
+        document.querySelector('.calendar-header__next-month').onclick = () => {
             currentMonth++;
             if (currentMonth > 11) {
                 currentMonth = 0; // Wrap to January

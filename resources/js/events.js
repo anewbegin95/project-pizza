@@ -304,27 +304,28 @@ function createEventTile(event) {
     if (String(event.events_page).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
-    tile.className = 'event-tile horizontal-tile';
+    // BEM/component refactor for event tile
+    tile.className = 'event-tile event-tile--horizontal';
 
     // Left: Image
     const imgContainer = document.createElement('div');
-    imgContainer.className = 'event-img-container';
+    imgContainer.className = 'event-tile__img-container';
     const img = document.createElement('img');
     img.src = event.img || 'resources/images/images/default-event-image.jpeg';
     img.alt = `${event.name} image`;
-    img.className = 'event-img';
+    img.className = 'event-tile__img';
     imgContainer.appendChild(img);
 
     // Right: Details
     const details = document.createElement('div');
-    details.className = 'event-details';
+    details.className = 'event-tile__details';
     const title = document.createElement('h3');
     title.textContent = event.name;
     const dateText = document.createElement('p');
-    dateText.className = 'event-date';
+    dateText.className = 'event-tile__date';
     dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
     const location = document.createElement('p');
-    location.className = 'event-location';
+    location.className = 'event-tile__location';
     location.textContent = event.location || '';
 
     details.appendChild(title);
@@ -649,6 +650,48 @@ function loadAndDisplayEvents() {
             });
 
             document.querySelector('main').appendChild(grid);
+
+            // Wait for all event tile images to load before injecting the footer
+            const images = Array.from(grid.querySelectorAll('img'));
+            let loadedCount = 0;
+            if (images.length === 0) {
+              injectFooter();
+            } else {
+              images.forEach(img => {
+                if (img.complete) {
+                  loadedCount++;
+                  if (loadedCount === images.length) injectFooter();
+                } else {
+                  img.addEventListener('load', () => {
+                    loadedCount++;
+                    if (loadedCount === images.length) injectFooter();
+                  });
+                  img.addEventListener('error', () => {
+                    loadedCount++;
+                    if (loadedCount === images.length) injectFooter();
+                  });
+                }
+              });
+            }
+
+            function injectFooter() {
+              fetch('partials/footer.html')
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error(`Failed to load footer.html: ${response.statusText}`);
+                  }
+                  return response.text();
+                })
+                .then((footerContent) => {
+                  const placeholder = document.getElementById('footer-placeholder');
+                  if (placeholder) {
+                    placeholder.innerHTML = footerContent;
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }
         })
         .catch(error => {
             console.error('Error loading events:', error);

@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-title="Calendar">
     <head>
+        <link rel="stylesheet" href="resources/css/base.css">
+        <link rel="stylesheet" href="resources/css/layout.css">
+        <link rel="stylesheet" href="resources/css/header.css">
+        <link rel="stylesheet" href="resources/css/hero.css">
+        <link rel="stylesheet" href="resources/css/buttons.css">
+        <link rel="stylesheet" href="resources/css/events.css">
+        <link rel="stylesheet" href="resources/css/calendar.css">
+        <link rel="stylesheet" href="resources/css/modals.css">
+        <link rel="stylesheet" href="resources/css/carousel.css">
+        <link rel="stylesheet" href="resources/css/social.css">
         <link rel="stylesheet" href="resources/css/style.css">  
         <!-- The head, header, and footer content will be dynamically loaded using script below-->
         <script src="resources/js/partials-loader.js"></script>
@@ -14,13 +24,13 @@
                     <h1>Events Calendar</h1>
                 </div>
             </section>
-            <section id="calendar-section" class="hidden" style="display:none;">
-                <div id="calendar-header">
-                    <button id="prev-month" aria-label="Previous Month">←</button>
-                    <span id="calendar-month-year"></span>
-                    <button id="next-month" aria-label="Next Month">→</button>
+            <section class="calendar-section hidden" style="display:none;">
+                <div class="calendar-header">
+                    <button class="calendar-header__prev-month" aria-label="Previous Month">←</button>
+                    <span class="calendar-month-year"></span>
+                    <button class="calendar-header__next-month" aria-label="Next Month">→</button>
                 </div>
-                <div id="calendar-days-row">
+                <div class="calendar-days-row">
                     <div class="calendar-day-title">Sun</div>
                     <div class="calendar-day-title">Mon</div>
                     <div class="calendar-day-title">Tue</div>
@@ -29,7 +39,7 @@
                     <div class="calendar-day-title">Fri</div>
                     <div class="calendar-day-title">Sat</div>
                 </div>
-                <div id="calendar-grid"></div>
+                <div class="calendar-grid"></div>
                 <!-- Calendar Day Overflow Modal (for '+N more' link) -->
                 <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
                   <div class="modal-content">
@@ -41,6 +51,8 @@
                 </div>
             </section>
         </main>
+        <!-- The footer content will be dynamically loaded here -->
+        <div id="footer-placeholder"></div>
         <script src="resources/js/events.js"></script>
         <script src="resources/js/calendar.js"></script>
     </body>

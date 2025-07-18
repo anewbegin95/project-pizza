@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Hide the hero section until data loads
-    const heroSection = document.querySelector('.event-detail-hero');
+    const heroSection = document.querySelector('.event-detail');
     if (heroSection) {
         heroSection.classList.add('hidden');
         heroSection.style.display = 'none';
