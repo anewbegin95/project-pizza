@@ -120,8 +120,9 @@ function renderEventDetail(event) {
             if (isDesktop || isSafari) {
                 icsLink.style.display = 'none';
                 // Create a container for multiple ICS links
-                const startDate = new Date(event.start_datetime);
-                const endDate = new Date(event.end_datetime);
+                // Use robust date parsing for ICS links
+                const startDate = parseEventDate(event.start_datetime);
+                const endDate = parseEventDate(event.end_datetime);
                 const numDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
                 const icsLinksContainer = document.createElement('div');
                 icsLinksContainer.className = 'ics-links-container';

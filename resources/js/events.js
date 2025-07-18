@@ -241,14 +241,16 @@ function formatEventDate(start, end, allDay, recurring) {
  */
 function parseEventDate(str) {
     if (!str) return null;
-    // Try native Date first
-    let d = new Date(str.replace(/-/g, '/'));
+    // Convert "YYYY-MM-DD HH:mm:ss" to ISO 8601 format for reliable parsing
+    const isoStr = str.replace(' ', 'T');
+    let d = new Date(isoStr);
     if (!isNaN(d)) return d;
+    // Fallbacks (legacy, rare)
     // Try M/D/YYYY H:MM:SS or M/D/YYYY
-    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    let match = str.match(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?$/);
     if (match) {
         let [, month, day, year, hour, min, sec] = match;
-        if (year.length === 2) year = '20' + year;
+        if (year && year.length === 2) year = '20' + year;
         return new Date(
             Number(year),
             Number(month) - 1,
