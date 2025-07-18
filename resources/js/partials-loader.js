@@ -85,7 +85,9 @@ fetch('partials/footer.html')
     const placeholder = document.getElementById('footer-placeholder');
     if (placeholder) {
       placeholder.innerHTML = footerContent;
-    } 
+    } else {
+      console.warn('Footer placeholder element not found in the DOM.');
+    }
   })
   .catch((error) => {
     console.error(error);
