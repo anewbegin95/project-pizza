@@ -650,6 +650,48 @@ function loadAndDisplayEvents() {
             });
 
             document.querySelector('main').appendChild(grid);
+
+            // Wait for all event tile images to load before injecting the footer
+            const images = Array.from(grid.querySelectorAll('img'));
+            let loadedCount = 0;
+            if (images.length === 0) {
+              injectFooter();
+            } else {
+              images.forEach(img => {
+                if (img.complete) {
+                  loadedCount++;
+                  if (loadedCount === images.length) injectFooter();
+                } else {
+                  img.addEventListener('load', () => {
+                    loadedCount++;
+                    if (loadedCount === images.length) injectFooter();
+                  });
+                  img.addEventListener('error', () => {
+                    loadedCount++;
+                    if (loadedCount === images.length) injectFooter();
+                  });
+                }
+              });
+            }
+
+            function injectFooter() {
+              fetch('partials/footer.html')
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error(`Failed to load footer.html: ${response.statusText}`);
+                  }
+                  return response.text();
+                })
+                .then((footerContent) => {
+                  const placeholder = document.getElementById('footer-placeholder');
+                  if (placeholder) {
+                    placeholder.innerHTML = footerContent;
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }
         })
         .catch(error => {
             console.error('Error loading events:', error);

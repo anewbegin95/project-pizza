@@ -89,6 +89,24 @@ function renderCalendar(month, year) {
         calendarSection.classList.remove('hidden');
         calendarSection.style.display = '';
     }
+
+    // Inject the footer after calendar is rendered
+    fetch('partials/footer.html')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load footer.html: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then((footerContent) => {
+        const placeholder = document.getElementById('footer-placeholder');
+        if (placeholder) {
+          placeholder.innerHTML = footerContent;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 }
 
 /**
