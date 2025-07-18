@@ -70,7 +70,7 @@ section.events-grid {
 .event-tile {
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* changed from stretch to flex-start to prevent stretching children */
+  align-items: center; /* center content vertically */
   background: var(--nyc-light-pink);
   border: none;
   border-radius: 12px;
@@ -114,7 +114,7 @@ section.events-grid {
   flex: 1 1 75%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* center text vertically */
   padding: var(--space-sm);
   gap: var(--space-xxs);
 }
