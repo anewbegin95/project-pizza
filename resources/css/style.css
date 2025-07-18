@@ -2,16 +2,45 @@
 ===============================================================================
 NYC Slice of Life – Global Stylesheet
 Author: Alex Newbegin
-Last Updated: 2025-05-15
+Last Updated: 2025-05-07
 ===============================================================================
+*/
 
-BEST PRACTICES: 
-- Organized by: Imports & Variables, Reset & Base, Typography, Layout, Header, Hero, Buttons & Links, Backgrounds, Forms, Section Dividers, Footer, Images & Icons, Events Grid, Event Modal, Calendar, Accessibility, Responsive Styles
-- All colors, spacing, and font sizes use CSS variables for consistency and easy updates
-- DRY: No duplicate rules, all reusable classes and variables
-- Responsive: Uses media queries for grid and modal layouts
-- Accessibility: Focus styles, color contrast, readable font sizes
-- Annotation: Each section and major block is clearly commented
+/*
+===============================================================================
+📌 CSS Best Practices:
+
+1. Structure & Organization
+   - Group styles logically: use clear sections (e.g., Variables, Reset, Typography, Layout, Components).
+   - Use consistent indentation (2 or 4 spaces) and spacing between rules for readability.
+   - Place utility and global styles near the top (e.g., variables, resets).
+
+2. Naming Conventions
+   - Use class names that are descriptive and consistent (e.g., .main-header, .card-title).
+   - Follow BEM (Block__Element--Modifier) if working with large-scale components.
+
+3. Use Variables
+   - Define common values like colors and spacing as CSS variables for consistency and easy updates.
+
+4. Keep it DRY
+   - Don’t Repeat Yourself. Reuse classes and variables whenever possible to reduce redundancy.
+
+5. Responsive Design
+   - Use media queries to adapt layouts and text sizes for various screen widths.
+   - Test responsiveness on actual devices when possible.
+
+6. Maintain Accessibility
+   - Ensure color contrasts are readable.
+   - Use focus styles and responsive images/icons to support keyboard and screen reader users.
+
+7. Performance
+   - Avoid overly specific selectors or deep nesting to keep CSS performant and maintainable.
+   - Minimize use of !important unless absolutely necessary.
+
+8. Version Control
+   - Use comments and versioning when making major updates to keep track of changes over time.
+
+Happy Styling! 🎨
 ===============================================================================
 */
 
@@ -25,111 +54,121 @@ BEST PRACTICES:
 
 /* CSS Variables */
 :root {
-  /* --- COLOR PALETTE --- */
-  --nyc-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
-  --nyc-navy: #001B2E;       /* Primary text color, header/footer */
-  --nyc-white: #FFFFFF;      /* Backgrounds, modal, event tiles */
-  --nyc-light-pink: #ffe2e7; /* Used for backgrounds, buttons, highlights */
-  --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
-  --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
-  --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
-  --nyc-light-green: #A1C7B6;/* Success messages */
-  --nyc-light-gray: #F5F5F5; /* Calendar, backgrounds, alt sections */
-  --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
-  --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
+  /* Color Palette */
+  --nyc-yellow: #FFD700;        /* Bright yellow for highlights, links, buttons */
+  --nyc-dark-gray: #474646;     /* Dark gray for main text */
+  --nyc-white: #FFFFFF;         /* Pure white for backgrounds */
 
-  /* --- SPACING SCALE --- */
-  --space-xxxs: 2px;
+  --nyc-soft-pink: #FFB6C1;     /* Accent color */
+  --nyc-dark-pink: #b55c88;     /* For hover states or contrast */
+  --nyc-gray: #999999;          /* Secondary gray, used in footer */
+
+  /* Spacing scale for consistent layout */
   --space-xxs: 4px;
   --space-xs: 8px;
   --space-sm: 16px;
   --space-md: 32px;
   --space-lg: 64px;
   --space-xl: 128px;
-  --space-xxl: 192px;
-  --space-xxxl: 256px;
-
-  /* --- FONT SIZES --- */
-  --font-xl: 40px;
-  --font-lg: 32px;
-  --font-md: 24px;
-  --font-sm: 16px;
-  --font-xs: 8px;
+  --space-xxl: 256px;
 }
 
 /* -----------------------------------------------------------------------------
   RESET & BASE
 ----------------------------------------------------------------------------- */
 
-/* Reset all elements to box-sizing: border-box and remove default margin/padding */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* Resets default browser styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;  /* Includes padding and border in width/height */
+}
+
+/* Base styles for html and body */
 html, body {
   height: 100%;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-  color: var(--nyc-navy);
+  margin: 0;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+  color: var(--nyc-dark-gray);
   background-color: var(--nyc-white);
   line-height: 1.6;
+  /* display: flex; */
+  /* flex-direction: column; */
 }
 
 /* -----------------------------------------------------------------------------
   TYPOGRAPHY
 ----------------------------------------------------------------------------- */
 
-/* Headings use Montserrat/Work Sans, body uses Work Sans */
-h1 { font-family: 'Montserrat', 'Arial', sans-serif; font-size: 40px; font-weight: 700; color: var(--nyc-navy); }
-h2, h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
-h2 { font-size: 32px; font-weight: 700; color: var(--nyc-navy); }
-h3 { font-size: 28px; font-weight: 700; color: var(--nyc-navy); }
-p, ul, ol { font-size: 16px; font-weight: 400; color: var(--nyc-navy); margin-bottom: var(--space-sm); }
-.modal-content p, .event-text p { font-family: 'Work Sans', 'Arial', sans-serif; }
-.modal-content h2, .event-text h3 { font-family: 'Work Sans', 'Arial', sans-serif; }
+/* Headings use a bold font and dark color */
+h1, h2, h3 {
+  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-weight: 700;
+  color: var(--nyc-dark-gray);
+}
+
+h1 {
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-size: 40px;
+}
+
+h2 { font-size: 32px; }
+h3 { font-size: 28px; }
+
+/* Paragraph and list text */
+p, ul, ol {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+}
 
 /* -----------------------------------------------------------------------------
   LAYOUT
 ----------------------------------------------------------------------------- */
 
-.container { width: 90%; max-width: 1200px; margin: 0 auto; padding: var(--space-sm); }
-section { margin-bottom: var(--space-lg); background-color: var(--nyc-white); }
-header { padding: var(--space-md) 0; }
-footer { padding: var(--space-xs) 0; }
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+section {
+  margin-bottom: var(--space-lg);
+}
+
+header {
+  padding: var(--space-md) 0;
+}
+
+footer {
+  padding: var(--space-xs) 0;
+}
 
 /* -----------------------------------------------------------------------------
   HEADER
 ----------------------------------------------------------------------------- */
-.site-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--nyc-white);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
 .header-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  max-width: 2000px;
+  position: relative;
 }
 
-/* Site Title */
 .site-title {
   flex-shrink: 0;
 }
 
-.site-title h1 {
-  font-size: 24px; /* Default size */
-  margin: 0;
-  white-space: nowrap; /* Prevent wrapping */
-}
-
-.site-title h1 a {
+.site-title a {
   text-decoration: none;
-  color: var(--nyc-navy);
+  color: var(--nyc-dark-gray);
 }
 
-.site-title h1 a:hover {
-  color: var(--nyc-fuschia);
+.site-title a:hover {
+  color: var(--nyc-yellow);
 }
 
 .main-nav {
@@ -150,16 +189,14 @@ footer { padding: var(--space-xs) 0; }
 }
 
 .main-nav ul li a {
-  color: var(--nyc-navy);
+  color: var(--nyc-dark-gray);
   text-decoration: none;
   font-weight: 500;
-  font-size: 16px; /* Default size */
   transition: color 0.3s;
 }
 
 .main-nav ul li a:hover {
-  color: var(--nyc-fuschia);
-  text-decoration: underline;
+  color: var(--nyc-yellow);
 }
 
 .header-actions {
@@ -170,7 +207,7 @@ footer { padding: var(--space-xs) 0; }
 
 .social-icons {
   display: flex;
-  gap: var(--space-md); /* Adds spacing between icons */
+  gap: var(--space-md); /* adds spacing between icons */
   align-items: center;
   padding-right: var(--space-md);
 }
@@ -182,103 +219,22 @@ footer { padding: var(--space-xs) 0; }
 }
 
 .social-icons .icon {
-  width: 32px; /* Set a consistent width */
-  height: 32px; /* Set a consistent height */
+  width: 32px;
+  height: 32px;
   display: inline-block;
-  object-fit: contain; /* Ensures the image fits within the box without distortion */
   transition: filter 0.3s;
   filter: none;
   box-shadow: none;
 }
 
 .social-icons a[href*="instagram"] .icon {
-  width: 32px; /* Override any custom sizes to match the default */
-  height: 32px;
+  width: 40px; /* Adjust the width */
+  height: 40px; /* Adjust the height */
 }
 
-.social-icons a[href*="tiktok"] .icon {
-  width: 24px; /* Ensure TikTok icon matches the default size */
-  height: 24px;
-}
 
-/* Menu Toggle Button */
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--nyc-navy);
-  cursor: pointer;
-  display: none; /* Hidden by default */
-  z-index: 1001; /* Ensure it appears above other elements */
-}
-
-.menu-toggle:hover {
-  background-color: transparent;;
-  color: var(--nyc-fuschia);
-}
-
-.menu-toggle:focus {
-  outline: none;
-}
-
-/* Collapsible Menu */
-.collapsible-menu {
-  position: fixed; /* Ensure it covers the entire screen */
-  top: 0;
-  left: 0;
-  width: 100%; /* Full width of the viewport */
-  height: 100%; /* Full height of the viewport */
-  background-color: var(--nyc-white); /* Background color for the menu */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-md); /* Spacing between menu items */
-  transform: translateX(100%); /* Hidden off-screen by default */
-  transition: transform 0.3s ease-in-out; /* Smooth slide-in effect */
-  z-index: 1000; /* Ensure it appears above other elements */
-  overflow: hidden; /* Prevent scrolling when the menu is open */
-}
-
-.collapsible-menu.open {
-  transform: translateX(0); /* Slide into view */
-}
-
-.collapsible-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: center;
-}
-
-.collapsible-menu ul li {
-  margin: var(--space-sm) 0;
-}
-
-/* Collapsible Menu Links */
-.collapsible-menu ul li a {
-  font-size: 20px;
-  color: var(--nyc-navy); /* Default text color */
-  text-decoration: none; /* No underline by default */
-  transition: color 0.3s, text-decoration 0.3s; /* Smooth hover effect */
-  outline: none; /* Remove focus outline */
-}
-
-/* Hover Effect: Yellow text with underline */
-.collapsible-menu ul li a:hover {
-  color: var(--nyc-fuschia); /* Change text color to yellow */
-  text-decoration: underline; /* Add underline on hover */
-}
-
-/* Focus Effect: Optional, if you want to keep focus styles */
-.collapsible-menu ul li a:focus {
-  outline: none; /* Remove the default focus outline */
-}
-
-/* Show the menu when toggled */
-.collapsible-menu.open {
-  transform: translateX(0); /* Slide into view */
+.social-icons .icon:hover {
+  filter: brightness(1.3);
 }
 
 /* -----------------------------------------------------------------------------
@@ -293,7 +249,7 @@ footer { padding: var(--space-xs) 0; }
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--nyc-white);
+  color: white;
   position: relative;
 }
 
@@ -304,7 +260,7 @@ footer { padding: var(--space-xs) 0; }
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay for better text visibility */
+  background: rgba(0, 0, 0, 0.2); /* Adds a dark overlay for better text visibility */
   z-index: 1;
 }
 
@@ -315,132 +271,56 @@ footer { padding: var(--space-xs) 0; }
 
 .hero h1 {
   font-size: 48px;
-  color: var(--nyc-pink);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 1rem;
   font-family: 'Montserrat', 'Arial', sans-serif;
 }
 
 .hero p {
   font-size: 1.5rem;
-  font-style: italic;
-  color: var(--nyc-white);
-  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
 }
 
 /* -----------------------------------------------------------------------------
   BUTTONS & LINKS
 ----------------------------------------------------------------------------- */
 
-/* Primary Buttons */
 .contact-btn,
 button,
 .btn {
-  background-color: var(--nyc-pink);
-  color: var(--nyc-fuschia);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--nyc-yellow);
+  color: var(--nyc-dark-gray);
   border: none;
-  outline: none;
   border-radius: 5px;
-  font-size: var(--font-sm);
-  padding: var(--space-xs) var(--space-md);
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.contact-btn:hover,
-button:hover,
-.btn:hover {
-  background-color: var(--nyc-fuschia);
-  color: var(--nyc-white);
-  outline: none;
-}
-
-/* Secondary Buttons */
-.secondary-btn {
-  background-color: var(--nyc-fuschia);
-  color: var(--nyc-white);
-  border: none;
-  outline: none;
-  border-radius: 5px;
-  font-size: var(--font-sm);
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  height: 50px;
+  width: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.secondary-btn:hover {
-  background-color: var(--nyc-light-blue);
-  color: var(--nyc-navy);
+
+.contact-btn:hover,
+button:hover,
+.btn:hover {
+  background-color: var(--nyc-soft-pink);
+  color: var(--nyc-dark-pink);
 }
 
 a {
-  color: var(--nyc-fuschia);
+  color: var(--nyc-yellow);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 a:hover {
-  color: var(--nyc-fuschia);
-  text-decoration: underline;
-}
-
-a:focus,
-button:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-/* -----------------------------------------------------------------------------
-  BACKGROUNDS
------------------------------------------------------------------------------ */
-
-body {
-  background-color: var(--nyc-white);
-  color: var(--nyc-navy);
-}
-
-.alt-section {
-  background-color: var(--nyc-light-pink);
-}
-
-.highlighted-section {
-  background-color: var(--nyc-fuschia);
-  color: var(--nyc-white);
-}
-
-.success-message {
-  background-color: var(--nyc-light-green);
-}
-
-/* -----------------------------------------------------------------------------
-  FORMS
------------------------------------------------------------------------------ */
-
-input,
-textarea {
-  border: 1px solid var(--nyc-medium-gray);
-  color: var(--nyc-navy);
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--nyc-medium-gray);
-}
-
-input:focus,
-textarea:focus {
-  border-color: var(--nyc-light-blue);
-  outline: none;
-}
-
-/* -----------------------------------------------------------------------------
-  SECTION DIVIDERS
------------------------------------------------------------------------------ */
-
-.divider {
-  border-top: 2px solid var(--nyc-light-blue);
-  margin: var(--space-md) 0;
+  color: var(--nyc-soft-pink);
 }
 
 /* -----------------------------------------------------------------------------
@@ -448,8 +328,9 @@ textarea:focus {
 ----------------------------------------------------------------------------- */
 
 footer {
+  padding: var(--space-xs) 0;
   text-align: center;
-  background: var(--nyc-light-gray);
+  background: var(--nyc-gray);
 }
 
 /* -----------------------------------------------------------------------------
@@ -466,268 +347,47 @@ img {
 .icon {
   width: 24px;
   height: 24px;
-  fill: var(--nyc-navy);
+  fill: var(--nyc-dark-gray);
   transition: fill 0.3s;
 }
 
 .icon:hover {
-  fill: var(--nyc-fuschia);
-}
-
-/* -----------------------------------------------------------------------------
-  SOCIAL MEDIA CONTENT
------------------------------------------------------------------------------ */
-/* Center the social media CTA section and style like header icons */
-.centered-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin: var(--space-md) auto;
-  padding: var(--space-md) 0;
-  background: var(--nyc-light-blue);
-  border-radius: 12px;
-  max-width: 95%;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-
-.social-media-title {
-  font-family: 'Montserrat', 'Arial', sans-serif;
-  color: var(--nyc-navy);
-  font-size: var(--font-lg);
-  margin-bottom: var(--space-xs);
-}
-
-.social-media-subtitle {
-  color: var(--nyc-navy);
-  font-size: var(--font-sm);
-  margin-bottom: var(--space-md);
-}
-
-.centered-cta .social-icons {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-md);
-  margin: 0 auto;
-  padding-right: 0;
-}
-
-.centered-cta .social-icons a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--nyc-navy);
-  background-color: var(--nyc-blue);
-  border-radius: 8px;
-  padding: 0; /* Remove vertical padding */
-  margin: 0;
-  min-width: 120px;
-  max-width: 300px;
-  height: 56px;         /* Set fixed height */
-  min-height: 56px;     /* Set min-height for consistency */
-  overflow: hidden;     /* Prevent icon from overflowing */
-}
-
-/* Make CTA social buttons behave like primary buttons on hover */
-.centered-cta .social-icons a:hover,
-.centered-cta .social-icons a:focus {
-  background-color: var(--nyc-navy);
-  color: var(--nyc-white);
-  outline: none;
-  text-decoration: none;
-  box-shadow: 0 4px 16px rgba(216,30,91,0.15); /* Optional: add a subtle shadow like your .btn:hover */
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.2s;
-}
-
-.centered-cta .icon {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  margin-right: var(--space-xs);
-  display: inline-block;
-  object-fit: contain;
-  transition: filter 0.3s, fill 0.3s;
-  fill: currentColor;
-}
-
-/* Make only the Instagram icon larger */
-.centered-cta a[href*="instagram"] .icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-}
-
-/* Instagram Embed Grid Styles */
-.instagram-embed-grid {
-  display: grid;
-  grid-template-columns: 4fr; /* Single column for mobile, adjust as needed */
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-sm, 32px);
-  justify-items: center;
-  margin: var(--space-lg, 64px) auto;
-  max-width: 1400px;
-  width: 100%;
-}
-
-.instagram-embed-grid iframe {
-  border-radius: var(--space-xs, 8px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  background: var(--nyc-white, #fff);
-  width: 100%;
-  max-width: 320px;
-  min-height: 400px;
-  aspect-ratio: 4/5;
-  margin: 0 auto;
-  display: block;
+  fill: var(--nyc-yellow);
 }
 
 /* -----------------------------------------------------------------------------
   EVENTS GRID
 ----------------------------------------------------------------------------- */
-
+/* EVENTS GRID STYLING */
 .events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-md);
-  justify-items: stretch;
-  align-items: stretch;
-  padding: var(--space-sm);
-}
-
-/* Remove extra margin and padding from the events grid section */
-section.events-grid {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: none !important;
-}
-
-/* Prevent empty grid from taking up space */
-#eventsGrid:empty {
-  min-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-@media (max-width: 1100px) {
-  .events-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
-    padding: var(--space-md);
-  }
-}
-
-@media (max-width: 900px) {
-  .events-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-sm);
-    padding: var(--space-sm);
-  }
-  .event-tile.horizontal-tile {
-    height: 100px;
-  }
-}
-
-@media (max-width: 700px), (max-width: 600px) {
-  .events-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-xs);
-    padding: var(--space-xs);
-  }
-  .event-tile.horizontal-tile {
-    flex-direction: column;
-    height: auto;
-    min-height: 0;
-  }
-  .event-img-container {
-    border-radius: 12px 12px 0 0;
-    max-width: 100%;
-    min-width: 0;
-    height: 120px;
-  }
-  .event-img-container img.event-img {
-    border-radius: 12px 12px 0 0;
-  }
-  .event-details {
-    padding: var(--space-xs);
-  }
+  padding: var(--space-md);
 }
 
 /* EVENT TILE */
-.event-tile.horizontal-tile {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  background: var(--nyc-light-pink);
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(216,30,91,0.08);
-  padding: 0;
-  margin: var(--space-xs);
-  min-width: 0;
-  min-height: 160px;
-  max-height: 160px;
-  max-width: 100%;
-  cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-
-.event-tile.horizontal-tile:hover {
-  box-shadow: 0 8px 24px rgba(216,30,91,0.18);
-  transform: translateY(-2px) scale(1.01);
-}
-
-.event-img-container {
-  flex: 0 0 25%;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  height: 100%;
-  min-width: 100px;
-  max-width: 160px;
-  overflow: hidden;
-  border-radius: 12px 0 0 12px;
-  background: var(--nyc-white);
-}
-
-.event-img-container img.event-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px 0 0 12px;
-}
-
-.event-details {
-  flex: 1 1 75%;
+.event-tile {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: var(--space-sm);
   padding: var(--space-sm);
-  gap: 4px;
+  border: 1px solid var(--nyc-gray);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--nyc-white);
+  max-width: 300px;
 }
 
-.event-details h3 {
-  font-size: 1.2em;
-  margin: 0 0 4px 0;
-  color: var(--nyc-navy);
-  font-family: 'Montserrat', 'Arial', sans-serif;
+.event-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-.event-date {
-  font-size: 1em;
-  color: var(--nyc-navy);
-  margin: 0 0 2px 0;
-}
-
-.event-location {
-  font-size: 0.95em;
-  color: var(--nyc-navy);
-  margin: 0;
-}
-
-/* EVENT IMAGE (shared) */
+/* EVENT IMAGE */
 .event-img {
   width: 100%;
   height: auto;
@@ -735,111 +395,80 @@ section.events-grid {
   margin-bottom: var(--space-sm);
 }
 
-/* EVENT TEXT BLOCK (shared) */
+/* EVENT TEXT BLOCK */
 .event-text {
-  padding: var(--space-sm);
+  padding: 16px;
 }
 
 .event-text h3 {
-  font-size: var(--font-xl);
-  margin: 0 0 var(--space-xs) 0;
-  color: var(--nyc-navy);
+  font-size: var(--font-xl); /* You mentioned using CSS variables — adjust if needed */
+  margin: 0 0 8px 0;
+  color: var(--text-dark);
 }
 
 .event-text p {
   font-size: var(--font-sm);
   margin: 0;
-  color: var(--nyc-navy);
-}
-
-/* Recurring Event Badge */
-.event-tile .recurring-badge {
-  background-color: var(--nyc-fuschia);
-  color: var(--nyc-white);
-  font-size: var(--font-xs);
-  padding: var(--space-xxs) var(--space-xs);
-  border-radius: var(--space-xxs);
-  position: absolute;
-  top: var(--space-xs);
-  right: var(--space-xs);
+  color: var(--text-light);
 }
 
 /* -----------------------------------------------------------------------------
-  MODALS
+  EVENT MODALS
 ----------------------------------------------------------------------------- */
-/* Modal layout */
+/* Modal Styles */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    overflow-y: auto;
-    justify-content: center;
-    align-items: center;
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: var(--space-lg); /* Leave space for the header */
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--space-lg)); /* Subtract header height */
+  background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+  z-index: 1000;
+  overflow-y: auto; /* Add vertical scrolling if content overflows */
+  justify-content: flex-start; /* Align content to the top */
+  align-items: flex-start; /* Align content to the top */
 }
 
 .modal-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr; /* Two columns: 1/4 for title and details, 3/4 for image and description */
-    gap: var(--space-md); /* Add spacing between columns */
-    align-items: start; /* Align content to the top */
-    margin: auto; /* Center the modal content */
-    background-color: var(--nyc-white);
-    padding: var(--space-md);
-    border-radius: 8px; /* Add rounded corners */
-    width: 75%; /* Occupy the middle 75% of the screen */
-    max-height: 90%; /* Ensure the modal doesn't exceed 90% of the screen height */
-    overflow-y: auto; /* Add vertical scrolling if content overflows */
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-    position: relative;
+  background-color: var(--nyc-white);
+  padding: var(--space-md);
+  border-radius: 0; /* Remove border radius for full-screen look */
+  width: 100%; /* Full width */
+  height: auto; /* Allow content to determine height */
+  box-shadow: none; /* Remove shadow for a cleaner look */
+  position: relative;
 }
 
-.return-button {
-  font-size: 20px;
-  background-color: transparent;
-  border: none;
-  color: var(--nyc-fuschia);
+.modal-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-content p {
   font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-  white-space: nowrap;
-  transition: color 0.3s;
-  display: inline;
+  margin-bottom: var(--space-sm);
 }
 
-.return-button:hover {
-  color: var(--nyc-pink);
-  background-color: transparent;
-  text-decoration: underline;
-}
-
-/* Day Events Modal Return Button & Date Heading Layout */
-.modal-content.show-day-grid {
-  position: relative;
-}
-
-.modal-content.show-day-grid .return-button {
+.close-button {
   position: absolute;
-  top: var(--space-md);
-  left: var(--space-sm);
-  z-index: 10;
-  display: block;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--nyc-dark-gray);
+  cursor: pointer;
 }
 
-.day-events-grid h2 {
-  grid-column: 1 / -1;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: var(--space-md);
-  justify-self: center;
-  position: relative;
+.close-button:hover {
+  color: var(--nyc-yellow);
 }
 
 /* Show the modal when it is not hidden */
@@ -847,646 +476,6 @@ section.events-grid {
   display: flex;
 }
 
-/* -----------------------------------------------------------------------------
-  CAROUSEL
------------------------------------------------------------------------------ */
-/* === Carousel Styles === */
-#featured-events-carousel, #events-carousel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin: var(--space-md) auto;
-  padding: var(--space-md) 0;
-  padding-bottom: var(--space-lg);
-  background: var(--nyc-light-pink);
-  border-radius: 12px;
-  max-width: 95%;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-
-.carousel-title {
-  font-family: 'Montserrat', 'Arial', sans-serif;
-  color: var(--nyc-navy);
-  font-size: var(--font-lg);
-  margin-bottom: var(--space-xs);
-  text-align: center;
-}
-
-.carousel-subtitle {
-  color: var(--nyc-navy);
-  font-size: var(--font-sm);
-  margin-bottom: var(--space-md);
-  text-align: center;
-}
-
-.carousel-container {
-  width: 75%;
-  height: 480px; /* Match #eventsCarousel */
-  position: relative;
-  overflow: visible;
-  cursor: pointer;
-}
-
-#eventsCarousel {
-  position: relative;
-  width: 100%;
-  height: 480px;
-  overflow: hidden;
-}
-
-.carousel-slide {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  transition: transform 0.5s cubic-bezier(.77,0,.18,1), opacity 0.5s;
-  opacity: 1;
-  z-index: 1;
-}
-
-/* Slide in from right */
-.slide-in-right {
-  transform: translateX(100%);
-}
-.slide-in-right.active {
-  transform: translateX(0%);
-}
-
-/* Slide out to left */
-.slide-out-left {
-  transform: translateX(0%);
-}
-.slide-out-left.exit {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-/* Slide in from left */
-.slide-in-left {
-  transform: translateX(-100%);
-}
-.slide-in-left.active {
-  transform: translateX(0%);
-}
-
-/* Slide out to right */
-.slide-out-right {
-  transform: translateX(0%);
-}
-.slide-out-right.exit {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.carousel-image {
-  width: 100%;
-  height: 480px;
-  object-fit: cover;
-  border-radius: 12px 12px 0 0;
-  display: block;
-}
-
-.carousel-event-overlay {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(0deg, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.1) 100%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: var(--space-xs);
-  padding-bottom: var(--space-xs);
-  border-radius: 0 0 12px 12px;
-}
-
-.carousel-event-name {
-  color: var(--nyc-white);
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-  text-align: center;
-  z-index: 3;
-  position: relative;
-  margin-top: 0;
-  padding: 0 16px;
-  width: 100%;
-  background: none; /* Remove background if present */
-  border-radius: 0;
-}
-
-.carousel-dot-bar {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: var(--space-xs) 0;
-}
-
-.carousel-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--nyc-medium-gray);
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  outline: none;
-  box-shadow: none;
-  padding: 0;
-}
-
-.carousel-dot.active,
-.carousel-dot:focus {
-  background: var(--nyc-fuschia);
-  transform: scale(1.2);
-  box-shadow: 0 0 0 2px var(--nyc-fuschia);
-}
-
-/* -----------------------------------------------------------------------------
-  CALENDAR
------------------------------------------------------------------------------ */
-/* Center the whole calendar section and set width */
-#calendar-section {
-  width: 70vw;
-  max-width: 1200px;
-  min-width: 320px;
-  margin: var(--space-md) auto; /* auto centers horizontally */
-  background: none;
-  padding: 0;
-}
-
-/* Make header match grid width and center it */
-#calendar-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xs);
-  background: var(--nyc-medium-gray);
-  color: var(--nyc-navy);
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-  border-radius: 8px 8px 0 0;
-  box-sizing: border-box;
-  margin: 0; /* Remove any default margin */
-}
-
-/* Grid matches section width, no extra margin */
-#calendar-grid {
-  width: 100%;
-  margin: 0;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  background: var(--nyc-white);
-  overflow: hidden;
-}
-
-/* Navigation buttons and label styling */
-#prev-month {
-  justify-self: end;
-}
-
-#next-month {
-  justify-self: start;
-}
-#calendar-month-year {
-  grid-column: 2;
-  min-width: 160px;
-  text-align: center;
-  font-size: 1.2em;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-}
-
-#calendar-days-row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background: var(--nyc-light-gray);
-  color: var(--nyc-navy);
-  font-weight: 600;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-  font-size: 1em;
-  text-align: center;
-  padding: 8px 0 8px 0;
-  border-bottom: 1px solid var(--nyc-light-gray);
-}
-
-.calendar-day-title {
-  padding: 0 4px;
-  letter-spacing: 0.02em;
-}
-
-.calendar-row {
-  display: flex;
-  position: relative; /* Needed for absolute event bars */
-  min-height: 48px;
-}
-
-.calendar-row-bar-layer {
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* Move bars down below the date number */
-  top: 36px;
-  bottom: 40px; /* More space for '+N more' link */
-  width: 100%;
-  height: auto;
-  pointer-events: none; /* Only bars and link are clickable */
-  z-index: 2;
-}
-
-.calendar-row:has(.active-day) {
-  display: flex;
-}
-
-.calendar-row:not(:has(.active-day)) {
-  display: none;
-}
-
-.calendar-cell {
-  flex: 1;
-  aspect-ratio: 1 / 1;
-  min-width: 0;
-  min-height: var(--space-xxl);
-  border: 1px solid var(--nyc-light-gray);
-  position: relative;
-  background: var(--nyc-white);
-  transition: background 0.2s;
-  /* Reserve space for date and bars at the top */
-  padding-top: 40px;
-  padding-right: var(--space-xs);
-  padding-left: var(--space-xs);
-  padding-bottom: 48px; /* More space for '+N more' link */
-  box-sizing: border-box;
-  overflow: visible; /* Ensure absolutely positioned children are visible */
-}
-
-.calendar-date {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: block;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 0;
-  min-width: 24px;
-  min-height: 20px;
-  z-index: 2;
-}
-
-.calendar-cell-bar-container {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  min-height: 28px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.calendar-event-bar {
-  position: absolute;
-  left: 0;
-  right: auto;
-  height: 24px;
-  margin-bottom: 4px;
-  background: var(--nyc-pink);
-  color: var(--nyc-navy);
-  border-radius: var(--space-xxs);
-  font-size: 12px;
-  font-family: 'Work Sans', 'Arial', sans-serif;
-  font-weight: 400;
-  cursor: pointer;
-  padding: 4px 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: flex;
-  align-items: center;
-  z-index: 3;
-  pointer-events: auto; /* Bars are clickable */
-  transition: background 0.2s, color 0.2s;
-}
-
-.calendar-event-bar:hover, .calendar-event-bar:focus {
-  background: var(--nyc-fuschia);
-  color: var(--nyc-white);
-  outline: none;
-}
-
-.calendar-event-bar--active {
-  background: var(--nyc-fuschia) !important;
-  color: var(--nyc-white) !important;
-  box-shadow: 0 0 0 2px var(--nyc-fuschia);
-  z-index: 10;
-}
-
-.calendar-event-bar-continue {
-  background: var(--nyc-pink);
-  height: 24px; /* Match the bar height */
-  border-radius: 0 var(--space-xxs) var(--space-xxs) 0;
-  margin: 2px 0;
-  position: relative;
-  z-index: 0;
-}
-
-.calendar-more-link {
-  cursor: pointer;
-  color: var(--nyc-blue);
-  font-size: 0.85em;
-  font-weight: 500;
-  text-align: center;
-  background: var(--nyc-white);
-  border-radius: var(--space-xxs);
-  padding: 2px 0;
-  margin-top: 2px;
-  transition: background 0.2s;
-}
-
-.calendar-more-link:hover,
-.calendar-more-link:focus {
-  background: var(--nyc-light-blue);
-  outline: none;
-}
-
-.calendar-more-link--absolute {
-  position: absolute;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  z-index: 99; /* Higher than event bars */
-  width: calc(100% - 4px);
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-
-/* DAY EVENTS GRID */
-.day-events-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* Always 3 columns on desktop */
-  gap: var(--space-md);
-  padding: var(--space-md);
-  width: 100%;
-  justify-content: center; /* Center grid in modal */
-  justify-items: stretch; /* Tiles fill columns */
-  align-items: start;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.day-events-grid h2 {
-  grid-column: 1 / -1;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: var(--space-md);
-  justify-self: center;
-  position: relative;
-}
-
-/* Modal content for day grid */
-.modal-content.show-day-grid {
-  grid-template-columns: 1fr;
-  width: 90%;
-  max-width: 1100px;
-  justify-items: center;
-  align-items: start;
-}
-
-/* -----------------------------------------------------------------------------
-  EVENT DETAIL PAGE
------------------------------------------------------------------------------ */
-.event-detail-hero {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-md);
-  align-items: start;
-  margin: var(--space-lg) auto;
-  background-color: var(--nyc-white);
-  padding: var(--space-md);
-  border-radius: 8px;
-  width: 75%;
-  max-width: 1100px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-#eventTitle {
-  margin-top: var(--space-sm);
-}
-
-.event-detail-content {
-  grid-column: 1 / 2;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  text-align: left;
-}
-
-.event-detail-content h1 {
-  font-size: 32px;
-  font-family: 'Work Sans', sans-serif;
-  font-weight: 700;
-  color: var(--nyc-navy);
-  margin-bottom: var(--space-sm);
-  text-align: left;
-}
-
-/* --- Ensure event date & location formatting is consistent on all screens --- */
-#eventDateRange, #eventLocation {
-  font-size: 1.1em;
-  color: #444;
-  font-weight: 500;
-  margin: 0.5em 0 0.5em 0;
-  letter-spacing: 0.01em;
-  line-height: 1.4;
-  display: block;
-}
-
-@media (max-width: 600px) {
-  #eventDateRange, #eventLocation {
-    font-size: 1.1em; /* Match desktop */
-    color: #444;      /* Match desktop */
-    font-weight: 500; /* Match desktop */
-    margin: 0.5em 0 0.5em 0;
-    letter-spacing: 0.01em;
-    line-height: 1.4;
-    display: block;
-  }
-}
-
-#eventExternalLink {
-  display: inline-block;
-  margin-right: 0;
-  margin-top: var(--space-sm);
-  margin-bottom: var(--space-sm);
-  font-size: 16px;
-  padding: var(--space-xs) var(--space-md);
-  border-radius: 5px;
-  background-color: var(--nyc-pink);
-  color: var(--nyc-fuschia);
-  text-decoration: none;
-  font-weight: 600;
-  transition: background-color 0.3s, color 0.3s;
-  width: auto;
-  white-space: nowrap;
-}
-#eventExternalLink:hover {
-  background-color: var(--nyc-fuschia);
-  color: var(--nyc-white);
-}
-#eventICSLink.hidden, #eventExternalLink.hidden {
-  display: none !important;
-}
-
-.event-detail-description {
-  margin-top: var(--space-xs);
-  font-size: 16px;
-  color: var(--nyc-navy);
-  border-radius: 8px;
-  padding: 0; /* Remove padding to make it flush left */
-  /* box-shadow: 0 1px 6px rgba(0,0,0,0.04); */
-}
-
-.event-detail-description p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.event-detail-image {
-  grid-column: 2 / 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-.event-detail-image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: var(--space-sm);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  object-fit: cover;
-}
-
-@media (max-width: 900px) {
-  .event-detail-hero {
-    grid-template-columns: 1fr;
-    width: 98%;
-    padding: var(--space-md) var(--space-xs);
-  }
-  .event-detail-image {
-    margin-top: var(--space-md);
-    justify-content: flex-start;
-  }
-  .event-detail-description {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 600px) {
-  .event-detail-hero {
-    padding: var(--space-xs);
-    margin: var(--space-md) auto;
-    border-radius: 8px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  }
-  .event-detail-content h1 {
-    font-size: 22px;
-  }
-  .event-detail-description {
-    padding: 0;
-    font-size: 14px;
-  }
-  .event-detail-image img {
-    max-width: 100vw;
-    border-radius: 8px;
-  }
-}
-
-@media (max-width: 800px) {
-  .event-detail-hero {
-    display: block !important;
-    padding: var(--space-sm);
-    background: var(--nyc-white);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    margin: var(--space-xs) auto;
-    max-width: 98vw;
-  }
-  .event-detail-content {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-sm);
-    padding: 0;
-    width: 100%;
-  }
-  .event-detail-content .return-button {
-    position: static;
-    margin-bottom: var(--space-xs);
-    align-self: flex-start;
-    z-index: 2;
-  }
-  .event-detail-content h1#eventTitle {
-    font-size: 1.5em;
-    margin: 0 0 var(--space-xs) 0;
-    text-align: left;
-  }
-  .event-detail-image {
-    width: 100%;
-    margin: 0 0 var(--space-sm) 0;
-    display: block;
-    text-align: center;
-  }
-  .event-detail-image img {
-    width: 100%;
-    max-width: 100vw;
-    height: auto;
-    border-radius: 12px;
-    margin: 0 auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-  #eventDateRange, #eventLocation {
-    font-size: 1em;
-    margin: 0 0 var(--space-xs) 0;
-    text-align: left;
-  }
-  .event-detail-description {
-    margin: 0 0 var(--space-xs) 0;
-    padding: 0;
-  }
-  .event-detail-description p {
-    font-size: 1em;
-    margin: 0;
-  }
-  #eventICSLink, #eventExternalLink {
-    display: block;
-    width: 100%;
-    margin: var(--space-xs) 0 0 0;
-    text-align: center;
-    font-size: 1.1em;
-    border-radius: 8px;
-    padding: var(--space-xs) 0;
-  }
-  #eventICSLink {
-    margin-bottom: var(--space-xs);
-  }
-}
-
-/* Show mobile event image only on mobile (<=800px) and desktop image only on desktop (>800px) */
-@media (max-width: 800px) {
-  .event-detail-image--desktop { display: none !important; }
-  .event-detail-image--mobile { display: block !important; }
-}
-@media (min-width: 801px) {
-  .event-detail-image--desktop { display: block !important; }
-  .event-detail-image--mobile { display: none !important; }
-}
 
 /* -----------------------------------------------------------------------------
   ACCESSIBILITY
@@ -1494,20 +483,20 @@ section.events-grid {
 
 a:focus,
 button:focus {
-  outline: none;
-  box-shadow: none;
+  outline: 3px solid var(--nyc-yellow);
+  outline-offset: 2px;
 }
 
 @media (prefers-contrast: high) {
   body {
-    background-color: var(--nyc-navy);
+    background-color: var(--nyc-dark-gray);
     color: var(--nyc-white);
   }
 
   a,
   button {
-    background-color: var(--nyc-fuschia);
-    color: var(--nyc-navy);
+    background-color: var(--nyc-yellow);
+    color: var(--nyc-dark-gray);
   }
 }
 
@@ -1515,150 +504,28 @@ button:focus {
   RESPONSIVE STYLES
 ----------------------------------------------------------------------------- */
 
-@media (max-width: 860px) {
+@media (max-width: 768px) {
   h1 { font-size: 32px; }
   h2 { font-size: 28px; }
   h3 { font-size: 24px; }
   p, ul, ol { font-size: 14px; }
 
-  .main-nav,
-  .header-actions {
-      display: none; /* Hide main navigation and header actions */
+  .main-nav ul {
+    flex-direction: column;
+    text-align: center;
   }
 
-  .menu-toggle {
-      display: block; /* Show the menu toggle button */
+  .main-nav ul li {
+    margin: 10px 0;
   }
 
   header h1 { font-size: 29px; }
   header p { font-size: 16px; }
-
-  /* Adjust contact button for smaller screens */
-  .contact-btn,
-  button,
-  .btn {
-    font-size: 14px; /* Reduce font size */
-    padding: var(--space-xxs) var(--space-xs); /* Adjust padding */
-    height: auto; /* Allow height to adjust dynamically */
-    width: auto; /* Allow width to adjust dynamically */
-  }
-
-  .hero {
-    height: 40vh; /* Reduce height for smaller screens */
-  }
-
-  .hero h1 {
-    font-size: 36px; /* Scale down font size */
-    margin-bottom: var(--space-xs); /* Adjust spacing */
-  }
-
-  .hero p {
-    font-size: 18px; /* Scale down font size */
-  }
-
-  .calendar-cell {
-    min-height: 120px; /* Taller for more events */
-    padding: var(--space-xs);
-    padding-top: 36px;
-    padding-bottom: 10px;
-  }
-
-  .calendar-cell-bar-container {
-    top: 28px;
-    min-height: 28px;
-  }
-
-  .calendar-event-bar {
-    font-size: 12px;
-    height: 18px;
-    padding: 1px 4px;
-  }
-
-  .day-events-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .modal-content.show-day-grid {
-    width: 98%;
-    max-width: 100vw;
-    padding: var(--space-xs);
-  }
 }
 
-@media (max-width: 600px) {
-  .day-events-grid {
-    grid-template-columns: 1fr;
-    padding: var(--space-xs);
-  }
-  .day-events-grid h2 {
-    font-size: 1.2em;
-  }
-}
-
-/* Responsive styles for the centered social media CTA */
-@media (max-width: 600px) {
-  .centered-cta {
-    padding: var(--space-sm) var(--space-xs);
-    max-width: 100%;
-    border-radius: 8px;
-  }
-
-  .social-media-title {
-    font-size: 22px;
-    margin-bottom: var(--space-xs);
-  }
-
-  .social-media-subtitle {
-    font-size: 14px;
-    margin-bottom: var(--space-sm);
-  }
-
-  .centered-cta .social-icons {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-xs);
+@media (max-width: 480px) {
+  .container {
     width: 100%;
-    margin: 0 auto var(--space-sm) auto;
-  }
-
-  .centered-cta .social-icons a {
-    min-width: 0;
-    max-width: 90vw;
-    width: 90vw;
-    height: 48px;
-    margin: 0;
-    font-size: 16px;
-    border-radius: 6px;
-  }
-
-  .centered-cta .icon {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
-    margin-right: var(--space-xs);
-  }
-
-  /* Make Instagram icon a bit larger still */
-  .centered-cta a[href*="instagram"] .icon {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-  }
-  .instagram-embed-grid {
-    display: grid; /* Ensure grid is still used */
-    grid-template-columns: 1fr;
-    gap: var(--space-xs, 6px);
-    margin: var(--space-md) auto;
-    max-width: 98vw;
-    width: 100%;
-  }
-  .instagram-embed-grid iframe,
-  .instagram-embed-grid img {
-    max-width: 100vw;
-    min-width: 0;
-    width: 100%;
-    height: auto;
+    padding: var(--space-sm);
   }
 }
