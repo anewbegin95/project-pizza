@@ -1,0 +1,22 @@
+/* -----------------------------------------------------------------------------
+  LAYOUT (Containers & Sections)
+  ----------------------------------------------------------------------------- */
+.container {
+  width: var(--container-width);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+section {
+  margin-bottom: var(--space-lg);
+  background-color: var(--nyc-white);
+}
+
+header {
+  padding: var(--space-md) 0;
+}
+
+footer {
+  padding: var(--space-xs) 0;
+}

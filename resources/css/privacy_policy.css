@@ -1,31 +1,32 @@
-.privacy-section#privacy-policy {
+/* Privacy Policy Section */
+.privacy-section {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  max-width: 900px;
-  margin: 2rem auto;
-  gap: 2rem;
+  max-width: var(--section-max-width);
+  margin: var(--space-lg) auto;
+  gap: var(--space-lg);
 }
 
 .privacy-text {
   flex: 1;
-  font-size: 1.08rem;
+  font-size: var(--font-sm);
   line-height: 1.7;
 }
 
 .privacy-text h3 {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  font-size: 1.15em;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-sm);
   color: var(--nyc-navy, #1a2238);
 }
 
 @media (max-width: 700px) {
-  .privacy-section#privacy-policy {
+  .privacy-section {
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    padding: 0 1rem;
+    gap: var(--space-md);
+    padding: 0 var(--space-sm);
   }
   .privacy-text {
     text-align: left;

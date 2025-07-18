@@ -1,0 +1,57 @@
+/* =============================================================================
+   FOOTER (BEM/component, modular, variable-based)
+============================================================================= */
+
+.site-footer {
+  width: 100%;
+  background: var(--nyc-navy);
+  color: var(--nyc-white);
+  padding: var(--space-lg) 0 var(--space-md) 0;
+  text-align: center;
+  font-size: var(--font-xs-sm);
+  border-top: 4px solid var(--nyc-fuschia);
+  margin-top: var(--space-lg);
+}
+
+.site-footer__content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+  margin-bottom: var(--space-xs);
+}
+
+.site-footer__link {
+  color: var(--nyc-white);
+  text-decoration: underline;
+  font-weight: var(--font-weight-medium);
+  transition: color 0.2s;
+}
+.site-footer__link:hover {
+  color: var(--nyc-fuschia);
+}
+
+.site-footer__copyright {
+  color: var(--nyc-light-gray);
+  font-size: var(--font-xs);
+  margin-top: var(--space-xs);
+}
+
+@media (max-width: 700px) {
+  .site-footer__content {
+    padding: 0 var(--space-xs);
+  }
+  .site-footer__links {
+    gap: var(--space-xs);
+  }
+}
