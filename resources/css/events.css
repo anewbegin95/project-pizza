@@ -57,7 +57,7 @@ section.events-grid {
     border-radius: 12px 12px 0 0;
     max-width: 100%;
     min-width: 0;
-    height: var(--space-lx);
+    height: var(--space-xl);
   }
   .event-tile__img {
     border-radius: 12px 12px 0 0;
