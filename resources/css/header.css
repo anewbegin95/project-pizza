@@ -161,3 +161,23 @@
 .collapsible-menu ul li a:focus {
   outline: none;
 }
+
+@media (max-width: 975px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+  }
+  .main-nav {
+    display: none;
+  }
+  .header-actions {
+    display: none;
+  }
+}
+@media (min-width: 976px) {
+  .collapsible-menu {
+    display: none !important;
+  }
+}
