@@ -23,7 +23,7 @@ function formatDateId(date) {
  * This function determines how many event bars are visible in the calendar grid
  */
 function getMaxVisible() {
-  return window.innerWidth <= 860 ? 2 : 4;
+return window.innerWidth <= 900 ? 2 : 4;
 }
 
 // === UI RENDERING FUNCTIONS ===

@@ -245,10 +245,10 @@
 
 @media (max-width: 900px) {
   .calendar-cell {
-    min-height: 120px;
+    min-height: 160px; /* Match desktop height */
     padding: var(--space-xs);
-    padding-top: 36px;
-    padding-bottom: 10px;
+    padding-top: 40px;
+    padding-bottom: 48px; /* Match desktop bottom padding */
   }
   .calendar-cell-bar-container {
     top: 28px;
