@@ -81,7 +81,6 @@
 
 .instagram-embed-grid {
   display: grid;
-  grid-template-columns: 4fr;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-sm, 32px);
   justify-items: center;
