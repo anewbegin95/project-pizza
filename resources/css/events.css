@@ -35,7 +35,7 @@ section.events-grid {
   .events-grid {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
-    padding: var(--space-sm);
+    padding: 0 var(--space-sm) !important;
   }
   .event-tile.event-tile--horizontal {
     height: var(--space-lg);
@@ -46,12 +46,16 @@ section.events-grid {
   .events-grid {
     grid-template-columns: 1fr;
     gap: var(--space-xs);
-    padding: var(--space-xs);
+    padding: 0 var(--space-sm) !important;
   }
   .event-tile.event-tile--horizontal {
     flex-direction: column;
     height: auto;
     min-height: 0;
+  }
+  .day-events-heading {
+    font-size: var(--font-md-sm);
+    margin-bottom: var(--space-xs);
   }
   .event-tile__img-container {
     border-radius: 12px 12px 0 0;
@@ -64,6 +68,58 @@ section.events-grid {
   }
   .event-tile__details {
     padding: var(--space-xs);
+  }
+}
+
+@media (max-width: 975px) {
+  .events-grid,
+  .day-events-grid.events-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    padding: 0 var(--space-sm) !important; /* Equal left/right padding */
+  }
+  .event-tile.event-tile--horizontal,
+  .day-events-grid.events-grid .event-tile.event-tile--horizontal {
+    flex-direction: row;
+    align-items: center;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    width: 100%;
+  }
+  .event-tile,
+  .day-events-grid.events-grid .event-tile {
+    min-height: 0;
+    max-height: none;
+    height: auto;
+    width: 100%;
+    align-items: center;
+  }
+  .event-tile__img-container,
+  .day-events-grid.events-grid .event-tile__img-container {
+    height: 100%;
+    min-width: 100px;
+    max-width: 160px;
+    border-radius: 12px 0 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .event-tile__img,
+  .day-events-grid.events-grid .event-tile__img {
+    height: auto;
+    width: 100%;
+    border-radius: 12px 0 0 12px;
+    margin: 0;
+    object-fit: cover;
+    display: block;
+  }
+  .event-tile__details,
+  .day-events-grid.events-grid .event-tile__details {
+    padding: var(--space-sm);
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
   }
 }
 
