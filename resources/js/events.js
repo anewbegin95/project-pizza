@@ -299,9 +299,9 @@ function isMultiDayEvent(event) {
  * @param {Object} event - Event object containing event details.
  * @returns {HTMLElement|null} - The event tile element or null if the event should not be displayed.
  */
-function createEventTile(event) {
+function createEventTile(event, skipEventsPageCheck = false) {
     if (String(event.master_display).toUpperCase() === 'FALSE') return null;
-    if (String(event.events_page).toUpperCase() === 'FALSE') return null;
+    if (!skipEventsPageCheck && String(event.events_page).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
     // BEM/component refactor for event tile
@@ -390,7 +390,7 @@ function openDayEventsModal(date, eventsForDay) {
 
     // Add event tiles, each with a click handler to open the standard event modal
     eventsForDay.forEach(event => {
-        const tile = createEventTile(event);
+        const tile = createEventTile(event, true);
         if (tile) {
             tile.onclick = (e) => {
                 e.stopPropagation();
@@ -400,7 +400,8 @@ function openDayEventsModal(date, eventsForDay) {
                 modalContent.classList.remove('show-day-grid');
                 modal.querySelector('.modal-details').style.display = '';
                 modal.querySelector('.modal-main').style.display = '';
-                openEventModal(event);
+                // Show event details in the modal (populate modal-details with event info)
+                populateEventModal(event);
             };
             dayGrid.appendChild(tile);
         }
@@ -729,4 +730,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/events.js
-window.openEventModal = openEventModal;
+// Removed broken window.openEventModal assignment
