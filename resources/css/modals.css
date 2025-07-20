@@ -56,20 +56,27 @@
 }
 
 .modal-content.show-day-grid .return-button {
-  position: absolute;
-  top: var(--space-md);
-  left: var(--space-sm);
+  position: static;
+  margin: var(--space-sm);
   z-index: 10;
   display: block;
+  justify-self: start;
+  align-self: start;
 }
 
-.day-events-grid h2 {
-  grid-column: 1 / -1;
-  text-align: center;
-  margin-top: 0;
+.day-events-heading {
+  font-size: var(--font-xl);
+  font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
+  text-align: center;
+  grid-column: 1 / -1;
   justify-self: center;
   position: relative;
+}
+@media (max-width: 600px) {
+  .day-events-heading {
+    font-size: var(--font-xl) !important;
+  }
 }
 
 .modal:not(.hidden) {
