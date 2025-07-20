@@ -54,10 +54,6 @@ section.events-grid {
     height: auto;
     min-height: 0;
   }
-  .day-events-heading {
-    font-size: var(--font-md-sm);
-    margin-bottom: var(--space-xs);
-  }
   .event-tile__img-container {
     border-radius: 12px 12px 0 0;
     max-width: 100%;
