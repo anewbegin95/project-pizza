@@ -298,31 +298,39 @@ function placeEventsInGrid(month, year) {
           moreLink.className = 'calendar-more-link calendar-more-link--absolute';
           moreLink.textContent = `+${eventsByDay[col].length - maxVisible} more`;
           moreLink.tabIndex = 0;
-          moreLink.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Calculate the date for this cell
-            const firstDayOfMonth = new Date(year, month, 1);
-            const startDayOfWeek = firstDayOfMonth.getDay();
-            const cellDay = week * 7 + col - startDayOfWeek + 1;
-            const cellDate = new Date(year, month, cellDay);
-            // Find all events (from global events array) that occur on this date
-            const cellDateId = formatDateId(cellDate);
-            const eventsForDay = events.filter(event => {
-              // Parse event start/end
-              const start = event.start_datetime ? new Date(event.start_datetime) : null;
-              const end = event.end_datetime ? new Date(event.end_datetime) : start;
-              if (!start) return false;
-              // Clamp event end to event start if missing
-              const eventStart = new Date(start);
-              const eventEnd = end ? new Date(end) : eventStart;
-              // Check if cellDate is between eventStart and eventEnd (inclusive, by day)
-              const cellYMD = cellDateId;
-              const startYMD = formatDateId(eventStart);
-              const endYMD = formatDateId(eventEnd);
-              return cellYMD >= startYMD && cellYMD <= endYMD;
+            moreLink.addEventListener('click', (e) => {
+              e.stopPropagation();
+              // Calculate the date for this cell
+              const firstDayOfMonth = new Date(year, month, 1);
+              const startDayOfWeek = firstDayOfMonth.getDay();
+              const cellDay = week * 7 + col - startDayOfWeek + 1;
+              const cellDate = new Date(year, month, cellDay);
+              // Find all events (from global events array) that occur on this date
+              const cellDateId = formatDateId(cellDate);
+              const eventsForDay = events.filter(event => {
+                // Parse event start/end
+                const start = event.start_datetime ? new Date(event.start_datetime) : null;
+                const end = event.end_datetime ? new Date(event.end_datetime) : start;
+                if (!start) return false;
+                // Clamp event end to event start if missing
+                const eventStart = new Date(start);
+                const eventEnd = end ? new Date(end) : eventStart;
+                // Check if cellDate is between eventStart and eventEnd (inclusive, by day)
+                const cellYMD = cellDateId;
+                const startYMD = formatDateId(eventStart);
+                const endYMD = formatDateId(eventEnd);
+                console.log('[Calendar Modal Filter Debug]', {
+                  eventName: event.name,
+                  cellYMD,
+                  startYMD,
+                  endYMD,
+                  match: cellYMD >= startYMD && cellYMD <= endYMD
+                });
+                return cellYMD >= startYMD && cellYMD <= endYMD;
+              });
+              console.log('[Calendar Modal Debug] cellDate:', cellDate, 'cellDateId:', cellDateId, 'eventsForDay:', eventsForDay);
+              openDayEventsModal(cellDate, eventsForDay);
             });
-            openDayEventsModal(cellDate, eventsForDay);
-          });
           cell.appendChild(moreLink);
         }
       }
