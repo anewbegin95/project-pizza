@@ -57,7 +57,7 @@
 
 .modal-content.show-day-grid .return-button {
   position: static;
-  margin-bottom: var(--space-xs);
+  margin: var(--space-sm);
   z-index: 10;
   display: block;
   justify-self: start;
