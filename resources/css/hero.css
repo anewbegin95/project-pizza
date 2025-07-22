@@ -41,3 +41,18 @@
   font-style: italic;
   color: var(--nyc-white);
 }
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: var(--font-xxl, 40px);
+  }
+  .hero p {
+    font-size: var(--font-sm, 18px);
+  }
+}
+
+@media (max-width: 450px) {
+  .hero h1 {
+    font-size: var(--font-xl, 32px);
+  }
+}
