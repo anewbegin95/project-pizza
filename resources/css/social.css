@@ -100,3 +100,32 @@
   margin: 0 auto;
   display: block;
 }
+
+@media (max-width: 1000px) {
+  .instagram-embed-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+  }
+}
+
+@media (max-width: 450px) {
+  .instagram-embed-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+  }
+
+  .centered-cta .social-icons {
+    flex-direction: row;
+    align-items: center;
+  }
+  .centered-cta .social-icons a {
+    min-width: var(--space-md);
+    max-width: 88px;
+    width: 88px;
+    justify-content: center;
+    height: var(--space-lg);
+    font-size: var(--font-xs-sm);
+  }
+}
