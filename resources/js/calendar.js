@@ -273,13 +273,20 @@ function placeEventsInGrid(month, year) {
       // Show event name:
       // - For single-day events, always show the name
       // - For multi-day events, only show on first week and first slot
+      let showName = false;
       if (!isMultiDay) {
-        bar.textContent = event.name;
+        showName = true;
       } else if (
         (week === Math.floor(startCellIndex / 7) && weekStartCol === (startCellIndex % 7)) ||
         weekStartCol === 0
       ) {
-        bar.textContent = event.name;
+        showName = true;
+      }
+      if (showName) {
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'calendar-event-bar__title';
+        titleSpan.textContent = event.name;
+        bar.appendChild(titleSpan);
       }
       bar.tabIndex = 0;
       bar.setAttribute('aria-label', event.name); // Accessibility improvement
