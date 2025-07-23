@@ -21,21 +21,20 @@
     margin: auto;
     background-color: var(--nyc-white);
     padding: var(--space-md);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     width: 75%;
     max-height: 90%;
     overflow-y: auto;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-xl);
     position: relative;
 }
 
 .return-button {
-  font-size: 20px;
+  font-size: var(--font-md-sm);
   background-color: transparent;
   border: none;
   color: var(--nyc-fuschia);
-  font-size: 16px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   padding: 0;
   margin: 0;
