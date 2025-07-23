@@ -232,20 +232,23 @@ section.events-grid {
   gap: var(--space-xxs);
 }
 
+/* Event tile title larger */
 .event-tile__details h3 {
   font-size: var(--font-md-sm);
   margin: 0 0 var(--space-xxs) 0;
   color: var(--nyc-navy);
 }
 
+/* Event tile date larger */
 .event-tile__date {
-  font-size: var(--font-xs-sm);
+  font-size: var(--font-sm);
   color: var(--nyc-navy);
   margin: 0 0 var(--space-xxxs) 0;
 }
 
+/* Event tile location larger */
 .event-tile__location {
-  font-size: var(--font-xs-sm);
+  font-size: var(--font-sm);
   color: var(--nyc-navy);
   margin: 0;
 }
