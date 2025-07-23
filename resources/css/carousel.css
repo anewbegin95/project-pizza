@@ -87,7 +87,7 @@
 
 .carousel-image {
   width: 100%;
-  height: var(--carousel-height, 480px); /* TODO: add --carousel-height to base.css if reused */
+  height: 480px;
   object-fit: cover;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   display: block;
