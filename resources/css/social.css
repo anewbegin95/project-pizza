@@ -8,9 +8,9 @@
   margin: var(--space-md) auto;
   padding: var(--space-md) 0;
   background: var(--nyc-light-blue);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   max-width: 95%;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-lg);
 }
 
 .social-media-title {
@@ -40,7 +40,7 @@
   justify-content: center;
   color: var(--nyc-navy);
   background-color: var(--nyc-blue);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0;
   margin: 0;
   min-width: 120px;
@@ -84,14 +84,14 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-sm, 32px);
   justify-items: center;
-  margin: var(--space-lg, 64px) auto;
+  margin: 64px auto;
   max-width: 1400px;
   width: 100%;
 }
 
 .instagram-embed-grid iframe {
-  border-radius: var(--space-xs, 8px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-radius: var(--radius-xs, 8px);
+  box-shadow: var(--shadow-lg);
   background: var(--nyc-white, #fff);
   width: 100%;
   max-width: 320px;
@@ -99,4 +99,33 @@
   aspect-ratio: 4/5;
   margin: 0 auto;
   display: block;
+}
+
+@media (max-width: 1000px) {
+  .instagram-embed-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+  }
+}
+
+@media (max-width: 450px) {
+  .instagram-embed-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+  }
+
+  .centered-cta .social-icons {
+    flex-direction: row;
+    align-items: center;
+  }
+  .centered-cta .social-icons a {
+    min-width: var(--space-md);
+    max-width: 88px;
+    width: 88px;
+    justify-content: center;
+    height: var(--space-lg);
+    font-size: var(--font-xs-sm);
+  }
 }

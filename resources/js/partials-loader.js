@@ -74,21 +74,23 @@ function initializeHeader() {
 
 // --- Load footer partial from partials/footer.html ---
 
-fetch('partials/footer.html')
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`Failed to load footer.html: ${response.statusText}`);
-    }
-    return response.text();
-  })
-  .then((footerContent) => {
-    const placeholder = document.getElementById('footer-placeholder');
-    if (placeholder) {
-      placeholder.innerHTML = footerContent;
-    } else {
-      console.warn('Footer placeholder element not found in the DOM.');
-    }
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('partials/footer.html')
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to load footer.html: ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then((footerContent) => {
+      const placeholder = document.getElementById('footer-placeholder');
+      if (placeholder) {
+        placeholder.innerHTML = footerContent;
+      } else {
+        console.warn('Footer placeholder element not found in the DOM.');
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
