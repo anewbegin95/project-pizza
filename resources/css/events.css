@@ -303,12 +303,12 @@ section.events-grid {
   }
   .event-tile__date,
   .event-tile__location {
-    font-size: var(--font-xs);
+    font-size: var(--font-xs-sm);
   }
   .event-tile__text h3 {
     font-size: var(--font-sm);
   }
   .event-tile__text p {
-    font-size: var(--font-xs);
+    font-size: var(--font-xs-sm);
   }
 }
