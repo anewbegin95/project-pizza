@@ -167,14 +167,23 @@
   font-weight: var(--font-weight-regular);
   cursor: pointer;
   padding: var(--space-xxs) var(--space-xs);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   z-index: 3;
   pointer-events: auto;
   transition: background 0.2s, color 0.2s;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Ensure the event bar title text truncates with ellipsis */
+.calendar-event-bar__title {
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .calendar-event-bar:hover, .calendar-event-bar:focus {
