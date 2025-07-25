@@ -1,4 +1,15 @@
+
 // === CALENDAR LOGIC FOR MONTH-VIEW ===
+
+// === CONSTANTS ===
+/**
+ * Magic numbers and style values used in calendar rendering.
+ * If you update the CSS, update these to match.
+ */
+const MAX_EVENT_BAR_SLOTS = 20; // Max vertical slots for event bars per week
+const EVENT_BAR_HEIGHT_PX = 24; // px, matches CSS
+const EVENT_BAR_VERTICAL_SPACING_PX = 28; // px, matches CSS
+const EVENT_BAR_HORIZONTAL_MARGIN_PX = 2; // px, matches CSS
 
 // === STATE ===
 // Track the current month and year being displayed in the calendar
@@ -19,11 +30,13 @@ function formatDateId(date) {
     return date.toISOString().split('T')[0];
 }
 
+
 /**
- * This function determines how many event bars are visible in the calendar grid
+ * Determines how many event bars are visible in the calendar grid.
+ * @returns {number}
  */
 function getMaxVisible() {
-return window.innerWidth <= 900 ? 2 : 4;
+  return window.innerWidth <= 900 ? 2 : 4;
 }
 
 // === UI RENDERING FUNCTIONS ===
@@ -194,7 +207,7 @@ function placeEventsInGrid(month, year) {
       // Skip bars that would have an invalid span (prevents bleed-over)
       if (weekStartCol > weekEndCol) return;
       let slot = 0;
-      outer: for (; slot < 20; slot++) { // 20 is arbitrary max
+      outer: for (; slot < MAX_EVENT_BAR_SLOTS; slot++) {
         for (let col = weekStartCol; col <= weekEndCol; col++) {
           if (slots[col][slot]) continue outer;
         }
@@ -224,12 +237,18 @@ function placeEventsInGrid(month, year) {
       bar.setAttribute('data-event-id', uniqueId);
       event._calendarUniqueId = uniqueId;
 
+      /**
+       * Highlights all segments of a multi-day event bar.
+       */
       function highlightAllSegments() {
         const eventId = bar.getAttribute('data-event-id');
         document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
           el.classList.add('calendar-event-bar--active')
         );
       }
+      /**
+       * Removes highlight from all segments of a multi-day event bar.
+       */
       function unhighlightAllSegments() {
         const eventId = bar.getAttribute('data-event-id');
         document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
@@ -245,7 +264,7 @@ function placeEventsInGrid(month, year) {
 
       bar.addEventListener('click', (e) => {
         // Remove highlight from all bars first
-        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('.calendar-event-bar--active'));
+        document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         highlightAllSegments();
         e.stopPropagation();
         window.location.href = `event.html?id=${event.id}`;
@@ -254,21 +273,28 @@ function placeEventsInGrid(month, year) {
       // Show event name:
       // - For single-day events, always show the name
       // - For multi-day events, only show on first week and first slot
+      let showName = false;
       if (!isMultiDay) {
-        bar.textContent = event.name;
+        showName = true;
       } else if (
         (week === Math.floor(startCellIndex / 7) && weekStartCol === (startCellIndex % 7)) ||
         weekStartCol === 0
       ) {
-        bar.textContent = event.name;
+        showName = true;
+      }
+      if (showName) {
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'calendar-event-bar__title';
+        titleSpan.textContent = event.name;
+        bar.appendChild(titleSpan);
       }
       bar.tabIndex = 0;
+      bar.setAttribute('aria-label', event.name); // Accessibility improvement
       bar.style.position = 'absolute';
-      const horizontalMargin = 2; // px
-      bar.style.left = `calc(${weekStartCol} * 100% / 7 + ${horizontalMargin}px)`;
-      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - ${horizontalMargin * 2}px)`;
-      bar.style.top = `${slot * 28}px`;
-      bar.style.height = '24px';
+      bar.style.left = `calc(${weekStartCol} * 100% / 7 + ${EVENT_BAR_HORIZONTAL_MARGIN_PX}px)`;
+      bar.style.width = `calc(${(weekEndCol - weekStartCol + 1)} * 100% / 7 - ${EVENT_BAR_HORIZONTAL_MARGIN_PX * 2}px)`;
+      bar.style.top = `${slot * EVENT_BAR_VERTICAL_SPACING_PX}px`;
+      bar.style.height = `${EVENT_BAR_HEIGHT_PX}px`;
       bar.style.zIndex = 2;
 
       // Rounded corners only on start/end
@@ -298,39 +324,34 @@ function placeEventsInGrid(month, year) {
           moreLink.className = 'calendar-more-link calendar-more-link--absolute';
           moreLink.textContent = `+${eventsByDay[col].length - maxVisible} more`;
           moreLink.tabIndex = 0;
-            moreLink.addEventListener('click', (e) => {
-              e.stopPropagation();
-              // Calculate the date for this cell
-              const firstDayOfMonth = new Date(year, month, 1);
-              const startDayOfWeek = firstDayOfMonth.getDay();
-              const cellDay = week * 7 + col - startDayOfWeek + 1;
-              const cellDate = new Date(year, month, cellDay);
-              // Find all events (from global events array) that occur on this date
-              const cellDateId = formatDateId(cellDate);
-              const eventsForDay = events.filter(event => {
-                // Parse event start/end
-                const start = event.start_datetime ? new Date(event.start_datetime) : null;
-                const end = event.end_datetime ? new Date(event.end_datetime) : start;
-                if (!start) return false;
-                // Clamp event end to event start if missing
-                const eventStart = new Date(start);
-                const eventEnd = end ? new Date(end) : eventStart;
-                // Check if cellDate is between eventStart and eventEnd (inclusive, by day)
-                const cellYMD = cellDateId;
-                const startYMD = formatDateId(eventStart);
-                const endYMD = formatDateId(eventEnd);
-                console.log('[Calendar Modal Filter Debug]', {
-                  eventName: event.name,
-                  cellYMD,
-                  startYMD,
-                  endYMD,
-                  match: cellYMD >= startYMD && cellYMD <= endYMD
-                });
-                return cellYMD >= startYMD && cellYMD <= endYMD;
-              });
-              console.log('[Calendar Modal Debug] cellDate:', cellDate, 'cellDateId:', cellDateId, 'eventsForDay:', eventsForDay);
-              openDayEventsModal(cellDate, eventsForDay);
+          moreLink.setAttribute('aria-label', `Show ${eventsByDay[col].length - maxVisible} more events for this day`); // Accessibility
+          moreLink.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Calculate the date for this cell
+            const firstDayOfMonth = new Date(year, month, 1);
+            const startDayOfWeek = firstDayOfMonth.getDay();
+            const cellDay = week * 7 + col - startDayOfWeek + 1;
+            const cellDate = new Date(year, month, cellDay);
+            // Find all events (from global events array) that occur on this date
+            const cellDateId = formatDateId(cellDate);
+            const eventsForDay = events.filter(event => {
+              // Parse event start/end
+              const start = event.start_datetime ? new Date(event.start_datetime) : null;
+              const end = event.end_datetime ? new Date(event.end_datetime) : start;
+              if (!start) return false;
+              // Clamp event end to event start if missing
+              const eventStart = new Date(start);
+              const eventEnd = end ? new Date(end) : eventStart;
+              // Check if cellDate is between eventStart and eventEnd (inclusive, by day)
+              const cellYMD = cellDateId;
+              const startYMD = formatDateId(eventStart);
+              const endYMD = formatDateId(eventEnd);
+              // Debug logs removed for production
+              return cellYMD >= startYMD && cellYMD <= endYMD;
             });
+            // Debug logs removed for production
+            openDayEventsModal(cellDate, eventsForDay);
+          });
           cell.appendChild(moreLink);
         }
       }
@@ -344,42 +365,47 @@ function placeEventsInGrid(month, year) {
 // This ensures all DOM elements are available
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Only run on calendar.html (where .calendar-grid exists)
-    if (document.querySelector('.calendar-grid')) {
-        // Fetch the event data from the Google Sheet CSV (URL is defined in events.js)
-        fetch(GOOGLE_SHEET_CSV_URL)
-            .then(res => res.text()) // Get the CSV as text
-            .then(csv => {
-                // Parse the CSV and filter out hidden events
-                events = parseCSV(csv)
-                    .filter(e =>
-                        String(e.master_display).toUpperCase() === 'TRUE' &&
-                        String(e.calendar).toUpperCase() === 'TRUE'
-                    );
-                // Render the calendar for the current month and year
-                renderCalendar(currentMonth, currentYear);
-            });
-        // Set up the previous month button
-        document.querySelector('.calendar-header__prev-month').onclick = () => {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11; // Wrap to December
-                currentYear--;
-            }
-            renderCalendar(currentMonth, currentYear); // Re-render with new month
-        };
-        // Set up the next month button
-        document.querySelector('.calendar-header__next-month').onclick = () => {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0; // Wrap to January
-                currentYear++;
-            }
-            renderCalendar(currentMonth, currentYear); // Re-render with new month
-        };
-        // Re-render calendar on window resize to update maxVisible
-        window.addEventListener('resize', () => {
-            renderCalendar(currentMonth, currentYear);
-        });
-    }
+  // Only run on calendar.html (where .calendar-grid exists)
+  if (document.querySelector('.calendar-grid')) {
+    // Fetch the event data from the Google Sheet CSV (URL is defined in events.js)
+    fetch(GOOGLE_SHEET_CSV_URL)
+      .then(res => res.text()) // Get the CSV as text
+      .then(csv => {
+        // Parse the CSV and filter out hidden events
+        events = parseCSV(csv)
+          .filter(e =>
+            String(e.master_display).toUpperCase() === 'TRUE' &&
+            String(e.calendar).toUpperCase() === 'TRUE'
+          );
+        // Render the calendar for the current month and year
+        renderCalendar(currentMonth, currentYear);
+      })
+      .catch(err => {
+        // User-facing error handling
+        alert('Failed to load calendar events. Please try again later.');
+        console.error('Failed to load calendar events:', err);
+      });
+    // Set up the previous month button
+    document.querySelector('.calendar-header__prev-month').onclick = () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11; // Wrap to December
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear); // Re-render with new month
+    };
+    // Set up the next month button
+    document.querySelector('.calendar-header__next-month').onclick = () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0; // Wrap to January
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear); // Re-render with new month
+    };
+    // Re-render calendar on window resize to update maxVisible
+    window.addEventListener('resize', () => {
+      renderCalendar(currentMonth, currentYear);
+    });
+  }
 });

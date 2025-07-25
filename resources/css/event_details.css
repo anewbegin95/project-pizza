@@ -38,6 +38,11 @@
   margin-top: var(--space-xxl);
 }
 
+/* Style the return button for appropriate font size and spacing */
+.return-button {
+  font-size: var(--font-sm) !important;
+}
+
 .event-detail__date,
 .event-detail__location {
   font-size: var(--font-md-sm);
@@ -151,6 +156,7 @@
     margin-bottom: var(--space-xs);
     align-self: flex-start;
     z-index: 2;
+    font-size: var(--font-xs-sm) !important;
   }
   .event-detail__content h1#eventTitle {
     font-size: var(--font-md-sm);
