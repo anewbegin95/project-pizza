@@ -77,16 +77,20 @@ function formatEventDate(start, end, allDay, recurring) {
     if (!end) end = '';
 
     console.log('formatEventDate called with:', { start, end, allDay, recurring }); // Debugging log
-    // Parse dates explicitly to handle the format correctly
-    const startDateEastern = new Date(startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    const endDateEastern = new Date(endDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
-    // Format dates directly with the correct timezone
-    const startDateFormatted = startDateEastern.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    const endDateFormatted = endDateEastern.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-    const startTimeFormatted = startDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const endTimeFormatted = endDateEastern.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    // Format dates/times naively (no timezone conversion)
+    const startDateFormatted = startDate
+        ? startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        : '';
+    const endDateFormatted = endDate
+        ? endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        : '';
+    const startTimeFormatted = startDate
+        ? startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        : '';
+    const endTimeFormatted = endDate
+        ? endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        : '';
 
     /*
      * Example 1: Ongoing Events
