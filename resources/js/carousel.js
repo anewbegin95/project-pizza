@@ -33,6 +33,7 @@ function filterCarouselEvents(events) {
 function createCarouselSlide(event, dotBar) {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
+    slide.tabIndex = 0; // Make slide focusable for keyboard navigation
 
     const img = document.createElement('img');
     img.src = event.img || 'resources/images/images/default-event-image.jpeg';
@@ -57,9 +58,16 @@ function createCarouselSlide(event, dotBar) {
         window.location.href = `event.html?id=${event.id}`;
     });
     slide.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key === ' ') {
             window.location.href = `event.html?id=${event.id}`;
         }
+    });
+    // Show visible focus for accessibility
+    slide.addEventListener('focus', () => {
+        slide.classList.add('carousel-slide-focus');
+    });
+    slide.addEventListener('blur', () => {
+        slide.classList.remove('carousel-slide-focus');
     });
 
     return slide;
@@ -79,6 +87,7 @@ function createCarouselDots(count, activeIndex, onDotClick) {
     for (let i = 0; i < count; i++) {
         const dot = document.createElement('button');
         dot.className = 'carousel-dot' + (i === activeIndex ? ' active' : '');
+        dot.tabIndex = 0; // Make dot focusable
         dot.setAttribute('aria-label', `Go to event ${i + 1}`);
         dot.type = 'button';
         if (i === activeIndex) dot.setAttribute('aria-current', 'true');
@@ -109,46 +118,49 @@ function initCarousel(events) {
     let intervalId = null;
 
     /**
-     * Renders the carousel with the current slide and dots.
-     * @param {number} nextIndex - Index of the next slide.
-     * @param {string} direction - Direction of the slide animation ('left' or 'right').
+     * Handles slide-in animation for a new slide.
      */
-    function renderCarousel(nextIndex = null, direction = 'right') {
-        // Remove old slides after animation
-        const oldSlide = container.querySelector('.carousel-slide');
-        const dots = createCarouselDots(featuredEvents.length, nextIndex !== null ? nextIndex : currentIndex, goToSlide);
-        const slide = createCarouselSlide(featuredEvents[nextIndex !== null ? nextIndex : currentIndex], dots);
-
-        // Set up initial class for animation
+    function animateSlideIn(slide, direction) {
         if (direction === 'right') {
             slide.classList.add('slide-in-right');
         } else {
             slide.classList.add('slide-in-left');
         }
-        container.appendChild(slide);
-
         // Force reflow to trigger transition
         void slide.offsetWidth;
-
-        // Animate slide in
         slide.classList.add('active');
-
-        // Animate old slide out
-        if (oldSlide) {
-            if (direction === 'right') {
-                oldSlide.classList.add('slide-out-left', 'exit');
-            } else {
-                oldSlide.classList.add('slide-out-right', 'exit');
-            }
-            oldSlide.addEventListener('transitionend', () => {
-                if (oldSlide.parentNode) oldSlide.parentNode.removeChild(oldSlide);
-            }, { once: true });
-        }
-
-        // Clean up classes after animation
         slide.addEventListener('transitionend', () => {
             slide.classList.remove('slide-in-right', 'slide-in-left', 'active');
         }, { once: true });
+    }
+
+    /**
+     * Handles slide-out animation for the old slide.
+     */
+    function animateSlideOut(oldSlide, direction) {
+        if (!oldSlide) return;
+        if (direction === 'right') {
+            oldSlide.classList.add('slide-out-left', 'exit');
+        } else {
+            oldSlide.classList.add('slide-out-right', 'exit');
+        }
+        oldSlide.addEventListener('transitionend', () => {
+            if (oldSlide.parentNode) oldSlide.parentNode.removeChild(oldSlide);
+        }, { once: true });
+    }
+
+    /**
+     * Renders the carousel with the current slide and dots.
+     * @param {number} nextIndex - Index of the next slide.
+     * @param {string} direction - Direction of the slide animation ('left' or 'right').
+     */
+    function renderCarousel(nextIndex = null, direction = 'right') {
+        const oldSlide = container.querySelector('.carousel-slide');
+        const dots = createCarouselDots(featuredEvents.length, nextIndex !== null ? nextIndex : currentIndex, goToSlide);
+        const slide = createCarouselSlide(featuredEvents[nextIndex !== null ? nextIndex : currentIndex], dots);
+        container.appendChild(slide);
+        animateSlideIn(slide, direction);
+        animateSlideOut(oldSlide, direction);
     }
 
     /**
@@ -165,6 +177,7 @@ function initCarousel(events) {
      * @param {number} index - Index of the slide to show.
      */
     function goToSlide(index) {
+        if (index === currentIndex) return; // Don't animate if already on this slide
         const direction = index > currentIndex ? 'right' : 'left';
         renderCarousel(index, direction);
         currentIndex = index;
@@ -211,6 +224,15 @@ function loadAndInitCarousel() {
         })
         .catch(error => {
             console.error('Error loading carousel events:', error);
+            // Show user-facing error message
+            const container = document.querySelector(CAROUSEL_CONTAINER_SELECTOR);
+            if (container) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'carousel-error';
+                errorDiv.textContent = 'Sorry, we couldn\'t load featured events. Please try again later.';
+                container.innerHTML = '';
+                container.appendChild(errorDiv);
+            }
         });
 }
 
