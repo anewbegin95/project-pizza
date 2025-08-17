@@ -87,7 +87,7 @@ function createCarouselDots(count, activeIndex, onDotClick) {
     for (let i = 0; i < count; i++) {
         const dot = document.createElement('button');
         dot.className = 'carousel-dot' + (i === activeIndex ? ' active' : '');
-        dot.tabIndex = 0; // Make dot focusable
+        // dot.tabIndex = 0; // Removed: buttons are focusable by default
         dot.setAttribute('aria-label', `Go to event ${i + 1}`);
         dot.type = 'button';
         if (i === activeIndex) dot.setAttribute('aria-current', 'true');
