@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let main = document.querySelector('main');
         if (!main) {
             main = document.createElement('main');
-            document.body.innerHTML = '';
             document.body.appendChild(main);
         }
         main.innerHTML = `<section role="alert" aria-label="${ariaLabel}" tabindex="-1"><h2>${message.title}</h2><p>${message.body}</p></section>`;
