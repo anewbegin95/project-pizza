@@ -266,6 +266,9 @@ function placeEventsInGrid(month, year) {
       bar.addEventListener('blur', () => unhighlightAllSegments(eventId));
       bar.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === ' ') {
+            e.preventDefault();
+          }
           window.location.href = `event.html?id=${event.id}`;
         }
       });
