@@ -18,6 +18,25 @@ let currentYear = new Date().getFullYear(); // Four-digit year, e.g., 2025
 let events = []; // This will hold all event objects loaded from the CSV
 
 // === UTILITY FUNCTIONS ===
+/**
+ * Highlights all segments of a multi-day event bar.
+ * @param {string} eventId
+ */
+function highlightAllSegments(eventId) {
+  document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
+    el.classList.add('calendar-event-bar--active')
+  );
+}
+
+/**
+ * Removes highlight from all segments of a multi-day event bar.
+ * @param {string} eventId
+ */
+function unhighlightAllSegments(eventId) {
+  document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
+    el.classList.remove('calendar-event-bar--active')
+  );
+}
 
 /**
  * Formats a Date object as YYYY-MM-DD for use as a cell ID.
@@ -237,35 +256,25 @@ function placeEventsInGrid(month, year) {
       bar.setAttribute('data-event-id', uniqueId);
       event._calendarUniqueId = uniqueId;
 
-      /**
-       * Highlights all segments of a multi-day event bar.
-       */
-      function highlightAllSegments() {
-        const eventId = bar.getAttribute('data-event-id');
-        document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
-          el.classList.add('calendar-event-bar--active')
-        );
-      }
-      /**
-       * Removes highlight from all segments of a multi-day event bar.
-       */
-      function unhighlightAllSegments() {
-        const eventId = bar.getAttribute('data-event-id');
-        document.querySelectorAll(`.calendar-event-bar[data-event-id="${eventId}"]`).forEach(el =>
-          el.classList.remove('calendar-event-bar--active')
-        );
-      }
-
-      // Highlight on hover/focus/click
-      bar.addEventListener('mouseenter', highlightAllSegments);
-      bar.addEventListener('focus', highlightAllSegments);
-      bar.addEventListener('mouseleave', unhighlightAllSegments);
-      bar.addEventListener('blur', unhighlightAllSegments);
-
+      // Accessibility and highlight logic
+      bar.tabIndex = 0;
+      bar.setAttribute('aria-label', event.name);
+      const eventId = bar.getAttribute('data-event-id');
+      bar.addEventListener('mouseenter', () => highlightAllSegments(eventId));
+      bar.addEventListener('focus', () => highlightAllSegments(eventId));
+      bar.addEventListener('mouseleave', () => unhighlightAllSegments(eventId));
+      bar.addEventListener('blur', () => unhighlightAllSegments(eventId));
+      bar.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === ' ') {
+            e.preventDefault();
+          }
+          window.location.href = `event.html?id=${event.id}`;
+        }
+      });
       bar.addEventListener('click', (e) => {
-        // Remove highlight from all bars first
         document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
-        highlightAllSegments();
+        highlightAllSegments(eventId);
         e.stopPropagation();
         window.location.href = `event.html?id=${event.id}`;
       });
@@ -382,7 +391,19 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         // User-facing error handling
-        alert('Failed to load calendar events. Please try again later.');
+        const calendarSection = document.querySelector('.calendar-section');
+        if (calendarSection) {
+          let errorDiv = calendarSection.querySelector('.calendar-error');
+          if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'calendar-error';
+            errorDiv.textContent = 'Failed to load calendar events. Please try again later.';
+            errorDiv.style.color = 'var(--nyc-red, #c00)';
+            errorDiv.style.textAlign = 'center';
+            errorDiv.style.margin = 'var(--space-md) 0';
+            calendarSection.appendChild(errorDiv);
+          }
+        }
         console.error('Failed to load calendar events:', err);
       });
     // Set up the previous month button
