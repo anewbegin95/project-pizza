@@ -62,4 +62,7 @@ fetch(DATE_IDEAS_CSV_URL)
     const dateIdeas = parseCSV(csv, "date-idea");
     console.log(dateIdeas);
     // ... use dateIdeas ...
+  })
+  .catch(error => {
+    console.error('Failed to fetch date ideas:', error);
   });
