@@ -37,22 +37,24 @@ function parseCSV(csvText, type = "date-idea") {
         }
     });
 
-    items.forEach(item => {
-        item.id = generateEventId(item);
+    items.forEach((item, idx) => {
+        item.id = generateEventId(item, idx);
     });
 
     return items;
 }
 
 /**
- * Generates a unique event ID (slug) from event name only.
- * Example output: "pizza-pop-up"
+ * Generates a unique event ID (slug) from event name and row index.
+ * Example output: "pizza-pop-up-3"
  * @param {Object} item - Item object containing name.
+ * @param {number} index - Row index to ensure uniqueness.
  * @returns {string} - Unique event ID.
  */
-function generateEventId(item) {
-    // Use item name only, lowercased and slugified
-    return (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function generateEventId(item, index) {
+    // Use item name, lowercased and slugified, plus index for uniqueness
+    const base = (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `${base}-${index}`;
 }
 
 // Fetch date ideas
