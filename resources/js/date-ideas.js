@@ -16,7 +16,7 @@ const DATE_IDEAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3
 
 function parseCSV(csvText, type = "date-idea") {
     const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(',').map(h => h.trim());
+    const headers = rows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h => h.trim());
     const items = [];
     let currentRow = [];
 
