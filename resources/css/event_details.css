@@ -158,7 +158,8 @@
     z-index: 2;
     font-size: var(--font-xs-sm) !important;
   }
-  .event-detail__content h1#eventTitle {
+  .event-detail__content h1#eventTitle,
+  .event-detail__content h1#dateIdeaTitle {
     font-size: var(--font-md-sm);
     margin: 0 0 var(--space-xs) 0;
     text-align: left;
