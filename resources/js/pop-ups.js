@@ -733,5 +733,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/events.js
+// filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/pop-ups.js
 // Removed broken window.openEventModal assignment

@@ -216,7 +216,7 @@ function initCarousel(events) {
 // === MAIN FUNCTIONALITY ===
 
 /**
- * Loads events (reusing fetch/parse logic from events.js), then initializes the carousel.
+ * Loads events (reusing fetch/parse logic from pop-ups.js), then initializes the carousel.
  */
 function loadAndInitCarousel() {
     fetch(GOOGLE_SHEET_CSV_URL)

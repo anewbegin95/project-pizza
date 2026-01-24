@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Use the same CSV URL and parseCSV as in events.js
+    // Use the same CSV URL and parseCSV as in pop-ups.js
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(res => res.text())
         .then(csv => {

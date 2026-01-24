@@ -376,7 +376,7 @@ function placeEventsInGrid(month, year) {
 document.addEventListener('DOMContentLoaded', () => {
   // Only run on calendar.html (where .calendar-grid exists)
   if (document.querySelector('.calendar-grid')) {
-    // Fetch the event data from the Google Sheet CSV (URL is defined in events.js)
+    // Fetch the event data from the Google Sheet CSV (URL is defined in pop-ups.js)
     fetch(GOOGLE_SHEET_CSV_URL)
       .then(res => res.text()) // Get the CSV as text
       .then(csv => {
