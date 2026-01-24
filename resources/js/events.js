@@ -706,7 +706,7 @@ function loadAndDisplayEvents() {
 // === EVENT LISTENERS ===
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Only run on events.html
+    // Only run on pop-ups.html
     if (document.getElementById('eventsGrid')) {
         loadAndDisplayEvents();
     }
