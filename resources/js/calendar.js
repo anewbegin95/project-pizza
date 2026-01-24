@@ -269,14 +269,14 @@ function placeEventsInGrid(month, year) {
           if (e.key === ' ') {
             e.preventDefault();
           }
-          window.location.href = `event.html?id=${event.id}`;
+          window.location.href = `pop-up.html?id=${event.id}`;
         }
       });
       bar.addEventListener('click', (e) => {
         document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
         highlightAllSegments(eventId);
         e.stopPropagation();
-        window.location.href = `event.html?id=${event.id}`;
+        window.location.href = `pop-up.html?id=${event.id}`;
       });
 
       // Show event name:

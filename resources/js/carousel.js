@@ -55,14 +55,14 @@ function createCarouselSlide(event, dotBar) {
     slide.appendChild(overlay);
 
     slide.addEventListener('click', () => {
-        window.location.href = `event.html?id=${event.id}`;
+        window.location.href = `pop-up.html?id=${event.id}`;
     });
     slide.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             if (e.key === ' ') {
                 e.preventDefault();
             }
-            window.location.href = `event.html?id=${event.id}`;
+            window.location.href = `pop-up.html?id=${event.id}`;
         }
     });
     // Show visible focus for accessibility

@@ -340,7 +340,7 @@ function createEventTile(event, skipEventsPageCheck = false) {
     tile.appendChild(details);
 
     tile.addEventListener('click', () => {
-        window.location.href = `event.html?id=${event.id}`;
+        window.location.href = `pop-up.html?id=${event.id}`;
     });
 
     return tile;
