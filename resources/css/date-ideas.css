@@ -1,5 +1,5 @@
 /* =============================================================================
-   DATE IDEAS GRID & TILE (BEM/component refactor, matches events.css)
+   DATE IDEAS GRID & TILE (BEM/component refactor, matches popups.css)
 ============================================================================= */
 
 /* Ensure base padding matches events grid on all screens */
@@ -173,7 +173,7 @@ section.date-ideas-grid {
   display: inline-block;
 }
 
-/* Responsive tweaks (reuse events.css media queries as needed) */
+/* Responsive tweaks (reuse popups.css media queries as needed) */
 @media (max-width: 900px) {
   .date-ideas-grid {
     grid-template-columns: 1fr;
@@ -248,7 +248,7 @@ section.date-ideas-grid {
     color: var(--nyc-navy);
   }
 }
-/* Add missing ≤975px breakpoint to mirror events.css */
+/* Add missing ≤975px breakpoint to mirror popups.css */
 @media (max-width: 975px) {
   section#dateIdeasGrid {
     padding: 0 var(--space-sm) !important;
