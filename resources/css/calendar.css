@@ -151,9 +151,9 @@
 }
 
 /* =========================
-   CALENDAR EVENT BAR
+   CALENDAR POP-UP BAR
 ========================= */
-.calendar-event-bar {
+.calendar-popup-bar {
   position: absolute;
   left: 0;
   right: auto;
@@ -177,25 +177,24 @@
   overflow: hidden;
 }
 
-/* Ensure the event bar title text truncates with ellipsis */
-.calendar-event-bar__title {
+/* Ensure the pop-up bar title text truncates with ellipsis */
+.calendar-popup-bar__title {
   flex: 1 1 0%;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.calendar-event-bar:hover, .calendar-event-bar:focus {
+.calendar-popup-bar:hover, .calendar-popup-bar:focus {
   background: var(--nyc-fuschia);
   color: var(--nyc-white);
   outline: none;
 }
 
 /* =========================
-   CALENDAR EVENT BAR ACTIVE
+   CALENDAR POP-UP BAR ACTIVE
 ========================= */
-.calendar-event-bar--active {
+.calendar-popup-bar--active {
   background: var(--nyc-fuschia) !important;
   color: var(--nyc-white) !important;
   box-shadow: 0 0 0 2px var(--nyc-fuschia);
@@ -203,9 +202,9 @@
 }
 
 /* =========================
-   CALENDAR EVENT BAR CONTINUE
+   CALENDAR POP-UP BAR CONTINUE
 ========================= */
-.calendar-event-bar-continue {
+.calendar-popup-bar-continue {
   background: var(--nyc-pink);
   height: 24px;
   border-radius: 0 var(--radius-xxs) var(--radius-xxs) 0;
@@ -247,7 +246,7 @@
   pointer-events: auto;
 }
 
-.day-events-grid {
+.day-popups-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr)); /* Now 1 column on desktop */
   gap: var(--space-md);
@@ -259,7 +258,7 @@
   max-width: 1000px;
   margin: 0 auto;
 }
-.day-events-grid h2 {
+.day-popups-grid h2 {
   grid-column: 1 / -1;
   text-align: center;
   margin-top: 0;
@@ -290,12 +289,12 @@
     top: 28px;
     min-height: 28px;
   }
-  .calendar-event-bar {
+  .calendar-popup-bar {
     font-size: var(--font-xs-sm);
     height: 18px;
     padding: var(--space-xxxs) var(--space-xxs);
   }
-  .day-events-grid {
+  .day-popups-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .modal-content.show-day-grid {
@@ -309,11 +308,11 @@
    MEDIA QUERIES: ≤600px
 ========================= */
 @media (max-width: 600px) {
-  .day-events-grid {
+  .day-popups-grid {
     grid-template-columns: 1fr;
     padding: var(--space-xs);
   }
-  .day-events-grid h2 {
+  .day-popups-grid h2 {
     font-size: var(--font-md-sm);
   }
 }

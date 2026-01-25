@@ -2,7 +2,7 @@
    DATE IDEAS GRID & TILE (BEM/component refactor, matches popups.css)
 ============================================================================= */
 
-/* Ensure base padding matches events grid on all screens */
+/* Ensure base padding matches date ideas grid on all screens */
 section#dateIdeasGrid {
   padding: var(--space-sm) !important;
 }
@@ -27,7 +27,7 @@ section.date-ideas-grid {
 }
 
 .date-idea-tile,
-.event-tile {
+.popup-tile {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -43,18 +43,18 @@ section.date-ideas-grid {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .date-idea-tile:hover,
-.event-tile:hover {
+.popup-tile:hover {
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px) scale(1.01);
 }
-#dateIdeasGrid .event-tile {
+#dateIdeasGrid .popup-tile {
   /* Stretch children so the image container fills tile height */
   align-items: stretch;
   overflow: hidden; /* ensure no background shows around the image */
 }
 
 .date-idea-tile__img-container,
-.event-tile__img-container {
+.popup-tile__img-container {
   flex: 0 0 25%;
   display: flex;
   align-items: stretch;
@@ -67,7 +67,7 @@ section.date-ideas-grid {
   background: transparent; /* avoid white bars if any gap remains */
 }
 .date-idea-tile__img,
-.event-tile__img {
+.popup-tile__img {
   display: block;
   width: 100% !important;
   height: 100% !important;
@@ -76,7 +76,7 @@ section.date-ideas-grid {
   margin: 0;
 }
 .date-idea-tile__details,
-.event-tile__details {
+.popup-tile__details {
   flex: 1 1 75%;
   display: flex;
   flex-direction: column;
@@ -87,7 +87,7 @@ section.date-ideas-grid {
   height: 100%;
 }
 .date-idea-tile__details,
-#dateIdeasGrid .event-tile__details {
+#dateIdeasGrid .popup-tile__details {
   /* Left align text on date ideas page and center vertically */
   align-items: flex-start;
   justify-content: center;
@@ -96,17 +96,17 @@ section.date-ideas-grid {
   padding-top: 0;
   padding-bottom: 0;
 }
-#dateIdeasGrid .event-tile__details h3,
-#dateIdeasGrid .event-tile__location,
-#dateIdeasGrid .event-tile__text {
+#dateIdeasGrid .popup-tile__details h3,
+#dateIdeasGrid .popup-tile__location,
+#dateIdeasGrid .popup-tile__text {
   text-align: left;
   width: 100%;
 }
 
 /* Remove extra inner padding so content sits at true middle */
-#dateIdeasGrid .event-tile__text { padding: 0; }
+#dateIdeasGrid .popup-tile__text { padding: 0; }
 .date-idea-tile__details h3,
-.event-tile__details h3 {
+.popup-tile__details h3 {
   font-size: var(--font-md-sm);
   margin: 0 0 var(--space-xxs) 0;
   color: var(--nyc-navy);
@@ -114,7 +114,7 @@ section.date-ideas-grid {
   width: 100%;
 }
 .date-idea-tile__location,
-.event-tile__location {
+.popup-tile__location {
   font-size: var(--font-sm);
   color: var(--nyc-navy);
   margin: 0;
@@ -122,14 +122,14 @@ section.date-ideas-grid {
   width: 100%;
 }
 .date-idea-tile__text,
-.event-tile__text {
+.popup-tile__text {
   padding: var(--space-sm);
   font-size: var(--font-sm);
   color: var(--nyc-navy);
 }
 
 /* Modal styles (reuse event detail styles) */
-.event-detail-modal {
+.popup-detail-modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 1000;
@@ -138,7 +138,7 @@ section.date-ideas-grid {
   align-items: center;
   justify-content: center;
 }
-.event-detail-modal .event-detail {
+.popup-detail-modal .popup-detail {
   background: var(--nyc-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
@@ -148,25 +148,25 @@ section.date-ideas-grid {
   padding: var(--space-md);
   position: relative;
 }
-.event-detail-modal .event-detail__content {
+.popup-detail-modal .popup-detail__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
-.event-detail-modal .event-detail__image img {
+.popup-detail-modal .popup-detail__image img {
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-xs);
   box-shadow: var(--shadow-lg);
   object-fit: cover;
 }
-.event-detail-modal .return-button {
+.popup-detail-modal .return-button {
   font-size: var(--font-sm) !important;
   margin-bottom: var(--space-xs);
 }
 
 /* External link text styling for date idea details */
-.event-detail__external-link-text {
+.popup-detail__external-link-text {
   font-weight: var(--font-weight-bold);
   text-align: left;
   padding-left: var(--space-sm);
@@ -180,12 +180,12 @@ section.date-ideas-grid {
     gap: var(--space-sm);
     box-sizing: border-box;
   }
-  /* Match events grid padding on mobile/tablet */
+  /* Match date ideas grid padding on mobile/tablet */
   section#dateIdeasGrid { padding: 0 var(--space-sm) !important; }
 }
 @media (max-width: 700px), (max-width: 600px) {
   /* Keep date ideas tiles horizontal on small screens and flush image */
-  #dateIdeasGrid .event-tile {
+  #dateIdeasGrid .popup-tile {
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -193,18 +193,18 @@ section.date-ideas-grid {
     padding: 0;
     overflow: hidden;
   }
-  #dateIdeasGrid .event-tile__img-container {
+  #dateIdeasGrid .popup-tile__img-container {
     flex: 0 0 25%;
     max-width: 160px;
     min-width: 100px;
     height: 100%;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   }
-  #dateIdeasGrid .event-tile__img {
+  #dateIdeasGrid .popup-tile__img {
     height: 100%;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   }
-  #dateIdeasGrid .event-tile__details {
+  #dateIdeasGrid .popup-tile__details {
     align-items: flex-start;
     justify-content: center;
     width: 100%;
@@ -214,7 +214,7 @@ section.date-ideas-grid {
     gap: var(--space-xs);
     box-sizing: border-box;
   }
-  /* Match events grid padding on small screens */
+  /* Match date ideas grid padding on small screens */
   section#dateIdeasGrid { padding: 0 var(--space-sm) !important; }
   .date-idea-tile {
     flex-direction: row;
