@@ -9,15 +9,15 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 // === UTILITY FUNCTIONS ===
 
 /**
- * Parses a CSV string into an array of event objects.
+ * Parses a CSV string into an array of pop-up objects.
  * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
  * @param {string} csvText - The raw CSV string.
- * @returns {Array<Object>} - Array of parsed event objects.
+ * @returns {Array<Object>} - Array of parsed pop-up objects.
  */
 function parseCSV(csvText) {
     const rows = csvText.trim().split('\n');
     const headers = rows[0].split(',').map(h => h.trim());
-    const events = [];
+    const popups = [];
     let currentRow = [];
 
     rows.slice(1).forEach(row => {
@@ -27,58 +27,102 @@ function parseCSV(csvText) {
 
         if (quoteCount % 2 === 0) {
             const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
-            const event = {};
+            const popup = {};
             headers.forEach((header, i) => {
-                event[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
+                popup[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
             });
-            event['recurring'] = event['recurring'] || 'FALSE';
-            event['master_display'] = event['master_display'] || 'TRUE';
-            event['events_page'] = event['events_page'] || 'TRUE';
-            event['calendar'] = event['calendar'] || 'TRUE';
-            event['link'] = event['link'] || '';
-            events.push(event);
+            // Normalize legacy event-based flags to popup flags
+            if (!popup['popups_page'] && popup['events_page']) {
+                popup['popups_page'] = popup['events_page'];
+            }
+            popup['recurring'] = popup['recurring'] || 'FALSE';
+            popup['master_display'] = popup['master_display'] || 'TRUE';
+            popup['popups_page'] = popup['popups_page'] || 'TRUE';
+            popup['calendar'] = popup['calendar'] || 'TRUE';
+            popup['link'] = popup['link'] || '';
+            popups.push(popup);
             currentRow = [];
         }
     });
 
-    // Assign event.id using the new generateEventId (event name only)
-    events.forEach(event => {
-        event.id = generateEventId(event);
+    // Assign popup.id using the new generatePopupId (name only)
+    popups.forEach(popup => {
+        popup.id = generatePopupId(popup);
     });
 
-    return events;
+    return popups;
 }
 
 /**
- * Generates a unique event ID (slug) from event name only.
+ * Generates a unique pop-up ID (slug) from name only.
  * Example output: "pizza-pop-up"
- * @param {Object} event - Event object containing name.
- * @returns {string} - Unique event ID.
+ * @param {Object} popup - Pop-up object containing `name`.
+ * @returns {string} - Unique pop-up ID.
  */
-function generateEventId(event) {
-    // Use event name only, lowercased and slugified
-    return (event.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function generatePopupId(popup) {
+    // Use popup name only, lowercased and slugified
+    return (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 /**
- * Formats event dates into human-readable strings based on various scenarios.
- * @param {string} start - Start date/time of the event.
- * @param {string} end - End date/time of the event.
- * @param {string} allDay - Whether the event lasts all day.
- * @param {string} recurring - Whether the event is recurring.
- * @returns {string} - Formatted date string.
+ * Formats pop-up dates into human-readable strings based on various scenarios.
+ *
+ * Examples:
+ * 1) Ongoing Pop-Ups
+ *    - Input: start = "Ongoing", end = "", allDay = "TRUE", recurring = "FALSE"
+ *    - Output: "Ongoing"
+ *
+ * 2) Ongoing (With Start Date)
+ *    - Input: start = "2025-05-11", end = "Ongoing"
+ *    - Output: "Starting Sun, May 11, ongoing"
+ *
+ * 3) Exact Start & End Datetime (One Day)
+ *    - Input: start = "2025-05-11 10:00:00", end = "2025-05-11 17:00:00", allDay = "FALSE", recurring = "FALSE"
+ *    - Output: "Sun, May 11, 10:00 AM – 5:00 PM"
+ *
+ * 4) Exact Start & End Datetime (Over Many Days)
+ *    - Input: start = "2025-05-11 10:00:00", end = "2025-05-13 17:00:00", allDay = "FALSE", recurring = "FALSE"
+ *    - Output: "Sun, May 11, 10:00 AM – Tue, May 13, 5:00 PM"
+ *
+ * 5) Exact Day but Not Time (One Day)
+ *    - Input: start = "2025-05-11", end = "", allDay = "FALSE", recurring = "FALSE"
+ *    - Output: "Sun, May 11"
+ *
+ * 6) Exact Start & End Day but No Time (Over Many Days)
+ *    - Input: start = "2025-05-11", end = "2025-05-13", allDay = "FALSE", recurring = "FALSE"
+ *    - Output: "Sun, May 11 – Tue, May 13"
+ *
+ * 7) Single Day, All Day
+ *    - Input: start = "2025-05-11" & end = "2025-05-11" or "2025-05-11" & end = "", allDay = "TRUE", recurring = "FALSE"
+ *    - Output: "Sun, May 11 (all day)"
+ *
+ * 8) Multi-day, All Day
+ *    - Input: start = "2025-05-11", end = "2025-05-13", allDay = "TRUE", recurring = "FALSE"
+ *    - Output: "Sun, May 11 – Tue, May 13 (all day)"
+ *
+ * 9) Recurring Pop-Ups (Specific Days or Times)
+ *    - Input: start = "2025-05-16 17:30:00", end = "2025-05-16 20:30:00", recurring = "TRUE"
+ *    - Output: "Fri, May 16, 5:30 – 8:30 PM"
+ *
+ * 10) Drop-In Pop-Ups (Start Time only)
+ *    - Input: start = "2025-05-11 14:00:00", end = "", allDay = "FALSE", recurring = "FALSE"
+ *    - Output: "Sun, May 11, starting at 2:00 PM"
+ *
+ * 11) Closing Pop-Ups (End Time only)
+ *    - Input: start = "", end = "2025-05-11 17:00:00"
+ *    - Output: "Sun, May 11, ending at 5:00 PM"
+ *
+ * 12) TBD (No Specific Date or Time)
+ *    - Input: start = "", end = ""
+ *    - Output: "Date and time to be announced"
  */
-function formatEventDate(start, end, allDay, recurring) {
-    const startDate = parseEventDate(start);
-    const endDate = parseEventDate(end);
+function formatPopupDate(start, end, allDay, recurring) {
+    const startDate = parsePopupDate(start);
+    const endDate = parsePopupDate(end);
 
-    // Ensure start and end are defined
     if (!start) start = '';
     if (!end) end = '';
 
-    console.log('formatEventDate called with:', { start, end, allDay, recurring }); // Debugging log
-
-    // Format dates/times naively (no timezone conversion)
     const startDateFormatted = startDate
         ? startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
         : '';
@@ -92,146 +136,59 @@ function formatEventDate(start, end, allDay, recurring) {
         ? endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
         : '';
 
-    /*
-     * Example 1: Ongoing Events
-     * Input: start = "Ongoing", end = "", allDay = "TRUE", recurring = "FALSE"
-     * Output (Tile): "Ongoing"
-     * Output (Modal): "Ongoing"
-     */
     if (start === 'Ongoing' && !end) {
         return 'Ongoing';
     }
-
-    /*
-     * Example 2: Ongoing Events (With Start Date)
-     * Input: start = "2025-05-11", end = "Ongoing"
-     * Output (Tile): "Starting Sun, May 11, ongoing"
-     * Output (Modal): "Starting Sun, May 11, ongoing"
-     */
     if (start && end === 'Ongoing') {
         return `Starting ${startDateFormatted}, ongoing`;
     }
-
-    /*
-     * Example 3: Exact Start & End Datetime (One Day)
-     * Input: start = "2025-05-11 10:00:00", end = "2025-05-11 17:00:00", allDay = "FALSE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11, 10:00 AM – 5:00 PM"
-     * Output (Modal): "Sun, May 11, 10:00 AM – 5:00 PM"
-     */
-    if (startDate.toDateString() === endDate.toDateString() 
-        && start.includes(':') 
-        && end.includes(':') 
-        && allDay === 'FALSE' 
-        && recurring === 'FALSE'
-    ) {
+    if (startDate && endDate && startDate.toDateString() === endDate.toDateString()
+        && start.includes(':') && end.includes(':')
+        && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
     }
-
-    /*
-     * Example 4: Exact Start & End Datetime (Over Many Days)
-     * Input: start = "2025-05-11 10:00:00", end = "2025-05-13 17:00:00", allDay = "FALSE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11, 10:00 AM – Tue, May 13, 5:00 PM"
-     * Output (Modal): "Sun, May 11, 10:00 AM – Tue, May 13, 5:00 PM"
-     */
-    if (startDate.toDateString() != endDate.toDateString() 
-        && start.includes(':') && end.includes(':') 
-        && allDay === 'FALSE' 
-        && recurring === 'FALSE') {
+    if (startDate && endDate && startDate.toDateString() != endDate.toDateString()
+        && start.includes(':') && end.includes(':')
+        && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted}, ${startTimeFormatted} - ${endDateFormatted}, ${endTimeFormatted}`;
     }
-
-    /*
-     * Example 5: Exact Day but Not Time (One Day)
-     * Input: start = "2025-05-11", end = "", allDay = "FALSE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11"
-     * Output (Modal): "Sun, May 11"
-     */
-    if (start
-        && !end
-        && !start.includes(':') 
-        && allDay === 'FALSE' 
-        && recurring === 'FALSE'
-    ) {
+    if (start && !end && !start.includes(':') && allDay === 'FALSE' && recurring === 'FALSE') {
         return startDateFormatted;
     }
-
-    /*
-     * Example 6: Exact Start & End Day but No Time (Over Many Days)
-     * Input: start = "2025-05-11", end = "2025-05-13", allDay = "FALSE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11 – Tue, May 13"
-     * Output (Modal): "Sun, May 11 – Tue, May 13"
-     */
-    if (start != end 
-        && !start.includes(':') 
-        && !end.includes(':')
-        && allDay === 'FALSE' 
-        && recurring === 'FALSE') {
+    if (start != end && !start.includes(':') && !end.includes(':') && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted} – ${endDateFormatted}`;
     }
-
-    /*
-     * Example 7: Single day, all day
-     * Input: start = "2025-05-11" & end = "2025-05-11" or "2025-05-11" & end = "", allDay = "TRUE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11 (all day)"
-     * Output (Modal): "Sun, May 11 (all day)"
-     */
-    if ((start === end || (start && !end))
-        && allDay === 'TRUE' 
-        && recurring === 'FALSE') {
+    if ((start === end || (start && !end)) && allDay === 'TRUE' && recurring === 'FALSE') {
         return `${startDateFormatted} (all day)`;
     }
-
-    /*
-     * Example 8: Multi-day, all day
-     * Input: start = "2025-05-11", end = "2025-05-13", allDay = "TRUE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11 – Tue, May 13 (all day)"
-     * Output (Modal): "Sun, May 11 – Tue, May 13 (all day)"
-     */
-    if (start != end
-        && allDay === 'TRUE' 
-        && recurring === 'FALSE') {
+    if (start != end && allDay === 'TRUE' && recurring === 'FALSE') {
         return `${startDateFormatted} - ${endDateFormatted} (all day)`;
     }
-
-    /*
-     * Example 9: Recurring Events (Specific Days or Times)
-     * Input: start = "2025-05-16 17:30:00", end = "2025-05-16 20:30:00", recurring = "TRUE", recurrence_pattern = "Every Friday from 5:30 PM to 8:30 PM"
-     * Output (Tile): "Next on Fri, May 16, 5:30 – 8:30 PM"
-     * Output (Modal): "Next on Fri, May 16, 5:30 – 8:30 PM"
-     */
     if (recurring === 'TRUE') {
-        return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`
+        return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
     }
-
-    /*
-     * Example 10: Drop-In Events (Exact Start Time but No End Time)
-     * Input: start = "2025-05-11 14:00:00", end = "", allDay = "FALSE", recurring = "FALSE"
-     * Output (Tile): "Sun, May 11, starting at 2:00 PM"
-     * Output (Modal): "Sun, May 11, starting at 2:00 PM"
-     */
     if (start && !end) {
         return `${startDateFormatted}, starting at ${startTimeFormatted}`;
     }
-
-    /*
-     * Example 11 Closing Events (Exact End Time but No Start Time)
-     * Input: start = "", end = "2025-05-11 17:00:00"
-     * Output (Tile): "Sun, May 11, ending at 5:00 PM"
-     * Output (Modal): "Sun, May 11, ending at 5:00 PM"
-     */
     if (!start && end) {
         return `${endDateFormatted}, ending at ${endTimeFormatted}`;
     }
-
-    /*
-     * Example 12: Events with No Specific Date or Time (TBD)
-     * Input: start = "", end = ""
-     * Output (Tile): "Date and time to be announced"
-     * Output (Modal): "Date and time to be announced"
-     */
     if (!start && !end) {
         return 'Date and time to be announced';
     }
+}
+
+/**
+ * Formats pop-up dates into human-readable strings based on various scenarios.
+ * @param {string} start - Start date/time of the pop-up.
+ * @param {string} end - End date/time of the pop-up.
+ * @param {string} allDay - Whether the pop-up lasts all day.
+ * @param {string} recurring - Whether the pop-up is recurring.
+ * @returns {string} - Formatted date string.
+ */
+function formatEventDate(start, end, allDay, recurring) {
+    // Legacy wrapper for compatibility
+    return formatPopupDate(start, end, allDay, recurring);
 }
 
 /**
@@ -242,8 +199,12 @@ function formatEventDate(start, end, allDay, recurring) {
  * - MM/DD/YYYY HH:MM:SS
  * - and similar variants (with or without leading zeros)
  * Returns a Date object or null if invalid.
+ *
+ * Notes:
+ * - Uses local parsing with minor normalization (slashes for dashes) to support Safari.
+ * - Avoids timezone conversion; treats provided times as local display values.
  */
-function parseEventDate(str) {
+function parsePopupDate(str) {
     if (!str) return null;
     // Try native Date first
     let d = new Date(str.replace(/-/g, '/'));
@@ -278,59 +239,68 @@ function parseEventDate(str) {
     return null;
 }
 
-/*
-* Checks if an event is a multi-day event, in the style of Example 4 above
-* @param {Object} event - Event object containing start_datetime and end_datetime.
-* @returns {boolean} - True if the event is a multi-day event, false otherwise.
-*/
-function isMultiDayEvent(event) {
-    const startDate = parseEventDate(event.start_datetime);
-    const endDate = parseEventDate(event.end_datetime);
-    if (!event.start_datetime || !event.end_datetime) return false;
+function parseEventDate(str) {
+    // Legacy wrapper
+    return parsePopupDate(str);
+}
+
+/**
+ * Checks if a pop-up spans multiple calendar days (non-all-day, non-recurring).
+ * Mirrors Example 4 in the date formatting docs.
+ */
+function isMultiDayPopup(popup) {
+    const startDate = parseEventDate(popup.start_datetime);
+    const endDate = parseEventDate(popup.end_datetime);
+    if (!popup.start_datetime || !popup.end_datetime) return false;
     return (
         startDate.toDateString() !== endDate.toDateString() &&
-        event.start_datetime.includes(':') &&
-        event.end_datetime.includes(':') &&
-        String(event.all_day).toUpperCase() === 'FALSE' &&
-        String(event.recurring).toUpperCase() === 'FALSE'
+        popup.start_datetime.includes(':') &&
+        popup.end_datetime.includes(':') &&
+        String(popup.all_day).toUpperCase() === 'FALSE' &&
+        String(popup.recurring).toUpperCase() === 'FALSE'
     );
+}
+
+function isMultiDayEvent(popup) {
+    // Legacy wrapper
+    return isMultiDayPopup(popup);
 }
 
 // === UI RENDERING FUNCTIONS ===
 
 /**
- * Creates an event tile for the events grid.
- * @param {Object} event - Event object containing event details.
- * @returns {HTMLElement|null} - The event tile element or null if the event should not be displayed.
+ * Creates a pop-up tile for the pop-ups grid.
+ * @param {Object} popup - Pop-up object containing details.
+ * @returns {HTMLElement|null} - The pop-up tile element or null if it should not be displayed.
  */
-function createEventTile(event, skipEventsPageCheck = false) {
-    if (String(event.master_display).toUpperCase() === 'FALSE') return null;
-    if (!skipEventsPageCheck && String(event.events_page).toUpperCase() === 'FALSE') return null;
+function createPopupTile(popup, skipPopupsPageCheck = false) {
+    if (String(popup.master_display).toUpperCase() === 'FALSE') return null;
+    if (!skipPopupsPageCheck && String(popup.popups_page).toUpperCase() === 'FALSE') return null;
 
     const tile = document.createElement('div');
-    // BEM/component refactor for event tile
-    tile.className = 'event-tile event-tile--horizontal';
+    // BEM/component refactor for popup tile
+    tile.className = 'popup-tile popup-tile--horizontal';
 
     // Left: Image
     const imgContainer = document.createElement('div');
-    imgContainer.className = 'event-tile__img-container';
+    imgContainer.className = 'popup-tile__img-container';
     const img = document.createElement('img');
-    img.src = event.img || 'resources/images/images/default-event-image.jpeg';
-    img.alt = `${event.name} image`;
-    img.className = 'event-tile__img';
+    img.src = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    img.alt = `${popup.name} image`;
+    img.className = 'popup-tile__img';
     imgContainer.appendChild(img);
 
     // Right: Details
     const details = document.createElement('div');
-    details.className = 'event-tile__details';
+    details.className = 'popup-tile__details';
     const title = document.createElement('h3');
-    title.textContent = event.name;
+    title.textContent = popup.name;
     const dateText = document.createElement('p');
-    dateText.className = 'event-tile__date';
-    dateText.textContent = formatEventDate(event.start_datetime, event.end_datetime, event.all_day, event.recurring);
+    dateText.className = 'popup-tile__date';
+    dateText.textContent = formatPopupDate(popup.start_datetime, popup.end_datetime, popup.all_day, popup.recurring);
     const location = document.createElement('p');
-    location.className = 'event-tile__location';
-    location.textContent = event.location || '';
+    location.className = 'popup-tile__location';
+    location.textContent = popup.location || '';
 
     details.appendChild(title);
     details.appendChild(dateText);
@@ -340,28 +310,28 @@ function createEventTile(event, skipEventsPageCheck = false) {
     tile.appendChild(details);
 
     tile.addEventListener('click', () => {
-        window.location.href = `event.html?id=${event.id}`;
+        window.location.href = `pop-up.html?id=${popup.id}`;
     });
 
     return tile;
 }
 
 /**
- * Opens a modal showing all events for a given day in a grid (like the events page).
- * @param {Date} date - The date for which to show events.
- * @param {Array<Object>} eventsForDay - Array of event objects for the day.
+ * Opens a modal showing all pop-ups for a given day in a grid (like the pop-ups page).
+ * @param {Date} date - The date for which to show pop-ups.
+ * @param {Array<Object>} popupsForDay - Array of pop-up objects for the day.
  */
-function openDayEventsModal(date, eventsForDay) {
-    const modal = document.getElementById('eventModal');
+function openDayPopupsModal(date, popupsForDay) {
+    const modal = document.getElementById('popupModal');
     const modalContent = modal.querySelector('.modal-content');
-    // Hide the single-event modal content
+    // Hide the single pop-up modal content
     modal.querySelector('.modal-details').style.display = 'none';
     modal.querySelector('.modal-main').style.display = 'none';
     // Switch modal-content to single-column for day grid
     modalContent.classList.add('show-day-grid');
 
-    // Remove any existing day-events grid
-    let dayGrid = modal.querySelector('.day-events-grid');
+    // Remove any existing day-popups grid
+    let dayGrid = modal.querySelector('.day-popups-grid');
     if (dayGrid) dayGrid.remove();
 
     // Update the return button text (no inline style)
@@ -370,42 +340,42 @@ function openDayEventsModal(date, eventsForDay) {
         returnButton.textContent = '← Return to calendar';
         // Restore modal content and remove day grid/modal class on click
         returnButton.onclick = () => {
-            if (modal.querySelector('.day-events-grid'))
-                modal.querySelector('.day-events-grid').remove();
+            if (modal.querySelector('.day-popups-grid'))
+                modal.querySelector('.day-popups-grid').remove();
             modalContent.classList.remove('show-day-grid');
             // Restore modal content (details/main)
             modal.querySelector('.modal-details').style.display = '';
             modal.querySelector('.modal-main').style.display = '';
             // Remove highlight from all bars
-            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
             modal.classList.add('hidden');
         };
     }
 
-    // Create a new grid for the day's events
+    // Create a new grid for the day's pop-ups
     dayGrid = document.createElement('div');
-    dayGrid.className = 'day-events-grid events-grid';
+    dayGrid.className = 'day-popups-grid popups-grid';
 
     // Add a heading for the date (centered at top, no inline style)
     const heading = document.createElement('h2');
     heading.textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-    heading.className = 'day-events-heading';
+    heading.className = 'day-popups-heading';
     dayGrid.appendChild(heading);
 
-    // Add event tiles, each with a click handler to open the standard event modal
-    eventsForDay.forEach(event => {
-        const tile = createEventTile(event, true);
+    // Add pop-up tiles, each with a click handler to open the standard pop-up modal
+    popupsForDay.forEach(popup => {
+        const tile = createPopupTile(popup, true);
         if (tile) {
             tile.onclick = (e) => {
                 e.stopPropagation();
                 // Remove only the day grid and modal class, restore modal content
-                if (modal.querySelector('.day-events-grid'))
-                    modal.querySelector('.day-events-grid').remove();
+                if (modal.querySelector('.day-popups-grid'))
+                    modal.querySelector('.day-popups-grid').remove();
                 modalContent.classList.remove('show-day-grid');
                 modal.querySelector('.modal-details').style.display = '';
                 modal.querySelector('.modal-main').style.display = '';
-                // Show event details in the modal (populate modal-details with event info)
-                populateEventModal(event);
+                // Show pop-up details in the modal (populate modal-details with popup info)
+                populatePopupModal(popup);
             };
             dayGrid.appendChild(tile);
         }
@@ -420,12 +390,12 @@ function openDayEventsModal(date, eventsForDay) {
     // Clicking outside closes the modal and restores content
     modal.onclick = (e) => {
         if (e.target === modal) {
-            if (modal.querySelector('.day-events-grid'))
-                modal.querySelector('.day-events-grid').remove();
+            if (modal.querySelector('.day-popups-grid'))
+                modal.querySelector('.day-popups-grid').remove();
             modalContent.classList.remove('show-day-grid');
             modal.querySelector('.modal-details').style.display = '';
             modal.querySelector('.modal-main').style.display = '';
-            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
             modal.classList.add('hidden');
         }
     };
@@ -473,7 +443,11 @@ function toEasternICSDateTime(dateObj) {
     return `${get('year')}${get('month')}${get('day')}T${get('hour')}${get('minute')}${get('second')}`;
 }
 
-function generateSingleDayICS(event, day, startTime, endTime) {
+/**
+ * Generate an ICS for a single day instance of a multi-day pop-up.
+ * Times are emitted in America/New_York (TZID) for correct local interpretation.
+ */
+function generateSingleDayICS(popup, day, startTime, endTime) {
     // Set start and end times for the specific day
     const formatDate = (dateObj, timeStr) => {
         const [h, m, s] = timeStr.split(':');
@@ -502,25 +476,29 @@ function generateSingleDayICS(event, day, startTime, endTime) {
         'CALSCALE:GREGORIAN',
         'X-WR-TIMEZONE:America/New_York',
         'BEGIN:VEVENT',
-        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
-        `SUMMARY:${escapeICSText(event.name)}`,
+        `UID:${popup.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
+        `SUMMARY:${escapeICSText(popup.name)}`,
         `DTSTART;TZID=America/New_York:${dtStart}`,
         `DTEND;TZID=America/New_York:${dtEnd}`,
         `DTSTAMP;TZID=America/New_York:${dtStamp}`,
-        `LOCATION:${escapeICSText(event.location || '')}`,
-        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
+        `LOCATION:${escapeICSText(popup.location || '')}`,
+        `DESCRIPTION:${escapeICSText(popup.long_desc || '')}`,
         'END:VEVENT',
         'END:VCALENDAR'
     ].join('\r\n');
     return foldICSLines(ics);
 }
 
-function generateICS(event) {
+/**
+ * Generate an ICS for a single- or multi-day pop-up.
+ * Emits DTSTART/DTEND as date-only for all-day pop-ups, otherwise with America/New_York TZ.
+ */
+function generateICS(popup) {
     const formatDateSingle = (dateString, allDay) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (allDay === 'TRUE') {
-            // All-day events: just date
+            // All-day pop-ups: just date
             const options = { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' };
             const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
             const get = (type) => parts.find(p => p.type === type).value;
@@ -528,8 +506,8 @@ function generateICS(event) {
         }
         return toEasternICSDateTime(date);
     };
-    const dtStart = formatDateSingle(event.start_datetime, event.all_day);
-    const dtEnd = formatDateSingle(event.end_datetime, event.all_day);
+    const dtStart = formatDateSingle(popup.start_datetime, popup.all_day);
+    const dtEnd = formatDateSingle(popup.end_datetime, popup.all_day);
     const now = new Date();
     const dtStamp = toEasternICSDateTime(now);
     let ics = [
@@ -539,76 +517,33 @@ function generateICS(event) {
         'CALSCALE:GREGORIAN',
         'X-WR-TIMEZONE:America/New_York',
         'BEGIN:VEVENT',
-        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
-        `SUMMARY:${escapeICSText(event.name)}`,
-        event.all_day === 'TRUE'
+        `UID:${popup.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
+        `SUMMARY:${escapeICSText(popup.name)}`,
+        popup.all_day === 'TRUE'
             ? `DTSTART;VALUE=DATE:${dtStart}`
             : `DTSTART;TZID=America/New_York:${dtStart}`,
-        event.all_day === 'TRUE'
+        popup.all_day === 'TRUE'
             ? `DTEND;VALUE=DATE:${dtEnd}`
             : `DTEND;TZID=America/New_York:${dtEnd}`,
         `DTSTAMP;TZID=America/New_York:${dtStamp}`,
-        `LOCATION:${escapeICSText(event.location || '')}`,
-        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
+        `LOCATION:${escapeICSText(popup.location || '')}`,
+        `DESCRIPTION:${escapeICSText(popup.long_desc || '')}`,
         'END:VEVENT',
         'END:VCALENDAR'
     ].join('\r\n');
     return foldICSLines(ics);
 }
 
-/**
- * Generates an ICS file content for a single day of a multi-day event.
- * @param {Object} event - Event object containing event details.
- * @param {Date} day - The date for this instance.
- * @param {string} startTime - "HH:MM:SS" from event.start_datetime
- * @param {string} endTime - "HH:MM:SS" from event.end_datetime
- * @returns {string} - The ICS file content as a string.
- */
-function generateSingleDayICS(event, day, startTime, endTime) {
-    const formatDate = (dateObj, timeStr) => {
-        const [h, m, s] = timeStr.split(':');
-        const dt = new Date(
-            day.getFullYear(),
-            day.getMonth(),
-            day.getDate(),
-            Number(h),
-            Number(m),
-            Number(s || 0),
-            0
-        );
-        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-    const dtStart = formatDate(day, startTime);
-    const dtEnd = formatDate(day, endTime);
-    const now = new Date();
-    const dtStamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    let ics = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//NYC Slice of Life//EN',
-        'CALSCALE:GREGORIAN',
-        'BEGIN:VEVENT',
-        `UID:${event.name.replace(/\s+/g, '_')}_${dtStart}@nycsliceoflife.com`,
-        `SUMMARY:${escapeICSText(event.name)}`,
-        `DTSTART:${dtStart}`,
-        `DTEND:${dtEnd}`,
-        `DTSTAMP:${dtStamp}`,
-        `LOCATION:${escapeICSText(event.location || '')}`,
-        `DESCRIPTION:${escapeICSText(event.long_desc || '')}`,
-        'END:VEVENT',
-        'END:VCALENDAR'
-    ].join('\r\n');
-    return foldICSLines(ics);
-}
+// Duplicate UTC-based generateSingleDayICS removed; Eastern TZ version retained above.
 
-function downloadICS(event, specificDay, startTime, endTime) {
+function downloadICS(popup, specificDay, startTime, endTime) {
     let icsContent, filename;
-    if (isMultiDayEvent(event) && specificDay) {
-        icsContent = generateSingleDayICS(event, specificDay, startTime, endTime);
-        filename = `${event.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
+    if (isMultiDayPopup(popup) && specificDay) {
+        icsContent = generateSingleDayICS(popup, specificDay, startTime, endTime);
+        filename = `${popup.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
     } else {
-        icsContent = generateICS(event);
-        filename = `${event.name.replace(/\s+/g, '_')}.ics`;
+        icsContent = generateICS(popup);
+        filename = `${popup.name.replace(/\s+/g, '_')}.ics`;
     }
     const blob = new Blob([icsContent], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
@@ -624,39 +559,39 @@ function downloadICS(event, specificDay, startTime, endTime) {
 // === MAIN FUNCTIONALITY ===
 
 /**
- * Fetches events from the CSV URL, parses them, and displays them in the events grid.
+ * Fetches pop-ups from the CSV URL, parses them, and displays them in the pop-ups grid.
  */
-function loadAndDisplayEvents() {
-    // Detect if we're on the events page (example: check URL or a DOM flag)
-    const isEventsPage = window.location.pathname.includes('events'); // adjust as needed
+function loadAndDisplayPopups() {
+    // Detect if we're on the pop-ups page (example: check URL or a DOM flag)
+    const isPopupsPage = window.location.pathname.includes('pop-ups'); // adjust as needed
 
     fetch(GOOGLE_SHEET_CSV_URL)
         .then(response => response.text())
         .then(csvText => {
-            const events = parseCSV(csvText).filter(e => {
+            const popups = parseCSV(csvText).filter(e => {
                 const masterDisplay = String(e.master_display).toUpperCase() === 'TRUE';
-                const eventsPageFlag = String(e.events_page).toUpperCase() === 'TRUE';
+                const popupsPageFlag = String(e.popups_page).toUpperCase() === 'TRUE';
 
-                if (isEventsPage) {
-                    // Show if both master_display and events_page true on events page
-                    return masterDisplay && eventsPageFlag;
+                if (isPopupsPage) {
+                    // Show if both master_display and popups_page true on pop-ups page
+                    return masterDisplay && popupsPageFlag;
                 } else {
-                    // Show if master_display true on other pages regardless of events_page
+                    // Show if master_display true on other pages regardless of popups_page
                     return masterDisplay;
                 }
             });
 
             const grid = document.createElement('div');
-            grid.className = 'events-grid';
+            grid.className = 'popups-grid';
 
-            events.forEach(event => {
-                const tile = createEventTile(event);
+            popups.forEach(popup => {
+                const tile = createPopupTile(popup);
                 if (tile) grid.appendChild(tile);
             });
 
             document.querySelector('main').appendChild(grid);
 
-            // Wait for all event tile images to load before injecting the footer
+            // Wait for all pop-up tile images to load before injecting the footer
             const images = Array.from(grid.querySelectorAll('img'));
             let loadedCount = 0;
             if (images.length === 0) {
@@ -699,39 +634,50 @@ function loadAndDisplayEvents() {
             }
         })
         .catch(error => {
-            console.error('Error loading events:', error);
+            console.error('Error loading pop-ups:', error);
         });
 }
 
 // === EVENT LISTENERS ===
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Only run on events.html
-    if (document.getElementById('eventsGrid')) {
-        loadAndDisplayEvents();
+    // Only run on pop-ups.html
+    if (document.getElementById('popupsGrid')) {
+        loadAndDisplayPopups();
     }
 
     const returnButton = document.querySelector('.return-button');
     if (returnButton) {
         returnButton.addEventListener('click', () => {
-            const modal = document.getElementById('eventModal');
+            const modal = document.getElementById('popupModal');
             modal.classList.add('hidden');
             // Remove highlight from all bars when modal closes
-            document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+            document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
         });
     }
 
-    const modal = document.getElementById('eventModal');
+    const modal = document.getElementById('popupModal');
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
                 // Remove highlight from all bars when modal closes
-                document.querySelectorAll('.calendar-event-bar--active').forEach(el => el.classList.remove('calendar-event-bar--active'));
+                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
             }
         });
     }
 });
 
-// filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/events.js
+// Compatibility/fallback: support legacy populate function name if present
+function populatePopupModal(popup) {
+    if (typeof populateEventModal === 'function') {
+        return populateEventModal(popup);
+    }
+    // Fallback behavior: navigate to the pop-up detail page
+    if (popup && popup.id) {
+        window.location.href = `pop-up.html?id=${popup.id}`;
+    }
+}
+
+// filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/pop-ups.js
 // Removed broken window.openEventModal assignment

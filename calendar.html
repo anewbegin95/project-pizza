@@ -6,8 +6,8 @@
         <link rel="stylesheet" href="resources/css/header.css">
         <link rel="stylesheet" href="resources/css/hero.css">
         <link rel="stylesheet" href="resources/css/buttons.css">
-        <link rel="stylesheet" href="resources/css/events.css">
-        <link rel="stylesheet" href="resources/css/event_details.css">
+        <link rel="stylesheet" href="resources/css/popups.css">
+        <link rel="stylesheet" href="resources/css/popup_details.css">
         <link rel="stylesheet" href="resources/css/calendar.css">
         <link rel="stylesheet" href="resources/css/modals.css">
         <link rel="stylesheet" href="resources/css/carousel.css">
@@ -22,7 +22,7 @@
             <!-- Hero Section -->
             <section class="hero">
                 <div class="hero-content">
-                    <h1>Events Calendar</h1>
+                    <h1>Pop-Up Calendar</h1>
                 </div>
             </section>
             <section class="calendar-section hidden" style="display:none;">
@@ -41,8 +41,8 @@
                     <div class="calendar-day-title">Sat</div>
                 </div>
                 <div class="calendar-grid"></div>
-                <!-- Calendar Day Overflow Modal (for '+N more' link) -->
-                <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                                <!-- Calendar Day Overflow Modal (for '+N more' link) -->
+                                <div id="popupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
                   <div class="modal-content">
                     <button class="return-button" id="modalReturnButton" aria-label="Close" tabindex="0">← Return</button>
                     <!-- These are only for single-event modal, but must be present for day grid modal logic to work -->
@@ -54,7 +54,7 @@
         </main>
         <!-- The footer content will be dynamically loaded here -->
         <div id="footer-placeholder"></div>
-        <script src="resources/js/events.js"></script>
+        <script src="resources/js/pop-ups.js"></script>
         <script src="resources/js/calendar.js"></script>
     </body>
 </html>

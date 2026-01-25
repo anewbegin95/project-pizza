@@ -53,7 +53,7 @@ function renderDateIdeaDetail(idea) {
     // Set both mobile and desktop images
     var imgMobile = document.getElementById('dateIdeaImageMobile');
     var imgDesktop = document.getElementById('dateIdeaImageDesktop');
-    var imgSrc = idea.img || 'resources/images/images/default-event-image.jpeg';
+    var imgSrc = idea.img || 'resources/images/images/default-popup-image.jpeg';
     var imgAlt = `${idea.name} image`;
     if (imgMobile) {
         imgMobile.src = imgSrc;
@@ -63,8 +63,8 @@ function renderDateIdeaDetail(idea) {
         imgDesktop.src = imgSrc;
         imgDesktop.alt = imgAlt;
     }
-    // External link (match event details behavior and styling)
-    const extLink = document.getElementById('eventExternalLink');
+    // External link (match pop-up details behavior and styling)
+    const extLink = document.getElementById('popupExternalLink');
     if (extLink) {
         const url = (idea.external_url || idea.link || '').trim();
         const label = idea.external_link_text || idea.link_text || 'Learn More';
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // Hide the hero section until data loads
-    const detailSection = document.querySelector('.event-detail');
+    const detailSection = document.querySelector('.popup-detail');
     if (detailSection) {
         detailSection.classList.add('hidden');
         detailSection.style.display = 'none';

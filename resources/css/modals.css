@@ -63,7 +63,7 @@
   align-self: start;
 }
 
-.day-events-heading {
+.day-popups-heading {
   font-size: var(--font-xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
@@ -73,7 +73,7 @@
   position: relative;
 }
 @media (max-width: 600px) {
-  .day-events-heading {
+  .day-popups-heading {
     font-size: var(--font-xl) !important;
   }
 }
