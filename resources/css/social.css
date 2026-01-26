@@ -134,6 +134,7 @@
     min-width: 0;
     justify-content: center;
     height: clamp(44px, 12vw, 56px);
+    min-height: clamp(44px, 12vw, 56px);
     font-size: var(--font-xs-sm);
     padding: 0; /* icon-centered buttons; spacing handled by grid padding */
   }
