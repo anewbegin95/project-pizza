@@ -23,9 +23,9 @@
 ## CSS Naming Conventions
 
 - **BEM-like structure:**  
-  `.block__element--modifier` (e.g., `.event-tile__title--highlighted`)
+  `.block__element--modifier` (e.g., `.popup-tile__title--highlighted`)
 - **Component/section prefixes:**  
-  `.calendar-event-bar`, `.event-detail-image--mobile`
+  `.calendar-popup-bar`, `.popup-detail-image--mobile`
 - **Hyphenated lowercase:**  
   `.main-nav`, `.hero-content`
 - **Utility/state classes:**  
@@ -35,9 +35,9 @@
 
 **Example:**
 ```css
-.event-tile { ... }
-.event-tile__title { ... }
-.event-tile--featured { ... }
+.popup-tile { ... }
+.popup-tile__title { ... }
+.popup-tile--featured { ... }
 ```
 
 ---
@@ -45,13 +45,13 @@
 ## JavaScript Naming Conventions
 
 - **camelCase** for variables and functions:  
-  `renderEventTile`, `eventList`, `getMaxVisible`
+  `renderPopupTile`, `popupList`, `getMaxVisible`
 - **PascalCase** for classes and constructors:  
-  `EventTile`, `CalendarGrid`
+  `PopupTile`, `CalendarGrid`
 - **Constants in UPPER_SNAKE_CASE**:  
   `GOOGLE_SHEET_CSV_URL`
 - **Descriptive function names:**  
-  `parseEventDate`, `formatEventDate`
+  `parsePopupDate`, `formatPopupDate`
 
 ---
 
@@ -67,7 +67,7 @@
 
 - Group related files by feature or type (e.g., `js/`, `css/`, `images/`).
 - Use descriptive file names:  
-  `event-details.js`, `calendar.js`, `style.css`
+  `pop-up-details.js`, `calendar.js`, `style.css`
 - Place documentation in `docs/` or at the project root.
 
 ---

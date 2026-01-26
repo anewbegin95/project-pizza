@@ -1,11 +1,11 @@
 /* =============================================================================
-   EVENTS GRID & EVENT TILE (BEM/component refactor)
+  POP-UPS GRID & POPUP TILE (BEM/component refactor)
 ============================================================================= */
 
 /* =========================
    GRID/CONTAINER STYLES
 ========================= */
-.events-grid {
+.popups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
   gap: var(--space-md);
@@ -13,12 +13,12 @@
   align-items: stretch;
   padding: var(--space-sm);
 }
-section.events-grid {
+section.popups-grid {
   margin: 0 !important;
   padding: 0 !important;
   background: none !important;
 }
-#eventsGrid:empty {
+#popupsGrid:empty {
   min-height: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -27,7 +27,7 @@ section.events-grid {
 /* =========================
    EVENT TILE STYLES
 ========================= */
-.event-tile {
+.popup-tile {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -42,11 +42,11 @@ section.events-grid {
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s;
 }
-.event-tile:hover {
+.popup-tile:hover {
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px) scale(1.01);
 }
-.event-tile__img-container {
+.popup-tile__img-container {
   flex: 0 0 25%;
   display: flex;
   align-items: center;
@@ -58,7 +58,7 @@ section.events-grid {
   border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   background: var(--nyc-white);
 }
-.event-tile__img {
+.popup-tile__img {
   display: block;
   width: 100%;
   height: auto;
@@ -66,7 +66,7 @@ section.events-grid {
   border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   margin: 0;
 }
-.event-tile__details {
+.popup-tile__details {
   flex: 1 1 75%;
   display: flex;
   flex-direction: column;
@@ -74,35 +74,35 @@ section.events-grid {
   padding: var(--space-sm);
   gap: var(--space-xxs);
 }
-.event-tile__details h3 {
+.popup-tile__details h3 {
   font-size: var(--font-md-sm);
   margin: 0 0 var(--space-xxs) 0;
   color: var(--nyc-navy);
 }
-.event-tile__date {
+.popup-tile__date {
   font-size: var(--font-sm);
   color: var(--nyc-navy);
   margin: 0 0 var(--space-xxxs) 0;
 }
-.event-tile__location {
+.popup-tile__location {
   font-size: var(--font-sm);
   color: var(--nyc-navy);
   margin: 0;
 }
-.event-tile__text {
+.popup-tile__text {
   padding: var(--space-sm);
 }
-.event-tile__text h3 {
+.popup-tile__text h3 {
   font-size: var(--font-xl);
   margin: 0 0 var(--space-xs) 0;
   color: var(--nyc-navy);
 }
-.event-tile__text p {
+.popup-tile__text p {
   font-size: var(--font-sm);
   margin: 0;
   color: var(--nyc-navy);
 }
-.event-tile__recurring-badge {
+.popup-tile__recurring-badge {
   background-color: var(--nyc-fuschia);
   color: var(--nyc-white);
   font-size: var(--font-xs);
@@ -112,7 +112,7 @@ section.events-grid {
   top: var(--space-xs);
   right: var(--space-xs);
 }
-.event-tile.event-tile--horizontal {
+.popup-tile.popup-tile--horizontal {
   margin-left: auto;
   margin-right: auto;
   max-width: 950px;
@@ -120,14 +120,14 @@ section.events-grid {
   box-sizing: border-box;
 }
 /* ...existing code up to the end of the last media query... */
-.event-detail__content h1 {
+.popup-detail__content h1 {
   font-size: var(--font-md);
 }
-.event-detail__description {
+.popup-detail__description {
   padding: 0;
   font-size: var(--font-xs-sm);
 }
-.event-detail__image img {
+.popup-detail__image img {
   max-width: 100vw;
   border-radius: var(--space-xs);
 }
@@ -140,14 +140,14 @@ section.events-grid {
    MEDIA QUERIES: ≤975px
 ========================= */
 @media (max-width: 975px) {
-  .events-grid,
-  .day-events-grid.events-grid {
+  .popups-grid,
+  .day-popups-grid.popups-grid {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
     padding: 0 var(--space-sm) !important;
   }
-  .event-tile.event-tile--horizontal,
-  .day-events-grid.events-grid .event-tile.event-tile--horizontal {
+  .popup-tile.popup-tile--horizontal,
+  .day-popups-grid.popups-grid .popup-tile.popup-tile--horizontal {
     flex-direction: row;
     align-items: center;
     height: auto;
@@ -155,16 +155,16 @@ section.events-grid {
     max-height: none;
     width: 100%;
   }
-  .event-tile,
-  .day-events-grid.events-grid .event-tile {
+  .popup-tile,
+  .day-popups-grid.popups-grid .popup-tile {
     min-height: 0;
     max-height: none;
     height: auto;
     width: 100%;
     align-items: center;
   }
-  .event-tile__img-container,
-  .day-events-grid.events-grid .event-tile__img-container {
+  .popup-tile__img-container,
+  .day-popups-grid.popups-grid .popup-tile__img-container {
     height: 100%;
     min-width: 100px;
     max-width: 160px;
@@ -173,8 +173,8 @@ section.events-grid {
     align-items: center;
     justify-content: center;
   }
-  .event-tile__img,
-  .day-events-grid.events-grid .event-tile__img {
+  .popup-tile__img,
+  .day-popups-grid.popups-grid .popup-tile__img {
     height: auto;
     width: 100%;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
@@ -182,8 +182,8 @@ section.events-grid {
     object-fit: cover;
     display: block;
   }
-  .event-tile__details,
-  .day-events-grid.events-grid .event-tile__details {
+  .popup-tile__details,
+  .day-popups-grid.popups-grid .popup-tile__details {
     padding: var(--space-sm);
     justify-content: center;
     align-items: flex-start;
@@ -195,12 +195,12 @@ section.events-grid {
    MEDIA QUERIES: ≤900px
 ========================= */
 @media (max-width: 900px) {
-  .events-grid {
+  .popups-grid {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
     padding: 0 var(--space-sm) !important;
   }
-  .event-tile.event-tile--horizontal {
+  .popup-tile.popup-tile--horizontal {
     height: auto;
     min-height: 0;
     align-items: stretch;
@@ -211,20 +211,20 @@ section.events-grid {
    MEDIA QUERIES: ≤700px, ≤600px
 =============================== */
 @media (max-width: 700px), (max-width: 600px) {
-  .events-grid {
+  .popups-grid {
     grid-template-columns: 1fr;
     gap: var(--space-xs);
     padding: 0 var(--space-sm) !important;
   }
-  .event-tile.event-tile--horizontal {
+  .popup-tile.popup-tile--horizontal {
     flex-direction: row;
     height: auto;
     min-height: 0;
     align-items: center;
     justify-content: flex-start;
   }
-  .event-tile,
-  .event-tile.event-tile--horizontal {
+  .popup-tile,
+  .popup-tile.popup-tile--horizontal {
     display: flex;
     flex-direction: row;
     min-height: 120px;
@@ -234,8 +234,8 @@ section.events-grid {
     padding: 0;
     overflow: hidden;
   }
-  .event-tile.event-tile--horizontal .event-tile__img-container,
-  .event-tile__img-container {
+  .popup-tile.popup-tile--horizontal .popup-tile__img-container,
+  .popup-tile__img-container {
     flex: 0 0 auto;
     width: 100%;
     height: auto;
@@ -250,8 +250,8 @@ section.events-grid {
     margin: 0;
     padding: 0;
   }
-  .event-tile.event-tile--horizontal .event-tile__img,
-  .event-tile__img {
+  .popup-tile.popup-tile--horizontal .popup-tile__img,
+  .popup-tile__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -259,7 +259,7 @@ section.events-grid {
     margin: 0;
     display: block;
   }
-  .event-tile__details {
+  .popup-tile__details {
     padding: var(--space-xs);
     width: 100%;
     flex: 1 1 auto;
@@ -273,24 +273,24 @@ section.events-grid {
     text-align: left;
     margin-top: 0;
   }
-  .event-tile__details h3,
-  .event-tile__date,
-  .event-tile__location {
+  .popup-tile__details h3,
+  .popup-tile__date,
+  .popup-tile__location {
     text-align: left;
     margin-left: 0;
     margin-right: 0;
   }
-  .event-tile__details h3 {
+  .popup-tile__details h3 {
     font-size: var(--font-md-sm);
   }
-  .event-tile__date,
-  .event-tile__location {
+  .popup-tile__date,
+  .popup-tile__location {
     font-size: var(--font-sm);
   }
-  .event-tile__text h3 {
+  .popup-tile__text h3 {
     font-size: var(--font-xl);
   }
-  .event-tile__text p {
+  .popup-tile__text p {
     font-size: var(--font-sm);
   }
 }
@@ -298,17 +298,17 @@ section.events-grid {
    MEDIA QUERIES: ≤450px
 =============================== */
 @media (max-width: 450px) {
-  .event-tile__details h3 {
+  .popup-tile__details h3 {
     font-size: var(--font-sm);
   }
-  .event-tile__date,
-  .event-tile__location {
+  .popup-tile__date,
+  .popup-tile__location {
     font-size: var(--font-xs-sm);
   }
-  .event-tile__text h3 {
+  .popup-tile__text h3 {
     font-size: var(--font-sm);
   }
-  .event-tile__text p {
+  .popup-tile__text p {
     font-size: var(--font-xs-sm);
   }
 }

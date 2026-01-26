@@ -109,7 +109,7 @@
   }
 }
 
-@media (max-width: 450px) {
+@media (max-width: 620px) {
   .instagram-embed-grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -117,15 +117,42 @@
   }
 
   .centered-cta .social-icons {
-    flex-direction: row;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    align-items: stretch;
+    justify-items: stretch;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 var(--space-sm);
   }
+
   .centered-cta .social-icons a {
-    min-width: var(--space-md);
-    max-width: 88px;
-    width: 88px;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
     justify-content: center;
-    height: var(--space-lg);
+    height: clamp(44px, 12vw, 56px);
+    min-height: clamp(44px, 12vw, 56px);
     font-size: var(--font-xs-sm);
+    padding: 0; /* icon-centered buttons; spacing handled by grid padding */
+  }
+
+  /* Icons scale down with viewport on small screens */
+  .centered-cta .icon {
+    width: clamp(20px, 8vw, 28px);
+    height: clamp(20px, 8vw, 28px);
+    min-width: 0;
+    min-height: 0;
+    margin-right: 0;
+  }
+
+  /* Slightly larger treatment for Instagram icon, still responsive */
+  .centered-cta a[href*="instagram"] .icon {
+    width: clamp(22px, 9vw, 34px);
+    height: clamp(22px, 9vw, 34px);
+    min-width: 0;
+    min-height: 0;
   }
 }

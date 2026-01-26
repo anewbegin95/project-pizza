@@ -11,7 +11,7 @@
   /* --- COLOR PALETTE --- */
   --nyc-pink: #FFB6C1; /* Used for backgrounds, buttons, highlights */
   --nyc-navy: #001B2E;       /* Primary text color, header/footer */
-  --nyc-white: #FFFFFF;      /* Backgrounds, modal, event tiles */
+  --nyc-white: #FFFFFF;      /* Backgrounds, modal, pop-up tiles */
   --nyc-light-pink: #ffe2e7; /* Used for backgrounds, buttons, highlights */
   --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
   --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
@@ -116,10 +116,10 @@ p, ul, ol {
   color: var(--nyc-navy);
   margin-bottom: var(--space-sm);
 }
-.modal-content p, .event-text p {
+.modal-content p, .popup-text p, .event-text p {
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
-.modal-content h2, .event-text h3 {
+.modal-content h2, .popup-text h3, .event-text h3 {
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
 
