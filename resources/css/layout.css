@@ -20,3 +20,14 @@ header {
 footer {
   padding: var(--space-xs) 0;
 }
+
+/* Mobile spacing adjustments for hero → menu → carousel */
+@media (max-width: 700px) {
+  section.hero {
+    margin-bottom: var(--space-sm);
+  }
+  section.home-menu {
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-sm);
+  }
+}
