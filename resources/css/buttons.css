@@ -42,8 +42,30 @@ button:hover,
   transition: background-color 0.3s, color 0.3s;
 }
 .secondary-btn:hover {
-  background-color: var(--nyc-light-blue);
-  color: var(--nyc-navy);
+  background-color: var(--nyc-pink);
+  color: var(--nyc-fuschia);
+}
+
+/* For the Substack button, stack subtitle below title */
+.home-menu .secondary-btn {
+  flex-direction: column;
+}
+.home-menu .secondary-btn .btn-title,
+.home-menu .secondary-btn .btn-subtitle {
+  display: block;
+}
+.home-menu .secondary-btn .btn-subtitle {
+  margin-left: 0;
+  margin-top: var(--space-xxs);
+}
+
+/* Home-menu specific hover for secondary (Substack) button */
+.home-menu .secondary-btn:hover {
+  background-color: var(--nyc-pink);
+  color: var(--nyc-fuschia);
+}
+.home-menu .secondary-btn:hover .btn-subtitle {
+  color: var(--nyc-fuschia);
 }
 
 /* Links */
@@ -67,10 +89,68 @@ button:focus {
 @media (max-width: 860px) {
   .contact-btn,
   button,
-  .btn {
-    font-size: var(--font-xs-sm);
+  .btn,
+  .secondary-btn {
+    /* Keep a consistent font size across all home-menu buttons */
+    font-size: var(--font-sm);
     padding: var(--space-xxs) var(--space-xs);
     height: auto;
     width: auto;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+  Home Menu (stacked navigation buttons below hero)
+ ----------------------------------------------------------------------------- */
+.home-menu {
+  margin-top: var(--space-xs);
+}
+
+.home-menu .container {
+  max-width: var(--section-max-width);
+}
+
+.home-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: var(--space-xxs);
+  width: 100%;
+  text-align: center;
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-xs) 0;
+  box-shadow: var(--shadow-sm);
+  min-height: 48px; /* ensure vertical centering even if text wraps */
+}
+
+/* Title + subtitle within menu buttons */
+.home-menu-btn .btn-title {
+  display: inline;
+}
+.home-menu-btn .btn-subtitle {
+  display: inline;
+  font-size: var(--font-xs-sm);
+  font-style: italic;
+  color: var(--nyc-white);
+  margin-left: var(--space-xxs);
+}
+
+@media (min-width: 915px) {
+  .home-menu .container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    align-items: stretch;
+  }
+  .home-menu-btn {
+    margin: 0;
+  }
+}
+
+/* Hide the home menu at desktop widths (>=1300px) */
+@media (min-width: 1300px) {
+  .home-menu {
+    display: none;
   }
 }
