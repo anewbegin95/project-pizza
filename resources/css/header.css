@@ -162,7 +162,7 @@
   outline: none;
 }
 
-@media (max-width: 975px) {
+@media (max-width: 1300px) {
   .menu-toggle {
     display: block;
     position: absolute;
@@ -176,7 +176,7 @@
     display: none;
   }
 }
-@media (min-width: 976px) {
+@media (min-width: 1300px) {
   .collapsible-menu {
     display: none !important;
   }
