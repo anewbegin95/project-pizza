@@ -27,12 +27,29 @@ let popups = []; // This will hold all pop-up objects loaded from the CSV
  */
 function parseDateSafe(dateStr) {
   if (!dateStr) return null;
-  // Replace hyphens with slashes to force local timezone interpretation
-  // "2026-02-14" with hyphens → parsed as UTC
-  // "2026/02/14" with slashes → parsed as local time
+  
+  // Try to parse manually for maximum control
+  // Format: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
+  const match = String(dateStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  
+  if (match) {
+    const [, year, month, day, hour, minute, second] = match;
+    // Create Date using local timezone by passing components to constructor
+    const date = new Date(
+      parseInt(year, 10),
+      parseInt(month, 10) - 1,  // Month is 0-indexed
+      parseInt(day, 10),
+      parseInt(hour || '0', 10),
+      parseInt(minute || '0', 10),
+      parseInt(second || '0', 10)
+    );
+    return isNaN(date.getTime()) ? null : date;
+  }
+  
+  // Fallback: replace hyphens with slashes for local timezone interpretation
   const localStr = String(dateStr).replace(/-/g, '/');
   const date = new Date(localStr);
-  return isNaN(date) ? null : date;
+  return isNaN(date.getTime()) ? null : date;
 }
 
 /**
