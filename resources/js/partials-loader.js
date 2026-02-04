@@ -59,7 +59,7 @@ fetch('partials/head.html')
     const canonicalLink = document.querySelector('link[rel="canonical"]');
     const canonicalUrl = (canonicalLink && canonicalLink.href)
       ? canonicalLink.href
-      : window.location.origin + window.location.pathname;
+      : window.location.origin + window.location.pathname + window.location.search;
 
     // Create or update the canonical link tag for consistency
     if (!canonicalLink) {

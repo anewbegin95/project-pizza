@@ -101,7 +101,6 @@ function renderPopupDetail(popup) {
     document.getElementById('popupLocation').textContent = popup.location || 'TBD';
     document.getElementById('popupDescription').innerHTML = (popup.long_desc || '').replace(/\n/g, '<br>');
     // Set both mobile and desktop images
-    const origin = window.location.origin;
     const imgMobile = document.getElementById('popupImage');
     const imgDesktop = document.getElementById('popupImageDesktop');
     const imgSrc = popup.img || 'resources/images/images/default-popup-image.jpeg';

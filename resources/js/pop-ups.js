@@ -594,7 +594,7 @@ function loadAndDisplayPopups() {
             // Inject JSON-LD for CollectionPage + ItemList of pop-ups
             // Only do this on the pop-ups.html listing page
             const isPopupsCollectionPage = typeof window !== 'undefined' &&
-                /\/pop-ups\.html?$/.test(window.location.pathname);
+                /\/pop-ups(\.html)?$/.test(window.location.pathname);
             if (isPopupsCollectionPage) {
                 try {
                     const origin = window.location.origin;
@@ -609,10 +609,17 @@ function loadAndDisplayPopups() {
                             itemListElement: []
                         }
                     };
-                    popups.forEach((popup, i) => {
+                    let listPosition = 0;
+                    popups.forEach((popup) => {
+                        const hasStartDate = Boolean(popup.start_datetime);
+                        const hasLocation = Boolean(popup.location);
+                        if (!hasStartDate && !hasLocation) {
+                            return;
+                        }
+                        listPosition += 1;
                         const listItem = {
                             '@type': 'ListItem',
-                            position: i + 1,
+                            position: listPosition,
                             item: {
                                 '@type': 'Event',
                                 name: popup.name,

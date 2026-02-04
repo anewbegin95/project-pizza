@@ -1,7 +1,3 @@
-const now = new Date();
-const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
-const text = formatter.format(now);
-const nodes = document.querySelectorAll('[data-fill="month-year"]');
 // Fills elements marked with data-fill="month-year" with the current Month Year
 
 (function() {
