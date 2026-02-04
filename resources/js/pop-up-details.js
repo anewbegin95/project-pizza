@@ -10,6 +10,16 @@ function getQueryParam(name) {
     return url.searchParams.get(name);
 }
 
+function getPopupSlug(popup) {
+    if (popup && popup.id) {
+        return popup.id;
+    }
+    return (popup && popup.name ? popup.name : '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
 /**
  * Fetches pop-up details from a Google Sheet CSV and renders the pop-up detail page.
  * This script expects the URL to contain a query parameter `id` that matches a pop-up ID.
@@ -58,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const popups = parseCSV(csv);
             // Assign popup.id using name only
             popups.forEach(popup => {
-                popup.id = (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                popup.id = getPopupSlug(popup);
             });
             const popup = popups.find(p => p.id === popupId);
             if (!popup) {
@@ -91,10 +101,11 @@ function renderPopupDetail(popup) {
     document.getElementById('popupLocation').textContent = popup.location || 'TBD';
     document.getElementById('popupDescription').innerHTML = (popup.long_desc || '').replace(/\n/g, '<br>');
     // Set both mobile and desktop images
-    var imgMobile = document.getElementById('popupImage');
-    var imgDesktop = document.getElementById('popupImageDesktop');
-    var imgSrc = popup.img || 'resources/images/images/default-popup-image.jpeg';
-    var imgAlt = `${popup.name} image`;
+    const origin = window.location.origin;
+    const imgMobile = document.getElementById('popupImage');
+    const imgDesktop = document.getElementById('popupImageDesktop');
+    const imgSrc = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    const imgAlt = `${popup.name} image`;
     if (imgMobile) {
         imgMobile.src = imgSrc;
         imgMobile.alt = imgAlt;
@@ -197,14 +208,15 @@ function handleICSLinks(popup, icsLink) {
 
     // Inject Event JSON-LD for this pop-up detail
     try {
-        const origin = 'https://nycsliceoflife.com';
+        const origin = window.location.origin;
+        const popupSlug = popup.id || getPopupSlug(popup) || 'popup';
         const eventJsonLd = {
             '@context': 'https://schema.org',
             '@type': 'Event',
             name: popup.name,
             eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
             eventStatus: 'https://schema.org/EventScheduled',
-            url: origin + '/pop-up.html?id=' + (popup.id || (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))
+            url: origin + '/pop-up.html?id=' + popupSlug
         };
 
         if (popup.long_desc) {
@@ -222,7 +234,7 @@ function handleICSLinks(popup, icsLink) {
         if (popup.location) {
             eventJsonLd.location = { '@type': 'Place', name: popup.location };
         }
-        var script = document.createElement('script');
+        const script = document.createElement('script');
         script.type = 'application/ld+json';
         script.textContent = JSON.stringify(eventJsonLd);
         document.head.appendChild(script);
@@ -232,8 +244,8 @@ function handleICSLinks(popup, icsLink) {
 
     // Override OG image with the pop-up image for better previews
     try {
-        const origin = 'https://nycsliceoflife.com';
-        var imgUrl = popup.img || '';
+        const origin = window.location.origin;
+        let imgUrl = popup.img || '';
         if (imgUrl && !/^https?:\/\//.test(imgUrl)) {
             // Convert relative path to absolute URL
             imgUrl = origin + '/' + imgUrl.replace(/^\//,'');

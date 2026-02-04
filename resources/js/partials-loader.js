@@ -49,14 +49,29 @@ fetch('partials/head.html')
       ogDesc.setAttribute('content', pageDescription);
     }
 
-    // Ensure og:url reflects the current page URL
+    // Ensure og:url reflects the canonical page URL (avoid query params and hashes)
     let ogUrl = document.querySelector('meta[property="og:url"]');
     if (!ogUrl) {
       ogUrl = document.createElement('meta');
       ogUrl.setAttribute('property', 'og:url');
       document.head.appendChild(ogUrl);
     }
-    ogUrl.setAttribute('content', window.location.href);
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    const canonicalUrl = (canonicalLink && canonicalLink.href)
+      ? canonicalLink.href
+      : window.location.origin + window.location.pathname;
+
+    // Create or update the canonical link tag for consistency
+    if (!canonicalLink) {
+      const newCanonical = document.createElement('link');
+      newCanonical.setAttribute('rel', 'canonical');
+      newCanonical.setAttribute('href', canonicalUrl);
+      document.head.appendChild(newCanonical);
+    } else if (!canonicalLink.href) {
+      canonicalLink.setAttribute('href', canonicalUrl);
+    }
+
+    ogUrl.setAttribute('content', canonicalUrl);
   })
   .catch((error) => {
     // Catch and log any errors that happen during fetch or DOM update

@@ -335,8 +335,4 @@ section.popups-grid {
   .popup-tile__text p {
     font-size: var(--font-xs-sm);
   }
-  .callout {
-    margin: var(--space-sm);
-    max-width: calc(100% - (2 * var(--space-sm)));
-  }
 }

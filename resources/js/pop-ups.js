@@ -597,7 +597,7 @@ function loadAndDisplayPopups() {
                 /\/pop-ups\.html?$/.test(window.location.pathname);
             if (isPopupsCollectionPage) {
                 try {
-                    const origin = 'https://nycsliceoflife.com';
+                    const origin = window.location.origin;
                     const collectionJsonLd = {
                         '@context': 'https://schema.org',
                         '@type': 'CollectionPage',
