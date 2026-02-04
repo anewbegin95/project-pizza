@@ -41,12 +41,16 @@ function unhighlightAllSegments(popupId) {
 /**
  * Formats a Date object as YYYY-MM-DD for use as a cell ID.
  * This helps us uniquely identify each day in the calendar grid.
+ * Uses local timezone to avoid date shifts when converting to UTC.
  * @param {Date} date - The date to format.
  * @returns {string} - The formatted date string (e.g., '2025-05-14').
  */
 function formatDateId(date) {
-    // Convert the date to ISO string and take only the date part (before 'T')
-    return date.toISOString().split('T')[0];
+    // Use local timezone to format the date, avoiding UTC conversion
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 
