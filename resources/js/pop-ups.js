@@ -540,7 +540,12 @@ function downloadICS(popup, specificDay, startTime, endTime) {
     let icsContent, filename;
     if (isMultiDayPopup(popup) && specificDay) {
         icsContent = generateSingleDayICS(popup, specificDay, startTime, endTime);
-        filename = `${popup.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
+        // Use local timezone for filename to match calendar display
+        const year = specificDay.getFullYear();
+        const month = String(specificDay.getMonth() + 1).padStart(2, '0');
+        const day = String(specificDay.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        filename = `${popup.name.replace(/\s+/g, '_')}_${dateStr}.ics`;
     } else {
         icsContent = generateICS(popup);
         filename = `${popup.name.replace(/\s+/g, '_')}.ics`;
