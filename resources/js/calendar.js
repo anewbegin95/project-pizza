@@ -20,36 +20,13 @@ let popups = []; // This will hold all pop-up objects loaded from the CSV
 // === UTILITY FUNCTIONS ===
 
 /**
- * Safely parse a date string, ensuring it's interpreted in local timezone.
- * This prevents issues where ISO date strings (YYYY-MM-DD) are parsed as UTC.
+ * Safely parse a date string using the shared pop-up parser.
+ * This keeps parsing logic consistent across calendar and pop-ups.
  * @param {string} dateStr - The date string to parse (e.g., "2026-02-14" or "2026-02-14 18:00:00")
  * @returns {Date|null} - The parsed Date object or null if invalid
  */
 function parseDateSafe(dateStr) {
-  if (!dateStr) return null;
-  
-  // Try to parse manually for maximum control
-  // Format: YYYY-M-D or YYYY-MM-DD (with optional time H:MM:SS or HH:MM:SS)
-  const match = String(dateStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
-  
-  if (match) {
-    const [, year, month, day, hour, minute, second] = match;
-    // Create Date using local timezone by passing components to constructor
-    const date = new Date(
-      parseInt(year, 10),
-      parseInt(month, 10) - 1,  // Month is 0-indexed
-      parseInt(day, 10),
-      parseInt(hour || '0', 10),
-      parseInt(minute || '0', 10),
-      parseInt(second || '0', 10)
-    );
-    return isNaN(date.getTime()) ? null : date;
-  }
-  
-  // Fallback: replace hyphens with slashes for local timezone interpretation
-  const localStr = String(dateStr).replace(/-/g, '/');
-  const date = new Date(localStr);
-  return isNaN(date.getTime()) ? null : date;
+  return typeof parsePopupDate === 'function' ? parsePopupDate(dateStr) : null;
 }
 
 /**
