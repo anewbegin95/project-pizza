@@ -29,7 +29,7 @@ function parseDateSafe(dateStr) {
   if (!dateStr) return null;
   
   // Try to parse manually for maximum control
-  // Format: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
+  // Format: YYYY-M-D or YYYY-MM-DD (with optional time H:MM:SS or HH:MM:SS)
   const match = String(dateStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
   
   if (match) {
