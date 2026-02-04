@@ -591,6 +591,46 @@ function loadAndDisplayPopups() {
 
             document.querySelector('main').appendChild(grid);
 
+                        // Inject JSON-LD for CollectionPage + ItemList of pop-ups
+                        try {
+                            const origin = 'https://nycsliceoflife.com';
+                            const collectionJsonLd = {
+                                '@context': 'https://schema.org',
+                                '@type': 'CollectionPage',
+                                name: 'Upcoming NYC Pop-Ups',
+                                description: document.documentElement.getAttribute('data-description') || 'Browse upcoming pop-ups in New York City.',
+                                url: origin + '/pop-ups.html',
+                                mainEntity: {
+                                    '@type': 'ItemList',
+                                    itemListElement: []
+                                }
+                            };
+                            popups.forEach((popup, i) => {
+                                const listItem = {
+                                    '@type': 'ListItem',
+                                    position: i + 1,
+                                    item: {
+                                        '@type': 'Event',
+                                        name: popup.name,
+                                        startDate: popup.start_datetime || undefined,
+                                        endDate: popup.end_datetime || undefined,
+                                        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                                        eventStatus: 'https://schema.org/EventScheduled',
+                                        location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
+                                        image: popup.img || undefined,
+                                        url: origin + '/pop-up.html?id=' + popup.id
+                                    }
+                                };
+                                collectionJsonLd.mainEntity.itemListElement.push(listItem);
+                            });
+                            const script = document.createElement('script');
+                            script.type = 'application/ld+json';
+                            script.textContent = JSON.stringify(collectionJsonLd);
+                            document.head.appendChild(script);
+                        } catch (e) {
+                            console.warn('JSON-LD injection failed:', e);
+                        }
+
             // Wait for all pop-up tile images to load before injecting the footer
             const images = Array.from(grid.querySelectorAll('img'));
             let loadedCount = 0;

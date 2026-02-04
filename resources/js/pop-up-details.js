@@ -194,6 +194,51 @@ function handleICSLinks(popup, icsLink) {
             icsLink.style.display = 'none';
         }
     }
+
+    // Inject Event JSON-LD for this pop-up detail
+    try {
+        const origin = 'https://nycsliceoflife.com';
+        const eventJsonLd = {
+            '@context': 'https://schema.org',
+            '@type': 'Event',
+            name: popup.name,
+            description: popup.long_desc || undefined,
+            startDate: popup.start_datetime || undefined,
+            endDate: popup.end_datetime || undefined,
+            eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+            eventStatus: 'https://schema.org/EventScheduled',
+            image: popup.img || undefined,
+            location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
+            url: origin + '/pop-up.html?id=' + (popup.id || (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))
+        };
+        var script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify(eventJsonLd);
+        document.head.appendChild(script);
+    } catch (e) {
+        console.warn('Event JSON-LD injection failed:', e);
+    }
+
+    // Override OG image with the pop-up image for better previews
+    try {
+        const origin = 'https://nycsliceoflife.com';
+        var imgUrl = popup.img || '';
+        if (imgUrl && !/^https?:\/\//.test(imgUrl)) {
+            // Convert relative path to absolute URL
+            imgUrl = origin + '/' + imgUrl.replace(/^\//,'');
+        }
+        if (imgUrl) {
+            let ogImg = document.querySelector('meta[property="og:image"]');
+            if (!ogImg) {
+                ogImg = document.createElement('meta');
+                ogImg.setAttribute('property', 'og:image');
+                document.head.appendChild(ogImg);
+            }
+            ogImg.setAttribute('content', imgUrl);
+        }
+    } catch (e) {
+        console.warn('OG image override failed:', e);
+    }
 }
     // Add iOS/Chrome-on-iOS/in-app browser instruction if on iOS
     // (Removed: no instructions for non-Safari mobile browsers)

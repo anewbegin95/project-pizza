@@ -25,6 +25,26 @@ section.popups-grid {
 }
 
 /* =========================
+   CALLOUT STYLES
+========================= */
+.callout {
+  margin: var(--space-md) auto;
+  padding: var(--space-sm-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  max-width: var(--section-max-width);
+}
+.callout--accent {
+  background-color: var(--nyc-light-blue);
+  border: 1px solid var(--nyc-navy);
+}
+.callout p {
+  margin: 0;
+  font-style: italic;
+  text-align: center;
+}
+
+/* =========================
    EVENT TILE STYLES
 ========================= */
 .popup-tile {
@@ -293,6 +313,10 @@ section.popups-grid {
   .popup-tile__text p {
     font-size: var(--font-sm);
   }
+  .callout {
+    margin: var(--space-sm);
+    max-width: calc(100% - (2 * var(--space-sm)));
+  }
 }
 /* ===============================
    MEDIA QUERIES: ≤450px
@@ -310,5 +334,9 @@ section.popups-grid {
   }
   .popup-tile__text p {
     font-size: var(--font-xs-sm);
+  }
+  .callout {
+    margin: var(--space-sm);
+    max-width: calc(100% - (2 * var(--space-sm)));
   }
 }
