@@ -209,10 +209,10 @@ function parsePopupDate(str) {
     // Try native Date first
     let d = new Date(str.replace(/-/g, '/'));
     if (!isNaN(d)) return d;
-    // Try M/D/YYYY H:MM:SS or M/D/YYYY
-    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    // Try M/D/YYYY H:MM:SS(.mmm) or M/D/YYYY
+    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
-        let [, month, day, year, hour, min, sec] = match;
+        let [, month, day, year, hour, min, sec, ms] = match;
         if (year.length === 2) year = '20' + year;
         return new Date(
             Number(year),
@@ -220,20 +220,22 @@ function parsePopupDate(str) {
             Number(day),
             Number(hour || 0),
             Number(min || 0),
-            Number(sec || 0)
+            Number(sec || 0),
+            Number(ms || 0)
         );
     }
-    // Try YYYY-MM-DD H:MM:SS (no leading zero)
-    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    // Try YYYY-MM-DD H:MM:SS(.mmm) (no leading zero)
+    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
-        let [, year, month, day, hour, min, sec] = match;
+        let [, year, month, day, hour, min, sec, ms] = match;
         return new Date(
             Number(year),
             Number(month) - 1,
             Number(day),
             Number(hour || 0),
             Number(min || 0),
-            Number(sec || 0)
+            Number(sec || 0),
+            Number(ms || 0)
         );
     }
     return null;
@@ -540,7 +542,12 @@ function downloadICS(popup, specificDay, startTime, endTime) {
     let icsContent, filename;
     if (isMultiDayPopup(popup) && specificDay) {
         icsContent = generateSingleDayICS(popup, specificDay, startTime, endTime);
-        filename = `${popup.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
+        // Use local timezone for filename to match calendar display
+        const year = specificDay.getFullYear();
+        const month = String(specificDay.getMonth() + 1).padStart(2, '0');
+        const day = String(specificDay.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        filename = `${popup.name.replace(/\s+/g, '_')}_${dateStr}.ics`;
     } else {
         icsContent = generateICS(popup);
         filename = `${popup.name.replace(/\s+/g, '_')}.ics`;
@@ -590,6 +597,58 @@ function loadAndDisplayPopups() {
             });
 
             document.querySelector('main').appendChild(grid);
+
+            // Inject JSON-LD for CollectionPage + ItemList of pop-ups
+            // Only do this on the pop-ups.html listing page
+            const isPopupsCollectionPage = typeof window !== 'undefined' &&
+                /\/pop-ups(\.html)?$/.test(window.location.pathname);
+            if (isPopupsCollectionPage) {
+                try {
+                    const origin = window.location.origin;
+                    const collectionJsonLd = {
+                        '@context': 'https://schema.org',
+                        '@type': 'CollectionPage',
+                        name: 'Upcoming NYC Pop-Ups',
+                        description: document.documentElement.getAttribute('data-description') || 'Browse upcoming pop-ups in New York City.',
+                        url: origin + '/pop-ups.html',
+                        mainEntity: {
+                            '@type': 'ItemList',
+                            itemListElement: []
+                        }
+                    };
+                    let listPosition = 0;
+                    popups.forEach((popup) => {
+                        const hasStartDate = Boolean(popup.start_datetime);
+                        const hasLocation = Boolean(popup.location);
+                        if (!hasStartDate && !hasLocation) {
+                            return;
+                        }
+                        listPosition += 1;
+                        const listItem = {
+                            '@type': 'ListItem',
+                            position: listPosition,
+                            item: {
+                                '@type': 'Event',
+                                name: popup.name,
+                                startDate: popup.start_datetime || undefined,
+                                endDate: popup.end_datetime || undefined,
+                                eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                                eventStatus: 'https://schema.org/EventScheduled',
+                                location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
+                                image: popup.img || undefined,
+                                url: origin + '/pop-up.html?id=' + popup.id
+                            }
+                        };
+                        collectionJsonLd.mainEntity.itemListElement.push(listItem);
+                    });
+                    const script = document.createElement('script');
+                    script.type = 'application/ld+json';
+                    script.textContent = JSON.stringify(collectionJsonLd);
+                    document.head.appendChild(script);
+                } catch (e) {
+                    console.warn('JSON-LD injection failed:', e);
+                }
+            }
 
             // Wait for all pop-up tile images to load before injecting the footer
             const images = Array.from(grid.querySelectorAll('img'));
