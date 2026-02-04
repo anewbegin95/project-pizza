@@ -18,6 +18,17 @@ let currentYear = new Date().getFullYear(); // Four-digit year, e.g., 2025
 let popups = []; // This will hold all pop-up objects loaded from the CSV
 
 // === UTILITY FUNCTIONS ===
+
+/**
+ * Safely parse a date string using the shared pop-up parser.
+ * This keeps parsing logic consistent across calendar and pop-ups.
+ * @param {string} dateStr - The date string to parse (e.g., "2026-02-14" or "2026-02-14 18:00:00")
+ * @returns {Date|null} - The parsed Date object or null if invalid
+ */
+function parseDateSafe(dateStr) {
+  return typeof parsePopupDate === 'function' ? parsePopupDate(dateStr) : null;
+}
+
 /**
  * Highlights all segments of a multi-day pop-up bar.
  * @param {string} popupId
@@ -41,12 +52,16 @@ function unhighlightAllSegments(popupId) {
 /**
  * Formats a Date object as YYYY-MM-DD for use as a cell ID.
  * This helps us uniquely identify each day in the calendar grid.
+ * Uses local timezone to avoid date shifts when converting to UTC.
  * @param {Date} date - The date to format.
  * @returns {string} - The formatted date string (e.g., '2025-05-14').
  */
 function formatDateId(date) {
-    // Convert the date to ISO string and take only the date part (before 'T')
-    return date.toISOString().split('T')[0];
+    // Use local timezone to format the date, avoiding UTC conversion
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 
@@ -161,11 +176,11 @@ function placePopupsInGrid(month, year) {
 
     // Gather all pop-ups that touch this week
     const popupsInWeek = popups.map(popup => {
-      const start = popup.start_datetime ? new Date(popup.start_datetime) : null;
-      const end = popup.end_datetime ? new Date(popup.end_datetime) : start;
+      const start = parseDateSafe(popup.start_datetime);
+      const end = parseDateSafe(popup.end_datetime) || start;
       if (!start) return null;
-      let popupStart = new Date(start);
-      let popupEnd = new Date(end);
+      let popupStart = start;
+      let popupEnd = end;
 
       // --- FIX: Only render pop-ups that overlap the current month ---
       const monthStart = new Date(year, month, 1);
@@ -344,13 +359,13 @@ function placePopupsInGrid(month, year) {
             // Find all pop-ups (from global popups array) that occur on this date
             const cellDateId = formatDateId(cellDate);
             const popupsForDay = popups.filter(popup => {
-              // Parse popup start/end
-              const start = popup.start_datetime ? new Date(popup.start_datetime) : null;
-              const end = popup.end_datetime ? new Date(popup.end_datetime) : start;
+              // Parse popup start/end using safe parser
+              const start = parseDateSafe(popup.start_datetime);
+              const end = parseDateSafe(popup.end_datetime) || start;
               if (!start) return false;
-              // Clamp popup end to popup start if missing
-              const popupStart = new Date(start);
-              const popupEnd = end ? new Date(end) : popupStart;
+              // Use parsed dates directly
+              const popupStart = start;
+              const popupEnd = end;
               // Check if cellDate is between popupStart and popupEnd (inclusive, by day)
               const cellYMD = cellDateId;
               const startYMD = formatDateId(popupStart);

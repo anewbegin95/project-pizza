@@ -209,10 +209,10 @@ function parsePopupDate(str) {
     // Try native Date first
     let d = new Date(str.replace(/-/g, '/'));
     if (!isNaN(d)) return d;
-    // Try M/D/YYYY H:MM:SS or M/D/YYYY
-    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    // Try M/D/YYYY H:MM:SS(.mmm) or M/D/YYYY
+    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
-        let [, month, day, year, hour, min, sec] = match;
+        let [, month, day, year, hour, min, sec, ms] = match;
         if (year.length === 2) year = '20' + year;
         return new Date(
             Number(year),
@@ -220,20 +220,22 @@ function parsePopupDate(str) {
             Number(day),
             Number(hour || 0),
             Number(min || 0),
-            Number(sec || 0)
+            Number(sec || 0),
+            Number(ms || 0)
         );
     }
-    // Try YYYY-MM-DD H:MM:SS (no leading zero)
-    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    // Try YYYY-MM-DD H:MM:SS(.mmm) (no leading zero)
+    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
-        let [, year, month, day, hour, min, sec] = match;
+        let [, year, month, day, hour, min, sec, ms] = match;
         return new Date(
             Number(year),
             Number(month) - 1,
             Number(day),
             Number(hour || 0),
             Number(min || 0),
-            Number(sec || 0)
+            Number(sec || 0),
+            Number(ms || 0)
         );
     }
     return null;
@@ -540,7 +542,12 @@ function downloadICS(popup, specificDay, startTime, endTime) {
     let icsContent, filename;
     if (isMultiDayPopup(popup) && specificDay) {
         icsContent = generateSingleDayICS(popup, specificDay, startTime, endTime);
-        filename = `${popup.name.replace(/\s+/g, '_')}_${specificDay.toISOString().split('T')[0]}.ics`;
+        // Use local timezone for filename to match calendar display
+        const year = specificDay.getFullYear();
+        const month = String(specificDay.getMonth() + 1).padStart(2, '0');
+        const day = String(specificDay.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        filename = `${popup.name.replace(/\s+/g, '_')}_${dateStr}.ics`;
     } else {
         icsContent = generateICS(popup);
         filename = `${popup.name.replace(/\s+/g, '_')}.ics`;
