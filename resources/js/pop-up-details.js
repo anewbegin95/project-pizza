@@ -202,15 +202,26 @@ function handleICSLinks(popup, icsLink) {
             '@context': 'https://schema.org',
             '@type': 'Event',
             name: popup.name,
-            description: popup.long_desc || undefined,
-            startDate: popup.start_datetime || undefined,
-            endDate: popup.end_datetime || undefined,
             eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
             eventStatus: 'https://schema.org/EventScheduled',
-            image: popup.img || undefined,
-            location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
             url: origin + '/pop-up.html?id=' + (popup.id || (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))
         };
+
+        if (popup.long_desc) {
+            eventJsonLd.description = popup.long_desc;
+        }
+        if (popup.start_datetime) {
+            eventJsonLd.startDate = popup.start_datetime;
+        }
+        if (popup.end_datetime) {
+            eventJsonLd.endDate = popup.end_datetime;
+        }
+        if (popup.img) {
+            eventJsonLd.image = popup.img;
+        }
+        if (popup.location) {
+            eventJsonLd.location = { '@type': 'Place', name: popup.location };
+        }
         var script = document.createElement('script');
         script.type = 'application/ld+json';
         script.textContent = JSON.stringify(eventJsonLd);
