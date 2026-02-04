@@ -20,13 +20,58 @@ fetch('partials/head.html')
 
     // Get the custom page title from the <html> tag’s data-title attribute
     const pageTitle = document.documentElement.getAttribute('data-title');
+    const pageDescription = document.documentElement.getAttribute('data-description');
 
     // If a title was specified, create a <title> tag and set its content
     if (pageTitle) {
       const titleElement = document.createElement('title'); // create new <title> element
       titleElement.textContent = pageTitle; // set the text inside <title>
       document.head.appendChild(titleElement); // add <title> to the <head>
+
+      // Ensure Open Graph title mirrors page title
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.setAttribute('content', pageTitle);
     }
+
+    // Optionally override Open Graph description if provided per-page
+    if (pageDescription) {
+      let ogDesc = document.querySelector('meta[property="og:description"]');
+      if (!ogDesc) {
+        ogDesc = document.createElement('meta');
+        ogDesc.setAttribute('property', 'og:description');
+        document.head.appendChild(ogDesc);
+      }
+      ogDesc.setAttribute('content', pageDescription);
+    }
+
+    // Ensure og:url reflects the canonical page URL (avoid query params and hashes)
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement('meta');
+      ogUrl.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrl);
+    }
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    const canonicalUrl = (canonicalLink && canonicalLink.href)
+      ? canonicalLink.href
+      : window.location.origin + window.location.pathname + window.location.search;
+
+    // Create or update the canonical link tag for consistency
+    if (!canonicalLink) {
+      const newCanonical = document.createElement('link');
+      newCanonical.setAttribute('rel', 'canonical');
+      newCanonical.setAttribute('href', canonicalUrl);
+      document.head.appendChild(newCanonical);
+    } else if (!canonicalLink.href) {
+      canonicalLink.setAttribute('href', canonicalUrl);
+    }
+
+    ogUrl.setAttribute('content', canonicalUrl);
   })
   .catch((error) => {
     // Catch and log any errors that happen during fetch or DOM update
