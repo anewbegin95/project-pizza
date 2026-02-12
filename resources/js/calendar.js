@@ -57,11 +57,14 @@ function unhighlightAllSegments(popupId) {
  * @returns {string} - The formatted date string (e.g., '2025-05-14').
  */
 function formatDateId(date) {
-    // Use local timezone to format the date, avoiding UTC conversion
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${lookup.year}-${lookup.month}-${lookup.day}`;
 }
 
 
@@ -391,16 +394,16 @@ function placePopupsInGrid(month, year) {
 document.addEventListener('DOMContentLoaded', () => {
   // Only run on calendar.html (where .calendar-grid exists)
   if (document.querySelector('.calendar-grid')) {
-    // Fetch the pop-up data from the Google Sheet CSV (URL is defined in pop-ups.js)
-    fetch(GOOGLE_SHEET_CSV_URL)
-      .then(res => res.text()) // Get the CSV as text
-      .then(csv => {
-        // Parse the CSV and filter out hidden pop-ups
-        popups = parseCSV(csv)
-          .filter(e =>
-            String(e.master_display).toUpperCase() === 'TRUE' &&
-            String(e.calendar).toUpperCase() === 'TRUE'
-          );
+    // Fetch pop-up data from Sanity
+    sanityFetch(window.SANITY_QUERIES.POPUPS)
+      .then(results => {
+        const mapped = typeof mapSanityPopup === 'function'
+          ? results.map(mapSanityPopup)
+          : results;
+        popups = mapped.filter(e =>
+          String(e.master_display).toUpperCase() === 'TRUE' &&
+          String(e.calendar).toUpperCase() === 'TRUE'
+        );
         // Render the calendar for the current month and year
         renderCalendar(currentMonth, currentYear);
       })

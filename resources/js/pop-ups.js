@@ -1,57 +1,11 @@
 // === CONSTANTS ===
 
 /**
- * URL of the published Google Sheet in CSV format.
- * Ensure the sheet is public for this to work.
+ * Sanity GROQ query key for pop-ups.
  */
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=0&single=true&output=csv';
+const POPUPS_QUERY = 'POPUPS';
 
 // === UTILITY FUNCTIONS ===
-
-/**
- * Parses a CSV string into an array of pop-up objects.
- * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
- * @param {string} csvText - The raw CSV string.
- * @returns {Array<Object>} - Array of parsed pop-up objects.
- */
-function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(',').map(h => h.trim());
-    const popups = [];
-    let currentRow = [];
-
-    rows.slice(1).forEach(row => {
-        currentRow.push(row);
-        const combinedRow = currentRow.join('\n');
-        const quoteCount = (combinedRow.match(/"/g) || []).length;
-
-        if (quoteCount % 2 === 0) {
-            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
-            const popup = {};
-            headers.forEach((header, i) => {
-                popup[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
-            });
-            // Normalize legacy event-based flags to popup flags
-            if (!popup['popups_page'] && popup['events_page']) {
-                popup['popups_page'] = popup['events_page'];
-            }
-            popup['recurring'] = popup['recurring'] || 'FALSE';
-            popup['master_display'] = popup['master_display'] || 'TRUE';
-            popup['popups_page'] = popup['popups_page'] || 'TRUE';
-            popup['calendar'] = popup['calendar'] || 'TRUE';
-            popup['link'] = popup['link'] || '';
-            popups.push(popup);
-            currentRow = [];
-        }
-    });
-
-    // Assign popup.id using the new generatePopupId (name only)
-    popups.forEach(popup => {
-        popup.id = generatePopupId(popup);
-    });
-
-    return popups;
-}
 
 /**
  * Generates a unique pop-up ID (slug) from name only.
@@ -62,6 +16,46 @@ function parseCSV(csvText) {
 function generatePopupId(popup) {
     // Use popup name only, lowercased and slugified
     return (popup.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function toDisplayFlag(value, defaultValue = 'FALSE') {
+    if (value === null || value === undefined) return defaultValue;
+    if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
+    return String(value).toUpperCase() === 'TRUE' ? 'TRUE' : 'FALSE';
+}
+
+function mapSanityPopup(item) {
+    const startValue = item.start_datetime || item.start_date || '';
+    const endValue = item.end_datetime || item.end_date || '';
+
+    return {
+        id: item.slug || item._id || generatePopupId(item),
+        name: item.name || '',
+        start_datetime: startValue,
+        end_datetime: endValue,
+        start_date: item.start_date || '',
+        end_date: item.end_date || '',
+        all_day: toDisplayFlag(item.all_day, 'FALSE'),
+        recurring: toDisplayFlag(item.recurring, 'FALSE'),
+        recurrence_frequency: item.recurrence_frequency || '',
+        recurrence_interval: item.recurrence_interval || '',
+        recurrence_by_weekday: item.recurrence_by_weekday || [],
+        recurrence_monthly_mode: item.recurrence_monthly_mode || '',
+        recurrence_by_monthday: item.recurrence_by_monthday || [],
+        recurrence_by_weekday_ordinal: item.recurrence_by_weekday_ordinal || '',
+        recurrence_by_monthly_weekday: item.recurrence_by_monthly_weekday || '',
+        recurrence_end_date: item.recurrence_end_date || '',
+        location: item.location || '',
+        link: item.link || '',
+        link_text: item.link_text || '',
+        short_desc: item.short_description || '',
+        long_desc: item.long_description || '',
+        img: item.imageUrl || '',
+        master_display: toDisplayFlag(item.display_overall, 'TRUE'),
+        popups_page: toDisplayFlag(item.display_in_popups_page, 'TRUE'),
+        calendar: toDisplayFlag(item.display_in_calendar, 'TRUE'),
+        carousel: toDisplayFlag(item.display_in_carousel, 'TRUE'),
+    };
 }
 
 /**
@@ -142,12 +136,12 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (start && end === 'Ongoing') {
         return `Starting ${startDateFormatted}, ongoing`;
     }
-    if (startDate && endDate && startDate.toDateString() === endDate.toDateString()
+    if (startDate && endDate && getEasternYMD(startDate) === getEasternYMD(endDate)
         && start.includes(':') && end.includes(':')
         && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted}, ${startTimeFormatted} – ${endTimeFormatted}`;
     }
-    if (startDate && endDate && startDate.toDateString() != endDate.toDateString()
+    if (startDate && endDate && getEasternYMD(startDate) !== getEasternYMD(endDate)
         && start.includes(':') && end.includes(':')
         && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted}, ${startTimeFormatted} - ${endDateFormatted}, ${endTimeFormatted}`;
@@ -191,6 +185,36 @@ function formatEventDate(start, end, allDay, recurring) {
     return formatPopupDate(start, end, allDay, recurring);
 }
 
+const EASTERN_TIMEZONE = 'America/New_York';
+
+function formatEasternDate(date) {
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: EASTERN_TIMEZONE,
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+    }).format(date);
+}
+
+function formatEasternTime(date) {
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: EASTERN_TIMEZONE,
+        hour: 'numeric',
+        minute: '2-digit',
+    }).format(date);
+}
+
+function getEasternYMD(date) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: EASTERN_TIMEZONE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(date);
+    const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${lookup.year}-${lookup.month}-${lookup.day}`;
+}
+
 /**
  * Robustly parse a date string from the CMS, accepting:
  * - YYYY-MM-DD HH:MM:SS
@@ -202,18 +226,32 @@ function formatEventDate(start, end, allDay, recurring) {
  *
  * Notes:
  * - Uses local parsing with minor normalization (slashes for dashes) to support Safari.
- * - Avoids timezone conversion; treats provided times as local display values.
+ * - Date-only values are normalized to midday UTC to preserve the Eastern calendar day.
  */
 function parsePopupDate(str) {
     if (!str) return null;
-    // Try native Date first
-    let d = new Date(str.replace(/-/g, '/'));
-    if (!isNaN(d)) return d;
+    const raw = String(str);
+    if (raw.includes('T') || /Z$|[+-]\d{2}:?\d{2}$/.test(raw)) {
+        const d = new Date(raw);
+        return isNaN(d) ? null : d;
+    }
+    const normalized = raw.replace(/-/g, '/');
     // Try M/D/YYYY H:MM:SS(.mmm) or M/D/YYYY
-    let match = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
+    let match = normalized.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
         let [, month, day, year, hour, min, sec, ms] = match;
         if (year.length === 2) year = '20' + year;
+        const hasTime = typeof hour !== 'undefined' && hour !== null;
+        if (!hasTime) {
+            return new Date(Date.UTC(
+                Number(year),
+                Number(month) - 1,
+                Number(day),
+                12,
+                0,
+                0
+            ));
+        }
         return new Date(
             Number(year),
             Number(month) - 1,
@@ -225,9 +263,20 @@ function parsePopupDate(str) {
         );
     }
     // Try YYYY-MM-DD H:MM:SS(.mmm) (no leading zero)
-    match = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
+    match = normalized.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?)?$/);
     if (match) {
         let [, year, month, day, hour, min, sec, ms] = match;
+        const hasTime = typeof hour !== 'undefined' && hour !== null;
+        if (!hasTime) {
+            return new Date(Date.UTC(
+                Number(year),
+                Number(month) - 1,
+                Number(day),
+                12,
+                0,
+                0
+            ));
+        }
         return new Date(
             Number(year),
             Number(month) - 1,
@@ -254,8 +303,9 @@ function isMultiDayPopup(popup) {
     const startDate = parseEventDate(popup.start_datetime);
     const endDate = parseEventDate(popup.end_datetime);
     if (!popup.start_datetime || !popup.end_datetime) return false;
+    if (!startDate || !endDate) return false;
     return (
-        startDate.toDateString() !== endDate.toDateString() &&
+        getEasternYMD(startDate) !== getEasternYMD(endDate) &&
         popup.start_datetime.includes(':') &&
         popup.end_datetime.includes(':') &&
         String(popup.all_day).toUpperCase() === 'FALSE' &&
@@ -572,10 +622,9 @@ function loadAndDisplayPopups() {
     // Detect if we're on the pop-ups page (example: check URL or a DOM flag)
     const isPopupsPage = window.location.pathname.includes('pop-ups'); // adjust as needed
 
-    fetch(GOOGLE_SHEET_CSV_URL)
-        .then(response => response.text())
-        .then(csvText => {
-            const popups = parseCSV(csvText).filter(e => {
+    sanityFetch(window.SANITY_QUERIES[POPUPS_QUERY])
+        .then(results => {
+            const popups = results.map(mapSanityPopup).filter(e => {
                 const masterDisplay = String(e.master_display).toUpperCase() === 'TRUE';
                 const popupsPageFlag = String(e.popups_page).toUpperCase() === 'TRUE';
 

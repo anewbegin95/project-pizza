@@ -20,8 +20,10 @@ function getPopupSlug(popup) {
         .replace(/^-|-$/g, '');
 }
 
+const POPUP_BY_ID_QUERY = 'POPUP_BY_ID';
+
 /**
- * Fetches pop-up details from a Google Sheet CSV and renders the pop-up detail page.
+ * Fetches pop-up details from Sanity and renders the pop-up detail page.
  * This script expects the URL to contain a query parameter `id` that matches a pop-up ID.
  * It retrieves the pop-up data, formats it, and displays it in a structured layout.
  * If the pop-up ID is not found or no ID is provided, it displays an error message.
@@ -61,17 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Use the same CSV URL and parseCSV as in pop-ups.js
-    fetch(GOOGLE_SHEET_CSV_URL)
-        .then(res => res.text())
-        .then(csv => {
-            const popups = parseCSV(csv);
-            // Assign popup.id using name only
-            popups.forEach(popup => {
-                popup.id = getPopupSlug(popup);
-            });
-            const popup = popups.find(p => p.id === popupId);
-            if (!popup) {
+    sanityFetch(window.SANITY_QUERIES[POPUP_BY_ID_QUERY], { id: popupId })
+        .then(result => {
+            const popup = typeof mapSanityPopup === 'function' ? mapSanityPopup(result) : result;
+            if (!popup || !popup.name) {
                 showError({ title: 'Pop-up not found', body: 'No pop-up matches this ID.' });
                 return;
             }

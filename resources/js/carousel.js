@@ -219,10 +219,11 @@ function initCarousel(popups) {
  * Loads pop-ups (reusing fetch/parse logic from pop-ups.js), then initializes the carousel.
  */
 function loadAndInitCarousel() {
-    fetch(GOOGLE_SHEET_CSV_URL)
-        .then(response => response.text())
-        .then(csvText => {
-            const popups = parseCSV(csvText);
+    sanityFetch(window.SANITY_QUERIES.POPUPS)
+        .then(results => {
+            const popups = typeof mapSanityPopup === 'function'
+                ? results.map(mapSanityPopup)
+                : results;
             initCarousel(popups);
         })
         .catch(error => {

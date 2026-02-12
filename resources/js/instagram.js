@@ -1,10 +1,8 @@
 // === CONSTANTS ===
 
 /**
- * Fetch Instagram post URLs from Google Sheets CSV and embed them as videos
+ * Fetch Instagram post URLs from Sanity featured posts and embed them as videos.
  */
-
-const INSTAGRAM_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=1211399873&single=true&output=csv';
 
 // === UTILITY FUNCTIONS ===
 
@@ -13,17 +11,16 @@ const INSTAGRAM_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3k
  */
 
 function fetchInstagramPosts() {
-  fetch(INSTAGRAM_CSV_URL)
-    .then(response => response.text())
-    .then(csv => {
-      // Split CSV into lines, skip header
-      const lines = csv.trim().split('\n').slice(1);
-      const urls = lines.map(line => line.replace(/"/g, '').trim()).filter(Boolean);
+  sanityFetch(window.SANITY_QUERIES.FEATURED_POSTS)
+    .then(results => {
+      const urls = (results || [])
+        .map(item => (item.embed_url || '').trim())
+        .filter(Boolean);
       renderInstagramEmbeds(urls);
     })
     .catch(err => {
       document.getElementById('instagram-videos').innerHTML = '<p>Could not load Instagram posts.</p>';
-      console.error('Failed to fetch Instagram CSV:', err);
+      console.error('Failed to fetch Instagram posts:', err);
     });
 }
 
@@ -40,8 +37,8 @@ function renderInstagramEmbeds(urls) {
   grid.className = 'instagram-embed-grid';
 
   urls.forEach(url => {
-    // Extract post ID from URL (e.g., https://www.instagram.com/p/POST_ID/)
-    const match = url.match(/instagram\.com\/p\/([^/]+)/);
+    // Extract post ID from URL (e.g., /p/ or /reel/)
+    const match = url.match(/instagram\.com\/(?:p|reel)\/([^/]+)/);
     if (match) {
       const postId = match[1];
       const iframe = document.createElement('iframe');
