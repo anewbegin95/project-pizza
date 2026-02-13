@@ -15,7 +15,7 @@ const EVENT_BAR_HORIZONTAL_MARGIN_PX = 2; // px, matches CSS
 // Track the current month and year being displayed in the calendar
 let currentMonth = new Date().getMonth(); // 0 = January, 11 = December
 let currentYear = new Date().getFullYear(); // Four-digit year, e.g., 2025
-let popups = []; // This will hold all pop-up objects loaded from the CSV
+let popups = []; // This will hold all pop-up objects loaded from Sanity
 
 // === UTILITY FUNCTIONS ===
 

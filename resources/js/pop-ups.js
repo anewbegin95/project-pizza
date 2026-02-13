@@ -616,7 +616,7 @@ function downloadICS(popup, specificDay, startTime, endTime) {
 // === MAIN FUNCTIONALITY ===
 
 /**
- * Fetches pop-ups from the CSV URL, parses them, and displays them in the pop-ups grid.
+ * Fetches pop-ups from Sanity and displays them in the pop-ups grid.
  */
 function loadAndDisplayPopups() {
     // Detect if we're on the pop-ups page (example: check URL or a DOM flag)
