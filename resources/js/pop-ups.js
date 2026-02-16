@@ -629,15 +629,14 @@ function loadAndDisplayPopups() {
                 }
             });
 
-            const grid = document.createElement('div');
-            grid.className = 'popups-grid';
+            const grid = document.getElementById('popupsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
 
             popups.forEach(popup => {
                 const tile = createPopupTile(popup);
                 if (tile) grid.appendChild(tile);
             });
-
-            document.querySelector('main').appendChild(grid);
 
             // Inject JSON-LD for CollectionPage + ItemList of pop-ups
             // Only do this on the pop-ups.html listing page

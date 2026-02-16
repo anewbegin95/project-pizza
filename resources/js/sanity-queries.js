@@ -57,7 +57,7 @@ window.SANITY_QUERIES = {
     "imageUrl": image.asset->url
   }`,
 
-  POPUPS: `*[_type == "pop-ups"] | order(start_datetime asc) {
+  POPUPS: `*[_type == "pop-ups"] | order(coalesce(start_datetime, start_date) asc) {
     _id,
     name,
     "slug": slug.current,
