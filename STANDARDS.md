@@ -49,7 +49,7 @@
 - **PascalCase** for classes and constructors:  
   `PopupTile`, `CalendarGrid`
 - **Constants in UPPER_SNAKE_CASE**:  
-  `GOOGLE_SHEET_CSV_URL`
+  `POPUPS_QUERY`
 - **Descriptive function names:**  
   `parsePopupDate`, `formatPopupDate`
 
