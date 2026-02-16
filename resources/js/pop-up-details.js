@@ -130,6 +130,42 @@ function renderPopupDetail(popup) {
     }
     // ...existing code...
 
+function getEasternDateParts(date) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(date);
+    const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return {
+        year: Number(lookup.year),
+        month: Number(lookup.month),
+        day: Number(lookup.day),
+    };
+}
+
+function getEasternTimeForICS(date) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).formatToParts(date);
+    const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${lookup.hour}:${lookup.minute}:${lookup.second}`;
+}
+
+function formatEasternDateLabel(date) {
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+    }).format(date);
+}
+
 /**
  * Handles ICS link rendering and accessibility for pop-up details.
  * @param {Object} popup - The pop-up data object.
@@ -145,18 +181,30 @@ function handleICSLinks(popup, icsLink) {
         if (isDesktop || isSafari) {
             icsLink.style.display = 'none';
             // Create a container for multiple ICS links
-            const startDate = new Date(popup.start_datetime);
-            const endDate = new Date(popup.end_datetime);
-            const numDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const startDate = typeof parsePopupDate === 'function'
+                ? parsePopupDate(popup.start_datetime)
+                : new Date(popup.start_datetime);
+            const endDate = typeof parsePopupDate === 'function'
+                ? parsePopupDate(popup.end_datetime)
+                : new Date(popup.end_datetime);
+            if (!startDate || !endDate || isNaN(startDate) || isNaN(endDate)) {
+                icsLink.style.display = 'none';
+                return;
+            }
+            const startParts = getEasternDateParts(startDate);
+            const endParts = getEasternDateParts(endDate);
+            const startDay = new Date(Date.UTC(startParts.year, startParts.month - 1, startParts.day, 12, 0, 0));
+            const endDay = new Date(Date.UTC(endParts.year, endParts.month - 1, endParts.day, 12, 0, 0));
+            const numDays = Math.floor((endDay - startDay) / (1000 * 60 * 60 * 24)) + 1;
             const icsLinksContainer = document.createElement('div');
             icsLinksContainer.className = 'ics-links-container';
             icsLinksContainer.setAttribute('role', 'group');
             icsLinksContainer.setAttribute('aria-label', 'Add pop-up days to calendar');
-            const startTime = popup.start_datetime.split(' ')[1];
-            const endTime = popup.end_datetime.split(' ')[1];
+            const startTime = getEasternTimeForICS(startDate);
+            const endTime = getEasternTimeForICS(endDate);
             for (let i = 0; i < numDays; i++) {
-                const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
-                const dateLabel = currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const currentDay = new Date(startDay.getTime() + i * 24 * 60 * 60 * 1000);
+                const dateLabel = formatEasternDateLabel(currentDay);
                 const link = document.createElement('a');
                 link.href = '#';
                 link.textContent = `Add ${dateLabel} to Calendar`;
