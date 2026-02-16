@@ -117,18 +117,10 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (!start) start = '';
     if (!end) end = '';
 
-    const startDateFormatted = startDate
-        ? startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-        : '';
-    const endDateFormatted = endDate
-        ? endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-        : '';
-    const startTimeFormatted = startDate
-        ? startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-        : '';
-    const endTimeFormatted = endDate
-        ? endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-        : '';
+    const startDateFormatted = startDate ? formatEasternDate(startDate) : '';
+    const endDateFormatted = endDate ? formatEasternDate(endDate) : '';
+    const startTimeFormatted = startDate ? formatEasternTime(startDate) : '';
+    const endTimeFormatted = endDate ? formatEasternTime(endDate) : '';
 
     if (start === 'Ongoing' && !end) {
         return 'Ongoing';
