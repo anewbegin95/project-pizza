@@ -32,6 +32,8 @@ window.sanityFetch = async function sanityFetch(query, params = {}) {
   // Public fetch helper for GROQ queries.
   const url = new URL(getSanityBaseUrl());
   url.searchParams.set('query', query);
+  // Force published-only content in public frontend requests.
+  url.searchParams.set('perspective', 'published');
 
   // Append GROQ parameters (e.g. $id) as query string values.
   Object.entries(params).forEach(([key, value]) => {

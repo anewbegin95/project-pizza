@@ -42,3 +42,17 @@ cd project-pizza
 # Open index.html directly in your browser, or serve it locally:
 npx serve .
 ```
+
+---
+
+## 🔒 Security Automation
+
+GitHub Actions now runs on every PR to `main`:
+- ESLint in `sanity/`
+- `npm audit` (high severity and above) in `sanity/`
+- Gitleaks secret scanning across repo/history
+- Dependency Review on PRs for high-risk dependency changes
+
+Optional Snyk scanning is also enabled in CI when the repository secret `SNYK_TOKEN` is set.
+
+Automated monitoring is also enabled via Dependabot (`.github/dependabot.yml`) for weekly npm updates in `sanity/`.

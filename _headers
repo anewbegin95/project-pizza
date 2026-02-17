@@ -1,0 +1,21 @@
+/**
+ * @file Security response headers configuration for static hosting platforms that support a `_headers` file.
+ *
+ * @remarks
+ * This file is only applied by compatible hosts (for example, Netlify and Cloudflare Pages).
+ * If production is served via GitHub Pages, these headers are not emitted and therefore do not
+ * provide runtime protection.
+ *
+ * @warning
+ * Verify the active deployment target supports `_headers`, or enforce equivalent headers at the
+ * actual edge/CDN or reverse-proxy layer used in production.
+ */
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; frame-src https://www.instagram.com https://instagram.com; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://41kk82h2.apicdn.sanity.io https://41kk82h2.api.sanity.io; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
+  Cross-Origin-Resource-Policy: same-origin
+*/
