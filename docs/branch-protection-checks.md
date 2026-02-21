@@ -45,6 +45,12 @@ Only mark this as required if `SNYK_TOKEN` is configured and expected for all PR
 - `Deployment status + health check` runs on `push` to `main` (post-merge), not PRs.
 - Because it does not run on PR events, it should be monitored as a post-merge deployment gate, not as a PR required check.
 
+## Notes on security audit scope
+
+- `Sanity Lint + npm audit` currently runs `npm audit --omit=dev --audit-level=high`.
+- This keeps merge-blocking focused on production dependency risk.
+- Dev-tooling/transitive dependency vulnerabilities should be handled in dedicated dependency-upgrade issues/PRs.
+
 ## Setup path in GitHub
 
 For each branch (`staging`, `main`):
