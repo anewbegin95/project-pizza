@@ -5,6 +5,7 @@ on:
     branches:
       - staging
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read

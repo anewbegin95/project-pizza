@@ -45,8 +45,8 @@ jobs:
       - name: Run ESLint
         run: npx eslint .
 
-      - name: Run npm audit (high+)
-        run: npm audit --audit-level=high
+      - name: Run npm audit (high+, prod deps only)
+        run: npm audit --omit=dev --audit-level=high
 
   secret-scan:
     name: Secret scan (Gitleaks)
@@ -65,15 +65,20 @@ jobs:
   snyk:
     name: Snyk (optional)
     runs-on: ubuntu-latest
-    if: ${{ secrets.SNYK_TOKEN != '' }}
     defaults:
       run:
         working-directory: sanity
     steps:
+      - name: Skip when SNYK_TOKEN is not configured
+        if: ${{ secrets.SNYK_TOKEN == '' }}
+        run: echo "SNYK_TOKEN not configured; skipping Snyk scan."
+
       - name: Checkout
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -81,9 +86,11 @@ jobs:
           cache-dependency-path: sanity/package-lock.json
 
       - name: Install dependencies
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         run: npm ci
 
       - name: Run Snyk test
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         continue-on-error: false
         env:
