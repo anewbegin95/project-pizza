@@ -6,6 +6,7 @@ This folder contains operational and engineering documentation for project-pizza
 
 - [Coding standards](./standards.md)
 - [Rollback and recovery](./rollback-and-recovery.md)
+- [Branch protection required checks](./branch-protection-checks.md)
 
 ## Additional repository docs
 
