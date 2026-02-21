@@ -45,14 +45,33 @@ npx serve .
 
 ---
 
-## 🔒 Security Automation
+## 🔒 Security + CI/CD Automation
 
-GitHub Actions now runs on every PR to `main`:
-- ESLint in `sanity/`
-- `npm audit` (high severity and above) in `sanity/`
-- Gitleaks secret scanning across repo/history
-- Dependency Review on PRs for high-risk dependency changes
+GitHub Actions now enforces branch-specific quality gates:
 
-Optional Snyk scanning is also enabled in CI when the repository secret `SNYK_TOKEN` is set.
+### `staging` integration gate
+- Sanity Studio build verification (`sanity/npm run build`)
+- CSS lint (Stylelint)
+- HTML lint (HTMLHint)
+- Unit tests (Vitest)
+- Broken link/internal asset checks (Lychee)
+- Lighthouse CI assertions (performance, accessibility, best practices, SEO)
+- E2E smoke tests (Playwright)
+- Dependency Review, ESLint, `npm audit`, Gitleaks, and optional Snyk
 
-Automated monitoring is also enabled via Dependabot (`.github/dependabot.yml`) for weekly npm updates in `sanity/`.
+### `main` deployment gate
+- Pre-merge checks on PRs to `main` (build + smoke tests)
+- Post-merge deployment health checks against production URLs
+- Manual rollback automation via GitHub Actions workflow
+
+Dependabot (`.github/dependabot.yml`) remains enabled for weekly npm updates in `sanity/`.
+
+---
+
+## 📚 Project Documentation
+
+- [Documentation index](docs/README.md)
+- [Coding standards](docs/standards.md)
+- [Rollback and recovery](docs/rollback-and-recovery.md)
+- [Security policy](.github/SECURITY.md)
+- [CI/CD checklist](.github/CICD-CHECKLIST.md)

@@ -1,0 +1,76 @@
+name: Main Deployment Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: main-deploy-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pre-deploy-checks:
+    name: Pre-deploy checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run smoke E2E tests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+      - name: Build Studio
+        working-directory: sanity
+        run: |
+          npm ci
+          npm run build
+
+  deployment-health-check:
+    name: Deployment status + health check
+    if: github.event_name == 'push'
+    needs:
+      - pre-deploy-checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for deployment propagation
+        run: sleep 30
+
+      - name: Health check public site
+        run: |
+          SITE_URL="https://$(cat CNAME)"
+          echo "Checking: $SITE_URL"
+
+          for path in "/" "/pop-ups.html" "/contact_us.html"; do
+            echo "Health check -> ${SITE_URL}${path}"
+            curl --fail --show-error --silent --location --retry 5 --retry-delay 5 "${SITE_URL}${path}" > /dev/null
+          done

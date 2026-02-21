@@ -1,0 +1,45 @@
+name: Rollback Main
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Commit SHA to revert on main
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  rollback:
+    name: Revert commit on main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Revert commit
+        run: |
+          TARGET_SHA="${{ github.event.inputs.commit_sha }}"
+          git checkout main
+          git pull --ff-only origin main
+
+          PARENTS=$(git rev-list --parents -n 1 "$TARGET_SHA")
+          PARENT_COUNT=$(echo "$PARENTS" | wc -w | tr -d ' ')
+
+          if [ "$PARENT_COUNT" -gt 2 ]; then
+            git revert -m 1 --no-edit "$TARGET_SHA"
+          else
+            git revert --no-edit "$TARGET_SHA"
+          fi
+
+      - name: Push revert
+        run: git push origin main

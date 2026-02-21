@@ -16,3 +16,11 @@
 # Service account / credential blobs
 *credentials*.json
 *secret*.json
+
+# Node artifacts
+node_modules/
+
+# Test / CI outputs
+playwright-report/
+test-results/
+.lighthouseci/
