@@ -75,7 +75,7 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           fail: true
-          args: --offline --no-progress --verbose --base "${{ github.workspace }}" --root-dir "${{ github.workspace }}" ./*.html ./partials/*.html
+          args: --offline --no-progress --verbose --base-url "file://${{ github.workspace }}/" --root-dir "${{ github.workspace }}" --exclude "^file://.*/%23$" ./*.html ./partials/*.html
 
   lighthouse:
     name: Lighthouse CI
