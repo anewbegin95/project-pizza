@@ -1,0 +1,26 @@
+# OS / editor artifacts
+.DS_Store
+
+# Environment and local config
+.env
+.env.*
+*.local
+
+# Secrets and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# Service account / credential blobs
+*credentials*.json
+*secret*.json
+
+# Node artifacts
+node_modules/
+
+# Test / CI outputs
+playwright-report/
+test-results/
+.lighthouseci/

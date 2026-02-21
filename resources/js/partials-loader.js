@@ -1,5 +1,15 @@
 // partials-loader.js
 
+const isProductionHost =
+  window.location.hostname === 'nycsliceoflife.com' ||
+  window.location.hostname === 'www.nycsliceoflife.com';
+
+if (window.location.protocol === 'http:' && isProductionHost) {
+  window.location.replace(
+    `https://${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`,
+  );
+}
+
 // --- Load <head> content from partials/head.html ---
 
 // Use fetch to get the contents of the head partial HTML file
@@ -90,11 +100,17 @@ fetch('partials/header.html')
     return response.text();
   })
   .then((headerContent) => {
-    // Insert the fetched header at the beginning of the <body>
-    document.body.insertAdjacentHTML('afterbegin', headerContent);
+    const mountHeader = () => {
+      if (!document.body) return;
+      document.body.insertAdjacentHTML('afterbegin', headerContent);
+      initializeHeader();
+    };
 
-    // Initialize header.js functionality after header.html is loaded
-    initializeHeader();
+    if (document.body) {
+      mountHeader();
+    } else {
+      document.addEventListener('DOMContentLoaded', mountHeader, { once: true });
+    }
   })
   .catch((error) => {
     console.error(error);

@@ -1,0 +1,109 @@
+name: Security CI
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+  push:
+    branches:
+      - staging
+      - main
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: security-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sanity-lint-and-audit:
+    name: Sanity Lint + npm audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sanity
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sanity/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint .
+
+      - name: Run npm audit (critical, prod deps only)
+        run: npm audit --omit=dev --audit-level=critical
+
+  secret-scan:
+    name: Secret scan (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  snyk:
+    name: Snyk (optional)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect SNYK_TOKEN availability
+        id: token_check
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when SNYK_TOKEN is not configured
+        if: ${{ steps.token_check.outputs.has_token == 'false' }}
+        run: echo "SNYK_TOKEN not configured; skipping Snyk scan."
+
+      - name: Checkout
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sanity/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        working-directory: sanity
+        run: npm ci
+
+      - name: Run Snyk test
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        uses: snyk/actions/node@master
+        continue-on-error: false
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --file=sanity/package.json --severity-threshold=high

@@ -1,48 +1,11 @@
 // === CONSTANTS ===
 
 /**
- * URL of the published Google Sheet in CSV format.
- * Ensure the sheet is public for this to work.
+ * Sanity GROQ query key for date ideas.
  */
-const DATE_IDEAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=121089378&single=true&output=csv';
+const DATE_IDEAS_QUERY = 'DATE_IDEAS';
 
 // === UTILITY FUNCTIONS ===
-/**
- * Parses a CSV string into an array of date idea objects.
- * Handles multi-line fields and ensures proper formatting for fields like `short_desc` and `long_desc`.
- * @param {string} csvText - The raw CSV string.
- * @returns {Array<Object>} - Array of parsed date idea objects.
- */
-
-function parseCSV(csvText, type = "date-idea") {
-    const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h => h.trim());
-    const items = [];
-    let currentRow = [];
-
-    rows.slice(1).forEach(row => {
-        currentRow.push(row);
-        const combinedRow = currentRow.join('\n');
-        const quoteCount = (combinedRow.match(/"/g) || []).length;
-
-        if (quoteCount % 2 === 0) {
-            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
-            const item = {};
-            headers.forEach((header, i) => {
-                item[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
-            });
-            item['type'] = type; // Add type field
-            items.push(item);
-            currentRow = [];
-        }
-    });
-
-    items.forEach((item, idx) => {
-        item.id = generateEventId(item, idx);
-    });
-
-    return items;
-}
 
 /**
  * Generates a unique date idea ID (slug) from date idea name and row index.
@@ -55,6 +18,21 @@ function generateEventId(item, index) {
     // Use item name, lowercased and slugified, plus index for uniqueness
     const base = (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return `${base}-${index}`;
+}
+
+function mapSanityDateIdea(item, index) {
+    return {
+        id: item.slug || item._id || generateEventId(item, index),
+        name: item.name || '',
+        location: item.location || '',
+        link: item.link || '',
+        link_text: item.link_text || '',
+        short_desc: item.short_description || '',
+        long_desc: item.long_description || '',
+        img: item.imageUrl || '',
+        master_display: item.display_overall ? 'TRUE' : 'FALSE',
+        type: 'date-idea',
+    };
 }
 
 // Fetch date ideas
@@ -171,10 +149,9 @@ function openDateIdeaModal(idea) {
 
 // === MAIN FUNCTIONALITY ===
 document.addEventListener('DOMContentLoaded', () => {
-    fetch(DATE_IDEAS_CSV_URL)
-        .then(res => res.text())
-        .then(csv => {
-            const dateIdeas = parseCSV(csv, "date-idea");
+    sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
+        .then(results => {
+            const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
             const grid = document.getElementById('dateIdeasGrid');
             if (!grid) return;
             grid.innerHTML = '';

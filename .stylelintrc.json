@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "block-no-empty": true,
+    "color-no-invalid-hex": true,
+    "declaration-block-no-duplicate-properties": true,
+    "no-duplicate-selectors": true,
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__(?:[a-z0-9]+(?:-[a-z0-9]+)*))?(?:--(?:[a-z0-9]+(?:-[a-z0-9]+)*))?$",
+      {
+        "message": "Use lowercase hyphenated class names with optional BEM parts (__element, --modifier)."
+      }
+    ],
+    "custom-property-pattern": [
+      "^(nyc|space|font|shadow|radius|container|section|carousel)-[a-z0-9-]+$",
+      {
+        "message": "Use project token prefixes: --nyc-*, --space-*, --font-*, --shadow-*, --radius-*, --container-*, --section-*, or --carousel-*."
+      }
+    ]
+  }
+}

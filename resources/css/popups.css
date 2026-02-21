@@ -13,9 +13,11 @@
   align-items: stretch;
   padding: var(--space-sm);
 }
+section#popupsGrid {
+  padding: var(--space-sm) !important;
+}
 section.popups-grid {
   margin: 0 !important;
-  padding: 0 !important;
   background: none !important;
 }
 #popupsGrid:empty {
