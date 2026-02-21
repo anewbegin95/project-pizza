@@ -65,9 +65,6 @@ jobs:
   snyk:
     name: Snyk (optional)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: sanity
     steps:
       - name: Detect SNYK_TOKEN availability
         id: token_check
@@ -98,6 +95,7 @@ jobs:
 
       - name: Install dependencies
         if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        working-directory: sanity
         run: npm ci
 
       - name: Run Snyk test
