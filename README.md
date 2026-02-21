@@ -71,7 +71,7 @@ Dependabot (`.github/dependabot.yml`) remains enabled for weekly npm updates in 
 ## 📚 Project Documentation
 
 - [Documentation index](docs/README.md)
-- [Coding standards](docs/standards.md)
+- [Coding standards](docs/STANDARDS.md)
 - [Rollback and recovery](docs/rollback-and-recovery.md)
 - [Security policy](.github/SECURITY.md)
 - [CI/CD checklist](.github/CICD-CHECKLIST.md)
