@@ -55,3 +55,39 @@ test('date idea details route shows missing-id error state', async ({ page }) =>
   await expect(page.getByRole('heading', { level: 2, name: /date idea not found/i })).toBeVisible()
   await expect(page.getByText(/no date idea id provided in the url/i)).toBeVisible()
 })
+
+test('desktop header navigation routes to calendar page', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 })
+  await page.goto('/')
+
+  const desktopNav = page.locator('.main-nav')
+  await expect(desktopNav).toBeVisible()
+
+  await desktopNav.getByRole('link', { name: /^calendar$/i }).click()
+  await expect(page).toHaveURL(/calendar\.html$/)
+  await expect(page.getByRole('heading', { level: 1, name: /nyc pop-up events calendar/i })).toBeVisible()
+})
+
+test('mobile menu toggle opens, closes, and navigates', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const menuToggle = page.locator('.menu-toggle')
+  const collapsibleMenu = page.locator('.collapsible-menu')
+
+  await expect(menuToggle).toBeVisible()
+  await expect(collapsibleMenu).not.toHaveClass(/open/)
+
+  await menuToggle.click()
+  await expect(collapsibleMenu).toHaveClass(/open/)
+
+  await menuToggle.click()
+  await expect(collapsibleMenu).not.toHaveClass(/open/)
+
+  await menuToggle.click()
+  await expect(collapsibleMenu).toHaveClass(/open/)
+
+  await collapsibleMenu.getByRole('link', { name: /^about us$/i }).click()
+  await expect(page).toHaveURL(/about\.html$/)
+  await expect(page.getByRole('heading', { level: 1, name: /about us/i })).toBeVisible()
+})
