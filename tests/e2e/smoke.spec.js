@@ -91,3 +91,10 @@ test('mobile menu toggle opens, closes, and navigates', async ({ page }) => {
   await expect(page).toHaveURL(/about\.html$/)
   await expect(page.getByRole('heading', { level: 1, name: /about us/i })).toBeVisible()
 })
+
+test('missing page route returns 404', async ({ page }) => {
+  const response = await page.goto('/this-page-should-not-exist-404-check.html')
+
+  expect(response).not.toBeNull()
+  expect(response.status()).toBe(404)
+})
