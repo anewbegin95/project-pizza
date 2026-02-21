@@ -11,7 +11,15 @@
 ## Testing
 - [ ] I tested locally.
 - [ ] I tested affected pages/flows.
+- [ ] Frontend checks pass locally: `npm run lint:css`, `npm run lint:html`, `npm run test:unit`.
+- [ ] Smoke checks pass locally (or in CI): `npm run test:e2e`.
+- [ ] If UX/perf-impacting changes were made, I reviewed Lighthouse CI results.
+- [ ] I verified no broken local links/assets were introduced.
 - [ ] I reviewed CI results for this PR.
+
+## Branch Gate Awareness
+- [ ] I am targeting the correct branch (`staging` for integration; `main` only for production-ready changes).
+- [ ] For PRs to `main`, I confirmed deploy/health-check impact and rollback notes (if needed).
 
 ## Notes
 - Any follow-up work, risks, or rollout notes.

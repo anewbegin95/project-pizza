@@ -82,4 +82,16 @@
 
 ---
 
+## Lint Enforcement (CI)
+
+The CI pipeline enforces a subset of these standards automatically via Stylelint:
+
+- Class naming pattern (lowercase-hyphen with optional BEM `__element` and `--modifier`)
+- CSS custom property prefixes (`--nyc-*`, `--space-*`, `--font-*`, `--shadow-*`, `--radius-*`, `--container-*`, `--section-*`, `--carousel-*`)
+- Core CSS safety checks (invalid hex, duplicate selectors, duplicate properties, empty blocks)
+
+Some standards are still guidance-only (not strict lint failures yet), such as file organization and comments.
+
+---
+
 Feel free to expand or modify this guide as your project evolves!
