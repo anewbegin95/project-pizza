@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test')
+const { once } = require('node:events')
 
 const POPUP_ID = 'popup-test-id'
 const DATE_IDEA_ID = 'date-idea-test-id'
@@ -88,6 +89,20 @@ test('pop-up ICS link is correctly formatted and downloadable', async ({ page })
   ])
 
   await expect(download.suggestedFilename()).toBe(`${POPUP_ID}.ics`)
+
+  const stream = await download.createReadStream()
+  const chunks = []
+  stream.on('data', (chunk) => chunks.push(chunk))
+  await once(stream, 'end')
+  const icsContent = Buffer.concat(chunks).toString('utf8')
+
+  expect(icsContent).toContain('BEGIN:VCALENDAR')
+  expect(icsContent).toContain('BEGIN:VEVENT')
+  expect(icsContent).toContain('SUMMARY:Mock Popup Name')
+  expect(icsContent).toMatch(/DTSTART(;VALUE=DATE|;TZID=America\/New_York):/)
+  expect(icsContent).toMatch(/DTEND(;VALUE=DATE|;TZID=America\/New_York):/)
+  expect(icsContent).toContain('END:VEVENT')
+  expect(icsContent).toContain('END:VCALENDAR')
 })
 
 test('date idea detail page renders populated content when id is provided', async ({ page }) => {
