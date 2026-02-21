@@ -69,16 +69,27 @@ jobs:
       run:
         working-directory: sanity
     steps:
+      - name: Detect SNYK_TOKEN availability
+        id: token_check
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Skip when SNYK_TOKEN is not configured
-        if: ${{ secrets.SNYK_TOKEN == '' }}
+        if: ${{ steps.token_check.outputs.has_token == 'false' }}
         run: echo "SNYK_TOKEN not configured; skipping Snyk scan."
 
       - name: Checkout
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -86,11 +97,11 @@ jobs:
           cache-dependency-path: sanity/package-lock.json
 
       - name: Install dependencies
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
         run: npm ci
 
       - name: Run Snyk test
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
         uses: snyk/actions/node@master
         continue-on-error: false
         env:
