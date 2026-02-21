@@ -4,7 +4,7 @@ This folder contains operational and engineering documentation for project-pizza
 
 ## Contents
 
-- [Coding standards](./standards.md)
+- [Coding standards](./STANDARDS.md)
 - [Rollback and recovery](./rollback-and-recovery.md)
 - [Branch protection required checks](./branch-protection-checks.md)
 
