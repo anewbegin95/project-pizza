@@ -82,19 +82,19 @@ window.SANITY_QUERIES = {
     long_description,
     display_overall,
     display_in_calendar,
+    // For the pop-ups page: hide items whose end datetime has passed. For all-day events,
+    // ISO YYYY-MM-DD strings sort correctly as plain strings, so lexicographic comparison
+    // on the date portion is equivalent to chronological comparison. The event remains
+    // visible on its end date and disappears the following day.
     "display_in_popups_page": select(
-      // Hide from pop-ups page if the end datetime has already passed
       defined(end_datetime) && end_datetime < now() => false,
-      // For all-day events: ISO YYYY-MM-DD strings sort correctly as plain strings,
-      // so lexicographic comparison is equivalent to chronological comparison.
-      // The event remains visible on its end date and disappears the following day.
       defined(end_date) && end_date < now()[0..9] => false,
       display_in_popups_page
     ),
+    // For the carousel: hide items whose end datetime has passed, using the same ISO
+    // date string comparison logic for all-day events as described above.
     "display_in_carousel": select(
-      // Hide from carousel if the end datetime has already passed
       defined(end_datetime) && end_datetime < now() => false,
-      // Same ISO date string comparison logic as above
       defined(end_date) && end_date < now()[0..9] => false,
       display_in_carousel
     ),
