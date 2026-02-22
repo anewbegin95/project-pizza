@@ -621,7 +621,10 @@ function loadAndDisplayPopups() {
                 const popupsPageFlag = String(e.popups_page).toUpperCase() === 'TRUE';
 
                 if (isPopupsPage) {
-                    // Show if both master_display and popups_page true on pop-ups page
+                    // Show if both master_display and popups_page true on pop-ups page.
+                    // Expiry is handled by the GROQ query: display_in_popups_page is
+                    // automatically returned as false for events whose end date/time
+                    // has passed, so no additional client-side expiry check is needed.
                     return masterDisplay && popupsPageFlag;
                 } else {
                     // Show if master_display true on other pages regardless of popups_page

@@ -12,7 +12,7 @@
         "http://127.0.0.1:4173/contact_us.html",
         "http://127.0.0.1:4173/privacy_policy.html"
       ],
-      "numberOfRuns": 1
+      "numberOfRuns": 3
     },
     "assert": {
       "assertions": {
