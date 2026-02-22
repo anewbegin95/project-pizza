@@ -83,19 +83,18 @@ window.SANITY_QUERIES = {
     display_overall,
     display_in_calendar,
     // For the pop-ups page: hide items whose end datetime has passed. For all-day events,
-    // ISO YYYY-MM-DD strings sort correctly as plain strings, so lexicographic comparison
-    // on the date portion is equivalent to chronological comparison. The event remains
-    // visible on its end date and disappears the following day.
+    // dateTime() converts the stored YYYY-MM-DD date string to a datetime (midnight UTC)
+    // so it can be compared directly with now().
     "display_in_popups_page": select(
       defined(end_datetime) && end_datetime < now() => false,
-      defined(end_date) && end_date < now()[0..9] => false,
+      defined(end_date) && dateTime(end_date) < now() => false,
       display_in_popups_page
     ),
-    // For the carousel: hide items whose end datetime has passed, using the same ISO
-    // date string comparison logic for all-day events as described above.
+    // For the carousel: hide items whose end datetime has passed, using the same
+    // dateTime() conversion for all-day events as described above.
     "display_in_carousel": select(
       defined(end_datetime) && end_datetime < now() => false,
-      defined(end_date) && end_date < now()[0..9] => false,
+      defined(end_date) && dateTime(end_date) < now() => false,
       display_in_carousel
     ),
     "imageUrl": image.asset->url
