@@ -14,16 +14,14 @@ const CAROUSEL_ROTATION_INTERVAL = 5000; // 5 seconds
 
 /**
  * Filters pop-ups to include only those that should appear in the carousel.
- * Both `master_display` and `carousel` fields must be TRUE, and the pop-up
- * must not have an end date/time that has already passed.
+ * Both `master_display` and `carousel` fields must be TRUE.
  * @param {Array<Object>} popups - Array of pop-up objects.
  * @returns {Array<Object>} - Filtered array of pop-ups for the carousel.
  */
 function filterCarouselPopups(popups) {
     return popups.filter(popup =>
         String(popup.master_display).toUpperCase() === 'TRUE' &&
-        String(popup.carousel).toUpperCase() === 'TRUE' &&
-        (typeof isPopupExpired === 'function' ? !isPopupExpired(popup) : true)
+        String(popup.carousel).toUpperCase() === 'TRUE'
     );
 }
 
