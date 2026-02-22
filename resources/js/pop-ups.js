@@ -288,6 +288,28 @@ function parseEventDate(str) {
 }
 
 /**
+ * Returns true if a pop-up has a non-empty end date/time that is strictly in
+ * the past.  Pop-ups with no end date (or an "Ongoing" end value) are never
+ * considered expired.
+ * For date-only end values (no time component) the comparison is made against
+ * the Eastern calendar day so events remain visible for the full end day.
+ * @param {Object} popup - Mapped pop-up object (from mapSanityPopup).
+ * @returns {boolean}
+ */
+function isPopupExpired(popup) {
+    const endValue = popup.end_datetime;
+    if (!endValue || String(endValue).toLowerCase() === 'ongoing') return false;
+    const endDate = parsePopupDate(endValue);
+    if (!endDate) return false;
+    // Date-only (no time component): compare Eastern calendar days
+    if (!String(endValue).match(/\d{1,2}:\d{2}/)) {
+        return getEasternYMD(endDate) < getEasternYMD(new Date());
+    }
+    // Datetime: compare exact moment
+    return endDate < new Date();
+}
+
+/**
  * Checks if a pop-up spans multiple calendar days (non-all-day, non-recurring).
  * Mirrors Example 4 in the date formatting docs.
  */
@@ -621,8 +643,9 @@ function loadAndDisplayPopups() {
                 const popupsPageFlag = String(e.popups_page).toUpperCase() === 'TRUE';
 
                 if (isPopupsPage) {
-                    // Show if both master_display and popups_page true on pop-ups page
-                    return masterDisplay && popupsPageFlag;
+                    // Show if both master_display and popups_page true on pop-ups page,
+                    // and the popup has not passed its end date/time
+                    return masterDisplay && popupsPageFlag && !isPopupExpired(e);
                 } else {
                     // Show if master_display true on other pages regardless of popups_page
                     return masterDisplay;
