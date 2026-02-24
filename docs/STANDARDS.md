@@ -49,7 +49,7 @@
 - **PascalCase** for classes and constructors:  
   `PopupTile`, `CalendarGrid`
 - **Constants in UPPER_SNAKE_CASE**:  
-  `GOOGLE_SHEET_CSV_URL`
+  `POPUPS_QUERY`
 - **Descriptive function names:**  
   `parsePopupDate`, `formatPopupDate`
 
@@ -79,6 +79,18 @@
 - **Accessibility:** Use proper labels, alt text, and keyboard navigation.
 - **Responsiveness:** Use mobile-first breakpoints and test on multiple devices.
 - **Refactor regularly:** Remove unused code and keep styles modular.
+
+---
+
+## Lint Enforcement (CI)
+
+The CI pipeline enforces a subset of these standards automatically via Stylelint:
+
+- Class naming pattern (lowercase-hyphen with optional BEM `__element` and `--modifier`)
+- CSS custom property prefixes (`--nyc-*`, `--space-*`, `--font-*`, `--shadow-*`, `--radius-*`, `--container-*`, `--section-*`, `--carousel-*`)
+- Core CSS safety checks (invalid hex, duplicate selectors, duplicate properties, empty blocks)
+
+Some standards are still guidance-only (not strict lint failures yet), such as file organization and comments.
 
 ---
 

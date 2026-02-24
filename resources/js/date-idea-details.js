@@ -4,36 +4,20 @@ function getQueryParam(name) {
     return url.searchParams.get(name);
 }
 
-const DATE_IDEAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3kyrvcTvanJ0p3Umxrlk36QZIDKS91n2pmzXaYaCv73mhLnhLeBf_ZpU87fZe0pu8J1Vz6mjI6uE/pub?gid=121089378&single=true&output=csv';
+const DATE_IDEA_BY_ID_QUERY = 'DATE_IDEA_BY_ID';
 
-function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h => h.trim());
-    const items = [];
-    let currentRow = [];
-    rows.slice(1).forEach(row => {
-        currentRow.push(row);
-        const combinedRow = currentRow.join('\n');
-        const quoteCount = (combinedRow.match(/"/g) || []).length;
-        if (quoteCount % 2 === 0) {
-            const values = combinedRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim());
-            const item = {};
-            headers.forEach((header, i) => {
-                item[header] = values[i]?.replace(/^"+|"+$/g, '') || '';
-            });
-            items.push(item);
-            currentRow = [];
-        }
-    });
-    items.forEach((item, idx) => {
-        item.id = generateEventId(item, idx);
-    });
-    return items;
-}
-
-function generateEventId(item, index) {
-    const base = (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    return `${base}-${index}`;
+function mapSanityDateIdea(item) {
+    if (!item) return null;
+    return {
+        id: item.slug || item._id || '',
+        name: item.name || '',
+        location: item.location || '',
+        link: item.link || '',
+        link_text: item.link_text || '',
+        short_desc: item.short_description || '',
+        long_desc: item.long_description || '',
+        img: item.imageUrl || '',
+    };
 }
 
 function showError(message, ariaLabel = 'Error message') {
@@ -49,7 +33,7 @@ function showError(message, ariaLabel = 'Error message') {
 function renderDateIdeaDetail(idea) {
     document.getElementById('dateIdeaTitle').textContent = idea.name;
     document.getElementById('dateIdeaLocation').textContent = idea.location || 'TBD';
-    document.getElementById('dateIdeaDescription').innerHTML = (idea.long_desc || '').replace(/\n/g, '<br>');
+    document.getElementById('dateIdeaDescription').innerHTML = (idea.long_desc || idea.short_desc || '').replace(/\n/g, '<br>');
     // Set both mobile and desktop images
     var imgMobile = document.getElementById('dateIdeaImageMobile');
     var imgDesktop = document.getElementById('dateIdeaImageDesktop');
@@ -101,12 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showError({ title: 'Date Idea not found', body: 'No date idea ID provided in the URL.' });
         return;
     }
-    fetch(DATE_IDEAS_CSV_URL)
-        .then(res => res.text())
-        .then(csv => {
-            const ideas = parseCSV(csv);
-            const idea = ideas.find(i => i.id === ideaId);
-            if (!idea) {
+    sanityFetch(window.SANITY_QUERIES[DATE_IDEA_BY_ID_QUERY], { id: ideaId })
+        .then(result => {
+            const idea = mapSanityDateIdea(result);
+            if (!idea || !idea.name) {
                 showError({ title: 'Date Idea not found', body: 'No date idea matches this ID.' });
                 return;
             }

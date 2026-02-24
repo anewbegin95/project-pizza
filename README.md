@@ -42,3 +42,36 @@ cd project-pizza
 # Open index.html directly in your browser, or serve it locally:
 npx serve .
 ```
+
+---
+
+## 🔒 Security + CI/CD Automation
+
+GitHub Actions now enforces branch-specific quality gates:
+
+### `staging` integration gate
+- Sanity Studio build verification (`sanity/npm run build`)
+- CSS lint (Stylelint)
+- HTML lint (HTMLHint)
+- Unit tests (Vitest)
+- Broken link/internal asset checks (Lychee)
+- Lighthouse CI assertions (performance, accessibility, best practices, SEO)
+- E2E smoke tests (Playwright)
+- Dependency Review, ESLint, `npm audit`, Gitleaks, and optional Snyk
+
+### `main` deployment gate
+- Pre-merge checks on PRs to `main` (build + smoke tests)
+- Post-merge deployment health checks against production URLs
+- Manual rollback automation via GitHub Actions workflow
+
+Dependabot (`.github/dependabot.yml`) remains enabled for weekly npm updates in `sanity/`.
+
+---
+
+## 📚 Project Documentation
+
+- [Documentation index](docs/README.md)
+- [Coding standards](docs/STANDARDS.md)
+- [Rollback and recovery](docs/rollback-and-recovery.md)
+- [Security policy](.github/SECURITY.md)
+- [CI/CD checklist](.github/CICD-CHECKLIST.md)
