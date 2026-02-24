@@ -28,6 +28,9 @@
     "prettier": "^3.5",
     "typescript": "^5.8"
   },
+  "overrides": {
+    "minimatch": "^10.2.1"
+  },
   "prettier": {
     "semi": false,
     "printWidth": 100,
