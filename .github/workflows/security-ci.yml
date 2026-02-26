@@ -17,6 +17,9 @@ concurrency:
   group: security-ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SANITY_NPM_VERSION: npm@10.9.4
+
 permissions:
   contents: read
   security-events: write
@@ -40,7 +43,7 @@ jobs:
           cache-dependency-path: sanity/package-lock.json
 
       - name: Pin npm version
-        run: npm install -g npm@10.9.4
+        run: npm install -g ${{ env.SANITY_NPM_VERSION }}
 
       - name: Install dependencies
         run: npm ci
@@ -95,6 +98,10 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: sanity/package-lock.json
+
+      - name: Pin npm version
+        if: ${{ steps.token_check.outputs.has_token == 'true' }}
+        run: npm install -g ${{ env.SANITY_NPM_VERSION }}
 
       - name: Install dependencies
         if: ${{ steps.token_check.outputs.has_token == 'true' }}

@@ -13,6 +13,9 @@ concurrency:
   group: main-deploy-gate-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SANITY_NPM_VERSION: npm@10.9.4
+
 permissions:
   contents: read
 
@@ -47,7 +50,7 @@ jobs:
       - name: Build Studio
         working-directory: sanity
         run: |
-          npm install -g npm@10.9.4
+          npm install -g ${{ env.SANITY_NPM_VERSION }}
           npm ci
           npm run build
 
