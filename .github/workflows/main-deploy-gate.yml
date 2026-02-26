@@ -47,6 +47,7 @@ jobs:
       - name: Build Studio
         working-directory: sanity
         run: |
+          npm install -g npm@10.9.4
           npm ci
           npm run build
 
