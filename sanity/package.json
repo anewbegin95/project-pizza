@@ -31,7 +31,6 @@
   "engines": {
     "node": "^18.0.0 || ^20.0.0 || >=22.0.0"
   },
-  "packageManager": "npm@10.9.4",
   "overrides": {
     "minimatch": "^10.2.1"
   },
