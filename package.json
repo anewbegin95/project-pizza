@@ -19,6 +19,6 @@
     "htmlhint": "^1.7.1",
     "http-server": "^14.1.1",
     "stylelint": "^16.24.0",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.18"
   }
 }
