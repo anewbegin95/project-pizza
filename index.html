@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" data-title="NYC Slice of Life" data-description="Explore upcoming NYC pop-ups, curated date ideas, and weekend plans. Browse this week’s pop-ups in our calendar and discover art, food, and market experiences across the city.">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src https://www.instagram.com https://instagram.com; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://41kk82h2.apicdn.sanity.io https://41kk82h2.api.sanity.io; form-action 'self'">
         <meta name="referrer" content="strict-origin-when-cross-origin">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Source+Sans+Pro:wght@400;600&family=Work+Sans:wght@400;600&display=swap">
+        <link rel="preload" as="image" href="resources/images/banners/midtown_manhattan_skyline.jpeg">
         <link rel="stylesheet" href="resources/css/base.css">
         <link rel="stylesheet" href="resources/css/layout.css">
         <link rel="stylesheet" href="resources/css/header.css">
@@ -14,12 +20,14 @@
         <link rel="stylesheet" href="resources/css/modals.css">
         <link rel="stylesheet" href="resources/css/carousel.css">
         <link rel="stylesheet" href="resources/css/social.css">
+        <link rel="stylesheet" href="resources/css/footer.css">
         <!-- Removed broken style.css link -->
         <!-- The head, header, and footer content will be dynamically loaded using script below-->
-        <script src="resources/js/partials-loader.js"></script>
-        <script src="resources/js/structured-data.js"></script>
-        <script src="resources/js/sanity-client.js"></script>
-        <script src="resources/js/sanity-queries.js"></script>
+        <script src="resources/js/partials-loader.js" defer></script>
+        <script src="resources/js/structured-data.js" defer></script>
+        <script src="resources/js/sanity-client.js" defer></script>
+        <script src="resources/js/sanity-queries.js" defer></script>
+        <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
     </head>
     <body>
         <!-- The header content will be dynamically loaded -->
