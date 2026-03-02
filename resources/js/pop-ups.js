@@ -329,9 +329,10 @@ function createPopupTile(popup, skipPopupsPageCheck = false) {
     const imgContainer = document.createElement('div');
     imgContainer.className = 'popup-tile__img-container';
     const img = document.createElement('img');
-    img.src = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    img.src = popup.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${popup.name} image`;
     img.className = 'popup-tile__img';
+    img.loading = 'lazy';
     imgContainer.appendChild(img);
 
     // Right: Details

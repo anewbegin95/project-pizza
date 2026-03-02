@@ -19,3 +19,17 @@
   Permissions-Policy: geolocation=(), camera=(), microphone=()
   Cross-Origin-Resource-Policy: same-origin
 */
+
+# Cache static assets for 1 year (immutable — versioned by content)
+/resources/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/resources/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/resources/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache partials for 1 hour (these can change more often)
+/partials/*
+  Cache-Control: public, max-age=3600

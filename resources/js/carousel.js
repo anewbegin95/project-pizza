@@ -36,9 +36,10 @@ function createCarouselSlide(popup, dotBar) {
     slide.tabIndex = 0; // Make slide focusable for keyboard navigation
 
     const img = document.createElement('img');
-    img.src = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    img.src = popup.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${popup.name} image`;
     img.className = 'carousel-image';
+    img.loading = 'lazy';
 
     // Create overlay for pop-up name and dots
     const overlay = document.createElement('div');
