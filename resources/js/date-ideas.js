@@ -50,9 +50,10 @@ function createDateIdeaTile(idea) {
     const imgContainer = document.createElement('div');
     imgContainer.className = 'popup-tile__img-container';
     const img = document.createElement('img');
-    img.src = idea.img || 'resources/images/images/default-popup-image.jpeg';
+    img.src = idea.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${idea.name} image`;
     img.className = 'popup-tile__img';
+    img.loading = 'lazy';
     imgContainer.appendChild(img);
 
     // Details
@@ -120,9 +121,9 @@ function openDateIdeaModal(idea) {
     document.getElementById('modalLocation').textContent = idea.location || '';
     document.getElementById('modalDescription').innerHTML = (idea.long_desc || idea.short_desc || '').replace(/\n/g, '<br>');
     // Images
-    document.getElementById('modalImageMobile').src = idea.img || 'resources/images/images/default-popup-image.jpeg';
+    document.getElementById('modalImageMobile').src = idea.img || 'resources/images/images/default-popup-image.webp';
     document.getElementById('modalImageMobile').alt = `${idea.name} image`;
-    document.getElementById('modalImageDesktop').src = idea.img || 'resources/images/images/default-popup-image.jpeg';
+    document.getElementById('modalImageDesktop').src = idea.img || 'resources/images/images/default-popup-image.webp';
     document.getElementById('modalImageDesktop').alt = `${idea.name} image`;
     // External link
     const extLink = document.getElementById('modalExternalLink');
