@@ -1,0 +1,49 @@
+name: Refresh Static Pop-Up Listings
+
+# Refreshes the pre-rendered event tiles in pop-ups.html by fetching the
+# latest pop-ups from Sanity and committing the updated file to main.
+# Runs on a daily schedule and can also be triggered manually.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-static-events
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Pre-render static event listings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pre-render static pop-up events
+        run: node scripts/prebuild-events.js
+
+      - name: Commit and push if updated
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pop-ups.html
+          if git diff --staged --quiet; then
+            echo "No changes detected — pop-ups.html is already up to date."
+          else
+            git commit -m "chore: refresh static pop-up event listings [skip ci]"
+            git push
+          fi
