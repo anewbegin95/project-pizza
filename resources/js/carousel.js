@@ -28,9 +28,11 @@ function filterCarouselPopups(popups) {
 /**
  * Creates a single carousel slide element for a featured pop-up.
  * @param {Object} popup - Pop-up object containing details.
+ * @param {HTMLElement} dotBar - Dot navigation element.
+ * @param {boolean} [isFirstSlide=false] - Whether this is the first (LCP candidate) slide. When true, lazy loading is skipped so the browser fetches the image eagerly.
  * @returns {HTMLElement} - The carousel slide element.
  */
-function createCarouselSlide(popup, dotBar) {
+function createCarouselSlide(popup, dotBar, isFirstSlide = false) {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     slide.tabIndex = 0; // Make slide focusable for keyboard navigation
@@ -39,7 +41,9 @@ function createCarouselSlide(popup, dotBar) {
     img.src = popup.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${popup.name} image`;
     img.className = 'carousel-image';
-    img.loading = 'lazy';
+    if (!isFirstSlide) {
+        img.loading = 'lazy';
+    }
 
     // Create overlay for pop-up name and dots
     const overlay = document.createElement('div');
@@ -120,6 +124,7 @@ function initCarousel(popups) {
 
     let currentIndex = 0;
     let intervalId = null;
+    let hasRenderedOnce = false;
 
     /**
      * Handles slide-in animation for a new slide.
@@ -161,7 +166,8 @@ function initCarousel(popups) {
     function renderCarousel(nextIndex = null, direction = 'right') {
         const oldSlide = container.querySelector('.carousel-slide');
         const dots = createCarouselDots(featuredPopups.length, nextIndex !== null ? nextIndex : currentIndex, goToSlide);
-        const slide = createCarouselSlide(featuredPopups[nextIndex !== null ? nextIndex : currentIndex], dots);
+        const slide = createCarouselSlide(featuredPopups[nextIndex !== null ? nextIndex : currentIndex], dots, !hasRenderedOnce);
+        hasRenderedOnce = true;
         container.appendChild(slide);
         animateSlideIn(slide, direction);
         animateSlideOut(oldSlide, direction);
