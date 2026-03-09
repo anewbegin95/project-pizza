@@ -1,7 +1,8 @@
 name: Refresh Static Pop-Up Listings
 
 # Refreshes the pre-rendered event tiles in pop-ups.html by fetching the
-# latest pop-ups from Sanity and committing the updated file to main.
+# latest pop-ups from Sanity and committing the updated file to an
+# automation branch (to avoid triggering main deployment workflows).
 # Runs on a daily schedule and can also be triggered manually.
 
 on:
@@ -21,7 +22,7 @@ jobs:
     name: Pre-render static event listings
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -33,25 +34,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Pre-render static pop-up events
-        run: node scripts/prebuild-events.js
-
-      - name: Commit and push if updated
+      - name: Switch to automation branch, run prebuild, and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH_NAME="automation/refresh-static-events"
+          # Check out the automation branch if it exists on origin, otherwise create it.
+          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" > /dev/null 2>&1; then
+            git fetch origin "${BRANCH_NAME}"
+            git switch -C "${BRANCH_NAME}" "origin/${BRANCH_NAME}"
+          else
+            git switch -c "${BRANCH_NAME}"
+          fi
+          # Run the prebuild on the automation branch.
+          node scripts/prebuild-events.js
           git add pop-ups.html
           if git diff --staged --quiet; then
             echo "No changes detected — pop-ups.html is already up to date."
           else
             git commit -m "chore: refresh static pop-up event listings [skip ci]"
-            # Push changes to a dedicated automation branch to avoid triggering
-            # main-branch deployment workflows on every scheduled run.
-            BRANCH_NAME="automation/refresh-static-events"
-            if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}"; then
-              git switch "${BRANCH_NAME}"
-            else
-              git switch -c "${BRANCH_NAME}"
-            fi
             git push origin "${BRANCH_NAME}"
           fi

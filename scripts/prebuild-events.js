@@ -251,7 +251,7 @@ function generatePopupTileHtml(popup) {
 // Sanity API fetch (no third-party dependencies — uses built-in https)
 // ---------------------------------------------------------------------------
 
-function sanityFetch(query) {
+function sanityFetch(query, timeoutMs = 15000) {
     return new Promise((resolve, reject) => {
         const url = new URL(
             `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}`
@@ -259,22 +259,50 @@ function sanityFetch(query) {
         url.searchParams.set('query', query);
         url.searchParams.set('perspective', 'published');
 
-        https.get(url.toString(), { headers: { Accept: 'application/json' } }, res => {
+        const req = https.get(url.toString(), { headers: { Accept: 'application/json' } }, res => {
             let data = '';
             res.on('data', chunk => { data += chunk; });
             res.on('end', () => {
+                clearTimeout(timer);
+                const { statusCode } = res;
+                const contentType = res.headers['content-type'] || '';
+                if (statusCode !== 200) {
+                    reject(new Error(
+                        `Sanity request failed with HTTP ${statusCode}. ` +
+                        `Body: ${data.slice(0, 300)}`
+                    ));
+                    return;
+                }
+                if (!contentType.includes('application/json')) {
+                    reject(new Error(
+                        `Unexpected content-type "${contentType}". ` +
+                        `Body: ${data.slice(0, 300)}`
+                    ));
+                    return;
+                }
                 try {
                     const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed.result)) {
+                    if (parsed.error) {
+                        reject(new Error(`Sanity API error: ${JSON.stringify(parsed.error)}`));
+                    } else if (Array.isArray(parsed.result)) {
                         resolve(parsed.result);
                     } else {
-                        reject(new Error(`Unexpected Sanity response: ${data.slice(0, 300)}`));
+                        reject(new Error(`Unexpected Sanity response shape: ${data.slice(0, 300)}`));
                     }
                 } catch (e) {
-                    reject(e);
+                    reject(new Error(`Failed to parse Sanity response as JSON: ${e.message}. Body: ${data.slice(0, 300)}`));
                 }
             });
-        }).on('error', reject);
+        });
+
+        const timer = setTimeout(() => {
+            req.destroy(new Error(`Sanity request timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+
+        req.on('error', err => {
+            clearTimeout(timer);
+            reject(err);
+        });
     });
 }
 
