@@ -165,6 +165,18 @@ function formatPopupDate(start, end, allDay, recurring) {
     }
     if (start && !end) return `${startDateFormatted}, starting at ${startTimeFormatted}`;
     if (!start && end) return `${endDateFormatted}, ending at ${endTimeFormatted}`;
+    // Match frontend behavior: for date-only values where start === end, non-all-day, non-recurring,
+    // the client-side formatter falls through without returning a value. Return an empty string here
+    // so static prebuild output stays in sync with JS-rendered tiles.
+    if (
+        start && end &&
+        start === end &&
+        !start.includes(':') &&
+        allDay === 'FALSE' &&
+        recurring === 'FALSE'
+    ) {
+        return '';
+    }
     return 'Date and time to be announced';
 }
 
