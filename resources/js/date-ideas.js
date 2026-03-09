@@ -35,15 +35,13 @@ function mapSanityDateIdea(item, index) {
     };
 }
 
-// Fetch date ideas
 // === UI RENDERING FUNCTIONS ===
 function createDateIdeaTile(idea) {
     if (String(idea.master_display).toUpperCase() !== 'TRUE') return null;
 
-    const tile = document.createElement('div');
+    const tile = document.createElement('a');
     tile.className = 'popup-tile popup-tile--horizontal';
-    tile.tabIndex = 0;
-    tile.setAttribute('role', 'button');
+    tile.href = `date-idea.html?id=${idea.id}`;
     tile.setAttribute('aria-label', idea.name);
 
     // Image
@@ -74,16 +72,6 @@ function createDateIdeaTile(idea) {
 
     tile.appendChild(imgContainer);
     tile.appendChild(details);
-
-    // Link to detail page
-    tile.addEventListener('click', () => {
-        window.location.href = `date-idea.html?id=${idea.id}`;
-    });
-    tile.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            window.location.href = `date-idea.html?id=${idea.id}`;
-        }
-    });
 
     return tile;
 }
