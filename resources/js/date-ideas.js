@@ -30,7 +30,7 @@ function mapSanityDateIdea(item, index) {
         short_desc: item.short_description || '',
         long_desc: item.long_description || '',
         img: item.imageUrl || '',
-        master_display: item.display_overall ? 'TRUE' : 'FALSE',
+        master_display: item.display_overall === true || String(item.display_overall).toUpperCase() === 'TRUE' ? 'TRUE' : 'FALSE',
         type: 'date-idea',
     };
 }

@@ -230,7 +230,7 @@ function mapSanityDateIdea(item, index) {
         link_text: item.link_text || '',
         short_desc: item.short_description || '',
         img: item.imageUrl || '',
-        master_display: toDisplayFlag(item.display_overall, 'TRUE'),
+        master_display: toDisplayFlag(item.display_overall, 'FALSE'),
     };
 }
 
