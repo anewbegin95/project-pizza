@@ -45,5 +45,13 @@ jobs:
             echo "No changes detected — pop-ups.html is already up to date."
           else
             git commit -m "chore: refresh static pop-up event listings [skip ci]"
-            git push
+            # Push changes to a dedicated automation branch to avoid triggering
+            # main-branch deployment workflows on every scheduled run.
+            BRANCH_NAME="automation/refresh-static-events"
+            if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}"; then
+              git switch "${BRANCH_NAME}"
+            else
+              git switch -c "${BRANCH_NAME}"
+            fi
+            git push origin "${BRANCH_NAME}"
           fi
