@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "CI quality gates for Project Pizza static site",
   "scripts": {
+    "prebuild": "node scripts/prebuild-events.js",
     "lint:css": "stylelint \"resources/css/**/*.css\"",
     "lint:html": "htmlhint \"**/*.html\"",
     "test:unit": "vitest run --globals tests/unit",

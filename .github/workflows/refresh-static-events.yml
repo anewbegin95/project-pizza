@@ -1,0 +1,57 @@
+name: Refresh Static Pop-Up Listings
+
+# Refreshes the pre-rendered event tiles in pop-ups.html by fetching the
+# latest pop-ups from Sanity and committing the updated file to an
+# automation branch (to avoid triggering main deployment workflows).
+# Runs on a daily schedule and can also be triggered manually.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-static-events
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Pre-render static event listings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Switch to automation branch, run prebuild, and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH_NAME="automation/refresh-static-events"
+          # Check out the automation branch if it exists on origin, otherwise create it.
+          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" > /dev/null 2>&1; then
+            git fetch origin "${BRANCH_NAME}"
+            git switch -C "${BRANCH_NAME}" "origin/${BRANCH_NAME}"
+          else
+            git switch -c "${BRANCH_NAME}"
+          fi
+          # Run the prebuild on the automation branch.
+          node scripts/prebuild-events.js
+          git add pop-ups.html
+          if git diff --staged --quiet; then
+            echo "No changes detected — pop-ups.html is already up to date."
+          else
+            git commit -m "chore: refresh static pop-up event listings [skip ci]"
+            git push origin "${BRANCH_NAME}"
+          fi

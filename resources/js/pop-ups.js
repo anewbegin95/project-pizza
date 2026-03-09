@@ -162,6 +162,8 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (!start && !end) {
         return 'Date and time to be announced';
     }
+    // start === end with date-only values (non-all-day, non-recurring): return the formatted date.
+    return startDateFormatted;
 }
 
 /**
