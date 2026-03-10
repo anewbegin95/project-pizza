@@ -49,7 +49,7 @@ const POPUPS_QUERY = `*[_type == "pop-ups"] | order(coalesce(start_datetime, sta
   "imageUrl": image.asset->url
 }`;
 
-/** GROQ query — mirrors window.SANITY_QUERIES.DATE_IDEAS in sanity-queries.js */
+/** GROQ query — listing-only subset of window.SANITY_QUERIES.DATE_IDEAS (omits date/time, recurrence, and long_description fields not needed for tile rendering) */
 const DATE_IDEAS_QUERY = `*[_type == "date_ideas"] | order(name asc) {
   _id,
   name,
