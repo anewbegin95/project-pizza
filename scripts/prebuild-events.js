@@ -356,9 +356,9 @@ function injectStaticTiles(htmlPath, tilesHtml, startMarker, endMarker) {
     let html = fs.readFileSync(htmlPath, 'utf8');
 
     const startIdx = html.indexOf(startMarker);
-    const endIdx = html.indexOf(endMarker);
+    const endIdx = startIdx === -1 ? -1 : html.indexOf(endMarker, startIdx + startMarker.length);
 
-    if (startIdx === -1 || endIdx === -1) {
+    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
         throw new Error(
             `Markers not found in ${path.basename(htmlPath)}.\n` +
             `Expected: ${startMarker} ... ${endMarker}`
