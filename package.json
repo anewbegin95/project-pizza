@@ -16,7 +16,7 @@
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.55.0",
-    "htmlhint": "^1.7.1",
+    "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
     "stylelint": "^16.24.0",
     "vitest": "^4.0.18"
