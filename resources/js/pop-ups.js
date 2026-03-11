@@ -755,9 +755,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (returnButton) {
         returnButton.addEventListener('click', () => {
             const modal = document.getElementById('popupModal');
-            modal.classList.add('hidden');
-            // Remove highlight from all bars when modal closes
-            document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+            if (modal) {
+                modal.classList.add('hidden');
+                // Remove highlight from all bars when modal closes
+                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+            }
         });
     }
 
