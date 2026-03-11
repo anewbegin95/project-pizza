@@ -1,8 +1,8 @@
-name: Refresh Static Pop-Up Listings
+name: Refresh Static Event Listings
 
-# Refreshes the pre-rendered event tiles in pop-ups.html by fetching the
-# latest pop-ups from Sanity and committing the updated file to an
-# automation branch (to avoid triggering main deployment workflows).
+# Refreshes the pre-rendered event tiles in pop-ups.html and date-ideas.html
+# by fetching the latest data from Sanity and committing the updated files to
+# an automation branch (to avoid triggering main deployment workflows).
 # Runs on a daily schedule and can also be triggered manually.
 
 on:
@@ -48,10 +48,10 @@ jobs:
           fi
           # Run the prebuild on the automation branch.
           node scripts/prebuild-events.js
-          git add pop-ups.html
+          git add pop-ups.html date-ideas.html
           if git diff --staged --quiet; then
-            echo "No changes detected — pop-ups.html is already up to date."
+            echo "No changes detected — pop-ups.html and date-ideas.html are already up to date."
           else
-            git commit -m "chore: refresh static pop-up event listings [skip ci]"
+            git commit -m "chore: refresh static event listings [skip ci]"
             git push origin "${BRANCH_NAME}"
           fi

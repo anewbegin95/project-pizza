@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Prebuild script: fetches active pop-up events from Sanity and pre-renders
- * them as static HTML tiles inside pop-ups.html, between the marker comments:
+ * Prebuild script: fetches active events from Sanity and pre-renders them as
+ * static HTML tiles inside pop-ups.html and date-ideas.html, between the
+ * respective marker comments:
  *
- *   <!-- STATIC_POPUPS_START -->
- *   <!-- STATIC_POPUPS_END -->
+ *   pop-ups.html:    <!-- STATIC_POPUPS_START --> ... <!-- STATIC_POPUPS_END -->
+ *   date-ideas.html: <!-- STATIC_DATE_IDEAS_START --> ... <!-- STATIC_DATE_IDEAS_END -->
  *
  * This makes the event listings visible in the raw HTML source at page load
  * without requiring JavaScript.  The existing client-side JS still runs and
@@ -48,9 +49,26 @@ const POPUPS_QUERY = `*[_type == "pop-ups"] | order(coalesce(start_datetime, sta
   "imageUrl": image.asset->url
 }`;
 
+/** GROQ query — listing-only subset of window.SANITY_QUERIES.DATE_IDEAS (omits date/time, recurrence, and long_description fields not needed for tile rendering) */
+const DATE_IDEAS_QUERY = `*[_type == "date_ideas"] | order(name asc) {
+  _id,
+  name,
+  "slug": slug.current,
+  location,
+  link,
+  link_text,
+  short_description,
+  display_overall,
+  "imageUrl": image.asset->url
+}`;
+
 /** Markers that delimit the static block inside pop-ups.html */
-const STATIC_START = '<!-- STATIC_POPUPS_START -->';
-const STATIC_END = '<!-- STATIC_POPUPS_END -->';
+const STATIC_POPUPS_START = '<!-- STATIC_POPUPS_START -->';
+const STATIC_POPUPS_END = '<!-- STATIC_POPUPS_END -->';
+
+/** Markers that delimit the static block inside date-ideas.html */
+const STATIC_DATE_IDEAS_START = '<!-- STATIC_DATE_IDEAS_START -->';
+const STATIC_DATE_IDEAS_END = '<!-- STATIC_DATE_IDEAS_END -->';
 
 // ---------------------------------------------------------------------------
 // Date utilities — ported from resources/js/pop-ups.js (keep in sync)
@@ -201,6 +219,21 @@ function mapSanityPopup(item) {
     };
 }
 
+function mapSanityDateIdea(item, index) {
+    const base = (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const fallbackId = `${base}-${index}`;
+    return {
+        id: item.slug || item._id || fallbackId,
+        name: item.name || '',
+        location: item.location || '',
+        link: item.link || '',
+        link_text: item.link_text || '',
+        short_desc: item.short_description || '',
+        img: item.imageUrl || '',
+        master_display: toDisplayFlag(item.display_overall, 'FALSE'),
+    };
+}
+
 // ---------------------------------------------------------------------------
 // HTML generation
 // ---------------------------------------------------------------------------
@@ -232,6 +265,26 @@ function generatePopupTileHtml(popup) {
                     <h3>${title}</h3>
                     <p class="popup-tile__date">${dateText}</p>
                     <p class="popup-tile__location">${location}</p>
+                </div>
+            </a>`;
+}
+
+function generateDateIdeaTileHtml(idea) {
+    const imgSrc = escapeHtml(idea.img || 'resources/images/images/default-popup-image.webp');
+    const imgAlt = escapeHtml(`${idea.name} image`);
+    const title = escapeHtml(idea.name);
+    const location = escapeHtml(idea.location || '');
+    const shortDesc = escapeHtml(idea.short_desc || '');
+    const detailUrl = escapeHtml(`date-idea.html?id=${idea.id}`);
+
+    return `<a class="popup-tile popup-tile--horizontal" href="${detailUrl}">
+                <div class="popup-tile__img-container">
+                    <img src="${imgSrc}" alt="${imgAlt}" class="popup-tile__img" loading="lazy">
+                </div>
+                <div class="popup-tile__details">
+                    <h3>${title}</h3>
+                    <p class="popup-tile__location">${location}</p>
+                    <p class="popup-tile__text">${shortDesc}</p>
                 </div>
             </a>`;
 }
@@ -296,22 +349,50 @@ function sanityFetch(query, timeoutMs = 15000) {
 }
 
 // ---------------------------------------------------------------------------
+// Shared helper: inject tiles between marker comments in an HTML file
+// ---------------------------------------------------------------------------
+
+function injectStaticTiles(htmlPath, tilesHtml, startMarker, endMarker) {
+    let html = fs.readFileSync(htmlPath, 'utf8');
+
+    const startIdx = html.indexOf(startMarker);
+    const endIdx = startIdx === -1 ? -1 : html.indexOf(endMarker, startIdx + startMarker.length);
+
+    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+        throw new Error(
+            `Markers not found in ${path.basename(htmlPath)}.\n` +
+            `Expected: ${startMarker} ... ${endMarker}`
+        );
+    }
+
+    const before = html.slice(0, startIdx + startMarker.length);
+    const after = html.slice(endIdx);
+
+    const staticBlock = tilesHtml
+        ? `\n        ${tilesHtml}\n        `
+        : '\n        ';
+
+    fs.writeFileSync(htmlPath, `${before}${staticBlock}${after}`, 'utf8');
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
 async function main() {
-    const htmlPath = path.resolve(__dirname, '..', 'pop-ups.html');
+    // --- Pop-ups ---
+    const popupsHtmlPath = path.resolve(__dirname, '..', 'pop-ups.html');
 
     console.log('Fetching pop-up events from Sanity...');
-    let results;
+    let popupResults;
     try {
-        results = await sanityFetch(POPUPS_QUERY);
+        popupResults = await sanityFetch(POPUPS_QUERY);
     } catch (err) {
-        console.error('Failed to fetch events from Sanity:', err.message);
+        console.error('Failed to fetch pop-up events from Sanity:', err.message);
         process.exit(1);
     }
 
-    const popups = results
+    const popups = popupResults
         .map(mapSanityPopup)
         .filter(e =>
             String(e.master_display).toUpperCase() === 'TRUE' &&
@@ -320,32 +401,43 @@ async function main() {
 
     console.log(`Found ${popups.length} active pop-up(s) for the pop-ups listing page.`);
 
-    const tilesHtml = popups.map(generatePopupTileHtml).join('\n                ');
+    const popupTilesHtml = popups.map(generatePopupTileHtml).join('\n        ');
 
-    let html = fs.readFileSync(htmlPath, 'utf8');
-
-    const startIdx = html.indexOf(STATIC_START);
-    const endIdx = html.indexOf(STATIC_END);
-
-    if (startIdx === -1 || endIdx === -1) {
-        console.error(
-            `Markers not found in pop-ups.html.\n` +
-            `Expected: ${STATIC_START} ... ${STATIC_END}`
-        );
+    try {
+        injectStaticTiles(popupsHtmlPath, popupTilesHtml, STATIC_POPUPS_START, STATIC_POPUPS_END);
+        console.log(`Updated pop-ups.html with ${popups.length} pre-rendered event tile(s).`);
+    } catch (err) {
+        console.error(err.message);
         process.exit(1);
     }
 
-    const before = html.slice(0, startIdx + STATIC_START.length);
-    const after = html.slice(endIdx);
+    // --- Date Ideas ---
+    const dateIdeasHtmlPath = path.resolve(__dirname, '..', 'date-ideas.html');
 
-    const staticBlock = tilesHtml
-        ? `\n                ${tilesHtml}\n                `
-        : '\n                ';
+    console.log('Fetching date ideas from Sanity...');
+    let dateIdeasResults;
+    try {
+        dateIdeasResults = await sanityFetch(DATE_IDEAS_QUERY);
+    } catch (err) {
+        console.error('Failed to fetch date ideas from Sanity:', err.message);
+        process.exit(1);
+    }
 
-    const newHtml = `${before}${staticBlock}${after}`;
+    const dateIdeas = dateIdeasResults
+        .map(mapSanityDateIdea)
+        .filter(e => String(e.master_display).toUpperCase() === 'TRUE');
 
-    fs.writeFileSync(htmlPath, newHtml, 'utf8');
-    console.log(`Updated pop-ups.html with ${popups.length} pre-rendered event tile(s).`);
+    console.log(`Found ${dateIdeas.length} active date idea(s) for the date ideas listing page.`);
+
+    const dateIdeaTilesHtml = dateIdeas.map(generateDateIdeaTileHtml).join('\n        ');
+
+    try {
+        injectStaticTiles(dateIdeasHtmlPath, dateIdeaTilesHtml, STATIC_DATE_IDEAS_START, STATIC_DATE_IDEAS_END);
+        console.log(`Updated date-ideas.html with ${dateIdeas.length} pre-rendered date idea tile(s).`);
+    } catch (err) {
+        console.error(err.message);
+        process.exit(1);
+    }
 }
 
 main().catch(err => {

@@ -30,20 +30,18 @@ function mapSanityDateIdea(item, index) {
         short_desc: item.short_description || '',
         long_desc: item.long_description || '',
         img: item.imageUrl || '',
-        master_display: item.display_overall ? 'TRUE' : 'FALSE',
+        master_display: item.display_overall === true || String(item.display_overall).toUpperCase() === 'TRUE' ? 'TRUE' : 'FALSE',
         type: 'date-idea',
     };
 }
 
-// Fetch date ideas
 // === UI RENDERING FUNCTIONS ===
 function createDateIdeaTile(idea) {
     if (String(idea.master_display).toUpperCase() !== 'TRUE') return null;
 
-    const tile = document.createElement('div');
+    const tile = document.createElement('a');
     tile.className = 'popup-tile popup-tile--horizontal';
-    tile.tabIndex = 0;
-    tile.setAttribute('role', 'button');
+    tile.href = `date-idea.html?id=${idea.id}`;
     tile.setAttribute('aria-label', idea.name);
 
     // Image
@@ -75,77 +73,7 @@ function createDateIdeaTile(idea) {
     tile.appendChild(imgContainer);
     tile.appendChild(details);
 
-    // Link to detail page
-    tile.addEventListener('click', () => {
-        window.location.href = `date-idea.html?id=${idea.id}`;
-    });
-    tile.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            window.location.href = `date-idea.html?id=${idea.id}`;
-        }
-    });
-
     return tile;
-}
-
-function openDateIdeaModal(idea) {
-    let modal = document.getElementById('dateIdeaModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'dateIdeaModal';
-        modal.className = 'modal popup-detail-modal';
-        modal.innerHTML = `
-            <div class="popup-detail-backdrop"></div>
-            <section class="popup-detail" style="display:block;">
-                <div class="popup-detail__content">
-                    <button class="return-button">← Return to all date ideas</button>
-                    <h1 id="modalTitle" class="mt-sm"></h1>
-                    <div class="popup-detail__image popup-detail__image--mobile">
-                        <img id="modalImageMobile" src="" alt="Date Idea Image" class="popup-tile__img">
-                    </div>
-                    <p id="modalLocation" class="popup-detail__location"></p>
-                    <div class="popup-detail__description">
-                        <p id="modalDescription"></p>
-                    </div>
-                    <a id="modalExternalLink" href="#" target="_blank" class="modal-button hidden">Learn More</a>
-                </div>
-                <div class="popup-detail__image popup-detail__image--desktop">
-                    <img id="modalImageDesktop" src="" alt="Date Idea Image" class="popup-tile__img">
-                </div>
-            </section>
-        `;
-        document.body.appendChild(modal);
-    }
-    // Populate modal
-    document.getElementById('modalTitle').textContent = idea.name;
-    document.getElementById('modalLocation').textContent = idea.location || '';
-    document.getElementById('modalDescription').innerHTML = (idea.long_desc || idea.short_desc || '').replace(/\n/g, '<br>');
-    // Images
-    document.getElementById('modalImageMobile').src = idea.img || 'resources/images/images/default-popup-image.webp';
-    document.getElementById('modalImageMobile').alt = `${idea.name} image`;
-    document.getElementById('modalImageDesktop').src = idea.img || 'resources/images/images/default-popup-image.webp';
-    document.getElementById('modalImageDesktop').alt = `${idea.name} image`;
-    // External link
-    const extLink = document.getElementById('modalExternalLink');
-    if (idea.link && idea.link.trim() !== '') {
-        extLink.href = idea.link;
-        extLink.textContent = idea.link_text || 'Learn More';
-        extLink.classList.remove('hidden');
-    } else {
-        extLink.href = '#';
-        extLink.classList.add('hidden');
-    }
-    // Show modal
-    modal.style.display = 'block';
-    // Return button closes modal
-    modal.querySelector('.return-button').onclick = () => {
-        modal.style.display = 'none';
-    };
-    // ESC key closes modal
-    modal.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') modal.style.display = 'none';
-    });
-    modal.focus();
 }
 
 // === MAIN FUNCTIONALITY ===
