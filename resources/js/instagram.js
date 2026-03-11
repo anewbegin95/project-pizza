@@ -58,5 +58,5 @@ function renderInstagramEmbeds(urls) {
   container.appendChild(grid);
 }
 
-// Run on page load
-fetchInstagramPosts();
+// Run after DOM is ready so deferred scripts (sanity-client.js) are available
+document.addEventListener('DOMContentLoaded', fetchInstagramPosts);

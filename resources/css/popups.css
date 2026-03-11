@@ -43,6 +43,8 @@ section.popups-grid {
   max-width: 100%;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s;
+  text-decoration: none;
+  color: inherit;
 }
 .popup-tile:hover {
   box-shadow: var(--shadow-xl);

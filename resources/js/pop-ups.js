@@ -162,6 +162,8 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (!start && !end) {
         return 'Date and time to be announced';
     }
+    // start === end with date-only values (non-all-day, non-recurring): return the formatted date.
+    return startDateFormatted;
 }
 
 /**
@@ -329,9 +331,10 @@ function createPopupTile(popup, skipPopupsPageCheck = false) {
     const imgContainer = document.createElement('div');
     imgContainer.className = 'popup-tile__img-container';
     const img = document.createElement('img');
-    img.src = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    img.src = popup.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${popup.name} image`;
     img.className = 'popup-tile__img';
+    img.loading = 'lazy';
     imgContainer.appendChild(img);
 
     // Right: Details
