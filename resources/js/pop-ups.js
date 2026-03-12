@@ -162,6 +162,8 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (!start && !end) {
         return 'Date and time to be announced';
     }
+    // start === end with date-only values (non-all-day, non-recurring): return the formatted date.
+    return startDateFormatted;
 }
 
 /**
@@ -329,9 +331,10 @@ function createPopupTile(popup, skipPopupsPageCheck = false) {
     const imgContainer = document.createElement('div');
     imgContainer.className = 'popup-tile__img-container';
     const img = document.createElement('img');
-    img.src = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    img.src = popup.img || 'resources/images/images/default-popup-image.webp';
     img.alt = `${popup.name} image`;
     img.className = 'popup-tile__img';
+    img.loading = 'lazy';
     imgContainer.appendChild(img);
 
     // Right: Details
@@ -752,9 +755,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (returnButton) {
         returnButton.addEventListener('click', () => {
             const modal = document.getElementById('popupModal');
-            modal.classList.add('hidden');
-            // Remove highlight from all bars when modal closes
-            document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+            if (modal) {
+                modal.classList.add('hidden');
+                // Remove highlight from all bars when modal closes
+                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+            }
         });
     }
 

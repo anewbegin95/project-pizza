@@ -37,7 +37,7 @@ function renderDateIdeaDetail(idea) {
     // Set both mobile and desktop images
     var imgMobile = document.getElementById('dateIdeaImageMobile');
     var imgDesktop = document.getElementById('dateIdeaImageDesktop');
-    var imgSrc = idea.img || 'resources/images/images/default-popup-image.jpeg';
+    var imgSrc = idea.img || 'resources/images/images/default-popup-image.webp';
     var imgAlt = `${idea.name} image`;
     if (imgMobile) {
         imgMobile.src = imgSrc;

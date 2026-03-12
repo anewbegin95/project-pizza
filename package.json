@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "CI quality gates for Project Pizza static site",
   "scripts": {
+    "prebuild": "node scripts/prebuild-events.js",
     "lint:css": "stylelint \"resources/css/**/*.css\"",
     "lint:html": "htmlhint \"**/*.html\"",
     "test:unit": "vitest run --globals tests/unit",
@@ -16,7 +17,7 @@
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.55.0",
-    "htmlhint": "^1.7.1",
+    "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
     "stylelint": "^16.24.0",
     "vitest": "^4.0.18"

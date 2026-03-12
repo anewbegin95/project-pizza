@@ -98,7 +98,7 @@ function renderPopupDetail(popup) {
     // Set both mobile and desktop images
     const imgMobile = document.getElementById('popupImage');
     const imgDesktop = document.getElementById('popupImageDesktop');
-    const imgSrc = popup.img || 'resources/images/images/default-popup-image.jpeg';
+    const imgSrc = popup.img || 'resources/images/images/default-popup-image.webp';
     const imgAlt = `${popup.name} image`;
     if (imgMobile) {
         imgMobile.src = imgSrc;
