@@ -128,6 +128,36 @@ function renderPopupDetail(popup) {
         if (prevContainer) prevContainer.remove();
         handleICSLinks(popup, icsLink);
     }
+
+    // Update page title and Open Graph metadata with event-specific data
+    try {
+        document.title = popup.name + ' | NYC Slice of Life';
+        let ogTitle = document.querySelector('meta[property="og:title"]');
+        if (!ogTitle) {
+            ogTitle = document.createElement('meta');
+            ogTitle.setAttribute('property', 'og:title');
+            document.head.appendChild(ogTitle);
+        }
+        ogTitle.setAttribute('content', popup.name + ' | NYC Slice of Life');
+
+        const rawDesc = (popup.long_desc || '').replace(/\n/g, ' ').trim();
+        const truncated = rawDesc.length > 200
+            ? rawDesc.slice(0, 200).replace(/\s+\S*$/, '') + '…'
+            : rawDesc;
+        const desc = truncated || document.documentElement.getAttribute('data-description') || '';
+        if (desc) {
+            let ogDesc = document.querySelector('meta[property="og:description"]');
+            if (!ogDesc) {
+                ogDesc = document.createElement('meta');
+                ogDesc.setAttribute('property', 'og:description');
+                document.head.appendChild(ogDesc);
+            }
+            ogDesc.setAttribute('content', desc);
+        }
+    } catch (e) {
+        console.warn('OG title/description update failed:', e);
+    }
+
     // ...existing code...
 
 function getEasternDateParts(date) {

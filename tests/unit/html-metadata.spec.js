@@ -18,4 +18,21 @@ describe('static html metadata', () => {
     const html = read('contact_us.html')
     expect(html).toContain('mailto:NYCSliceofLife@gmail.com')
   })
+
+  it('pop-ups listing page has static Open Graph meta tags', () => {
+    const html = read('pop-ups.html')
+    expect(html).toContain('property="og:title"')
+    expect(html).toContain('property="og:description"')
+    expect(html).toContain('property="og:image"')
+    expect(html).toContain('property="og:type"')
+    expect(html).toContain('property="og:url"')
+  })
+
+  it('pop-up detail page has static Open Graph meta tags', () => {
+    const html = read('pop-up.html')
+    expect(html).toContain('property="og:title"')
+    expect(html).toContain('property="og:description"')
+    expect(html).toContain('property="og:image"')
+    expect(html).toContain('property="og:type"')
+  })
 })
