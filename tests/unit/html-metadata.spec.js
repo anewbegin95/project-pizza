@@ -40,10 +40,14 @@ describe('static html metadata', () => {
     const html = read('pop-ups.html')
     expect(html).toContain('<!-- STATIC_JSONLD_START -->')
     expect(html).toContain('<!-- STATIC_JSONLD_END -->')
-    // Markers must appear inside <head>
+    // Markers must appear inside <head> and in the correct order
     const headEnd = html.indexOf('</head>')
     const markerStart = html.indexOf('<!-- STATIC_JSONLD_START -->')
+    const markerEnd = html.indexOf('<!-- STATIC_JSONLD_END -->')
     expect(markerStart).toBeGreaterThan(-1)
+    expect(markerEnd).toBeGreaterThan(-1)
+    expect(markerStart).toBeLessThan(markerEnd)
     expect(markerStart).toBeLessThan(headEnd)
+    expect(markerEnd).toBeLessThan(headEnd)
   })
 })
