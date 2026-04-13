@@ -1,19 +1,19 @@
 # NYC Slice of Life
 
-> NYC Slice of Life is a New York City food events guide specializing in pizza
-> pop-ups, curated date ideas, and local dining experiences. The site surfaces
-> upcoming pop-up events, maintains a full events calendar, and provides
-> detailed information about each event and venue.
+> NYC Slice of Life is a curated guide for NYC pop-ups, date ideas, and weekend plans.
+> Born from a love of exploring the city beyond the 9 to 5, it spotlights everything
+> from beauty pop-ups to art installations, helping locals and visitors make the most
+> of their nights and weekends in New York City.
 
 > See also: sitemap.xml for a complete machine-readable page index.
 
 ## Pages
 
-- [Homepage](https://nycsliceoflife.com/): Discover upcoming NYC pizza pop-ups, curated date ideas, and local food events.
-- [Upcoming NYC Pop-ups](https://nycsliceoflife.com/pop-ups.html): Browse all active and upcoming pizza and food pop-up events in New York City.
-- [Date Ideas](https://nycsliceoflife.com/date-ideas.html): Curated date ideas in NYC centered on food, dining, and shared experiences.
-- [Events Calendar](https://nycsliceoflife.com/calendar.html): Full calendar view of NYC pop-up food events.
-- [About Us](https://nycsliceoflife.com/about.html): Learn about NYC Slice of Life and our mission to surface great food experiences.
+- [Homepage](https://nycsliceoflife.com/): Discover upcoming NYC pop-ups, curated date ideas, and weekend plans for locals and visitors.
+- [Upcoming NYC Pop-ups](https://nycsliceoflife.com/pop-ups.html): Browse all active and upcoming NYC pop-up events, from beauty and art to installations and more.
+- [Date Ideas](https://nycsliceoflife.com/date-ideas.html): Curated NYC date ideas and unique things to do, for locals and visitors alike.
+- [Events Calendar](https://nycsliceoflife.com/calendar.html): Full calendar view of upcoming NYC pop-up events.
+- [About Us](https://nycsliceoflife.com/about.html): Learn about NYC Slice of Life — a curated guide born from a love of exploring NYC beyond the 9 to 5.
 - [Contact Us](https://nycsliceoflife.com/contact_us.html): Get in touch with the NYC Slice of Life team.
 
 ## Optional

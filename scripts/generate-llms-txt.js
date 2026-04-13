@@ -60,27 +60,27 @@ const STATIC_PAGES = [
     {
         url: `${BASE_URL}/`,
         label: 'Homepage',
-        description: 'Discover upcoming NYC pizza pop-ups, curated date ideas, and local food events.',
+        description: 'Discover upcoming NYC pop-ups, curated date ideas, and weekend plans for locals and visitors.',
     },
     {
         url: `${BASE_URL}/pop-ups.html`,
         label: 'Upcoming NYC Pop-ups',
-        description: 'Browse all active and upcoming pizza and food pop-up events in New York City.',
+        description: 'Browse all active and upcoming NYC pop-up events, from beauty and art to installations and more.',
     },
     {
         url: `${BASE_URL}/date-ideas.html`,
         label: 'Date Ideas',
-        description: 'Curated date ideas in NYC centered on food, dining, and shared experiences.',
+        description: 'Curated NYC date ideas and unique things to do, for locals and visitors alike.',
     },
     {
         url: `${BASE_URL}/calendar.html`,
         label: 'Events Calendar',
-        description: 'Full calendar view of NYC pop-up food events.',
+        description: 'Full calendar view of upcoming NYC pop-up events.',
     },
     {
         url: `${BASE_URL}/about.html`,
         label: 'About Us',
-        description: 'Learn about NYC Slice of Life and our mission to surface great food experiences.',
+        description: 'Learn about NYC Slice of Life — a curated guide born from a love of exploring NYC beyond the 9 to 5.',
     },
     {
         url: `${BASE_URL}/contact_us.html`,
@@ -173,10 +173,10 @@ function buildLlmsTxt(popups, dateIdeas) {
 
     lines.push('# NYC Slice of Life');
     lines.push('');
-    lines.push('> NYC Slice of Life is a New York City food events guide specializing in pizza');
-    lines.push('> pop-ups, curated date ideas, and local dining experiences. The site surfaces');
-    lines.push('> upcoming pop-up events, maintains a full events calendar, and provides');
-    lines.push('> detailed information about each event and venue.');
+    lines.push('> NYC Slice of Life is a curated guide for NYC pop-ups, date ideas, and weekend plans.');
+    lines.push('> Born from a love of exploring the city beyond the 9 to 5, it spotlights everything');
+    lines.push('> from beauty pop-ups to art installations, helping locals and visitors make the most');
+    lines.push('> of their nights and weekends in New York City.');
     lines.push('');
     lines.push('> See also: sitemap.xml for a complete machine-readable page index.');
     lines.push('');
