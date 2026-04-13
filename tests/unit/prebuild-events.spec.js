@@ -130,18 +130,40 @@ describe('generateCollectionJsonLd', () => {
     expect(items[0].position).toBe(1)
     expect(items[0].item['@type']).toBe('Event')
     expect(items[0].item.name).toBe('Pizza Pop-Up')
+    expect(items[0].item.startDate).toBe('2025-06-01T10:00:00')
+    expect(items[0].item.endDate).toBe('2025-06-01T14:00:00')
     expect(items[0].item.location.name).toBe('Brooklyn, NY')
   })
 
-  it('skips popups that have neither a start date nor a location', () => {
+  it('skips popups that have neither a parseable start date nor a location', () => {
     const popups = [
       { id: 'no-info', name: 'No Info', start_datetime: '', end_datetime: '', location: '', img: '' },
+      { id: 'ongoing', name: 'Ongoing Event', start_datetime: 'Ongoing', end_datetime: '', location: '', img: '' },
       { id: 'with-date', name: 'With Date', start_datetime: '2025-06-01T10:00:00', end_datetime: '', location: '', img: '' },
     ]
     const result = generateCollectionJsonLd(popups)
     const parsed = parseJsonLd(result)
     expect(parsed.mainEntity.itemListElement).toHaveLength(1)
     expect(parsed.mainEntity.itemListElement[0].item.name).toBe('With Date')
+  })
+
+  it('omits startDate/endDate when value is not a valid parseable date', () => {
+    const popups = [
+      {
+        id: 'ongoing-with-loc',
+        name: 'Ongoing Event',
+        start_datetime: 'Ongoing',
+        end_datetime: 'Ongoing',
+        location: 'NYC',
+        img: '',
+      },
+    ]
+    const result = generateCollectionJsonLd(popups)
+    const parsed = parseJsonLd(result)
+    const item = parsed.mainEntity.itemListElement[0].item
+    expect(item.startDate).toBeUndefined()
+    expect(item.endDate).toBeUndefined()
+    expect(item.location.name).toBe('NYC')
   })
 
   it('escapes < to \\u003c in serialized JSON to prevent script tag injection', () => {

@@ -308,9 +308,12 @@ function generateCollectionJsonLd(popups) {
     };
     let listPosition = 0;
     popups.forEach(popup => {
-        const hasStartDate = Boolean(popup.start_datetime);
+        // Only include startDate/endDate when the value is a parseable date (not
+        // free-text strings like "Ongoing"), to keep the JSON-LD schema valid.
+        const parsedStart = parsePopupDate(popup.start_datetime);
+        const parsedEnd = parsePopupDate(popup.end_datetime);
         const hasLocation = Boolean(popup.location);
-        if (!hasStartDate && !hasLocation) return;
+        if (!parsedStart && !hasLocation) return;
         listPosition += 1;
         const listItem = {
             '@type': 'ListItem',
@@ -318,8 +321,8 @@ function generateCollectionJsonLd(popups) {
             item: {
                 '@type': 'Event',
                 name: popup.name,
-                startDate: popup.start_datetime || undefined,
-                endDate: popup.end_datetime || undefined,
+                startDate: parsedStart ? popup.start_datetime : undefined,
+                endDate: parsedEnd ? popup.end_datetime : undefined,
                 eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
                 eventStatus: 'https://schema.org/EventScheduled',
                 location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
