@@ -103,9 +103,13 @@ const OPTIONAL_PAGES = [
 function sanityFetch(query, timeoutMs = 15000) {
     return new Promise((resolve, reject) => {
         const encodedQuery = encodeURIComponent(query);
-        const apiUrl = `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodedQuery}`;
+        const apiUrl = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodedQuery}&perspective=published`;
 
-        const req = https.get(apiUrl, res => {
+        const req = https.get(apiUrl, {
+            headers: {
+                Accept: 'application/json',
+            },
+        }, res => {
             let data = '';
             res.on('data', chunk => { data += chunk; });
             res.on('end', () => {
