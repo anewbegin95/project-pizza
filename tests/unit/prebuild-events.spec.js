@@ -263,12 +263,12 @@ describe('generateSitemap', () => {
     lastmodMatches.forEach(tag => expect(tag).toContain(today))
   })
 
-  it('XML-escapes special characters in dynamic IDs', () => {
+  it('URL-encodes special characters in dynamic IDs', () => {
     const popups = [{ id: 'event&<special>' }]
     const ideas = [{ id: 'idea&test' }]
     const xml = generateSitemap(popups, ideas)
     expect(xml).not.toContain('id=event&<special>')
-    expect(xml).toContain('id=event&amp;&lt;special&gt;')
-    expect(xml).toContain('id=idea&amp;test')
+    expect(xml).toContain('id=event%26%3Cspecial%3E')
+    expect(xml).toContain('id=idea%26test')
   })
 })
