@@ -8,6 +8,14 @@ const {
 const os = require('node:os')
 const fs = require('node:fs')
 const path = require('node:path')
+const crypto = require('node:crypto')
+
+/** Extract and parse the JSON-LD payload from a generated script tag string. */
+function parseJsonLd(scriptTagStr) {
+  const firstBrace = scriptTagStr.indexOf('{')
+  const lastBrace = scriptTagStr.lastIndexOf('}')
+  return JSON.parse(scriptTagStr.slice(firstBrace, lastBrace + 1))
+}
 
 describe('escapeHtml', () => {
   it('escapes HTML special characters', () => {
@@ -96,9 +104,7 @@ describe('generateCollectionJsonLd', () => {
 
   it('includes CollectionPage schema with correct name and url', () => {
     const result = generateCollectionJsonLd([])
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
-    expect(match).not.toBeNull()
-    const parsed = JSON.parse(match[1])
+    const parsed = parseJsonLd(result)
     expect(parsed['@type']).toBe('CollectionPage')
     expect(parsed.name).toBe('Upcoming NYC Pop-Ups')
     expect(parsed.url).toContain('pop-ups.html')
@@ -117,8 +123,7 @@ describe('generateCollectionJsonLd', () => {
       },
     ]
     const result = generateCollectionJsonLd(popups)
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
-    const parsed = JSON.parse(match[1])
+    const parsed = parseJsonLd(result)
     const items = parsed.mainEntity.itemListElement
     expect(items).toHaveLength(1)
     expect(items[0]['@type']).toBe('ListItem')
@@ -134,8 +139,7 @@ describe('generateCollectionJsonLd', () => {
       { id: 'with-date', name: 'With Date', start_datetime: '2025-06-01T10:00:00', end_datetime: '', location: '', img: '' },
     ]
     const result = generateCollectionJsonLd(popups)
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
-    const parsed = JSON.parse(match[1])
+    const parsed = parseJsonLd(result)
     expect(parsed.mainEntity.itemListElement).toHaveLength(1)
     expect(parsed.mainEntity.itemListElement[0].item.name).toBe('With Date')
   })
@@ -145,7 +149,7 @@ describe('injectStaticTiles', () => {
   let tmpFile
 
   beforeEach(() => {
-    tmpFile = path.join(os.tmpdir(), `test-inject-${Date.now()}.html`)
+    tmpFile = path.join(os.tmpdir(), `test-inject-${crypto.randomUUID()}.html`)
   })
 
   afterEach(() => {
