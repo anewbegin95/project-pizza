@@ -66,6 +66,10 @@ const DATE_IDEAS_QUERY = `*[_type == "date_ideas"] | order(name asc) {
 const STATIC_POPUPS_START = '<!-- STATIC_POPUPS_START -->';
 const STATIC_POPUPS_END = '<!-- STATIC_POPUPS_END -->';
 
+/** Markers that delimit the static JSON-LD block inside pop-ups.html */
+const STATIC_JSONLD_START = '<!-- STATIC_JSONLD_START -->';
+const STATIC_JSONLD_END = '<!-- STATIC_JSONLD_END -->';
+
 /** Markers that delimit the static block inside date-ideas.html */
 const STATIC_DATE_IDEAS_START = '<!-- STATIC_DATE_IDEAS_START -->';
 const STATIC_DATE_IDEAS_END = '<!-- STATIC_DATE_IDEAS_END -->';
@@ -289,6 +293,59 @@ function generateDateIdeaTileHtml(idea) {
             </a>`;
 }
 
+function generateCollectionJsonLd(popups) {
+    const baseUrl = 'https://nycsliceoflife.com';
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Upcoming NYC Pop-Ups',
+        description: 'Browse upcoming pop-ups in New York City this week. NYC pop-up events calendar featuring pop-up shops, markets, art and food pop-ups.',
+        url: baseUrl + '/pop-ups.html',
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: []
+        }
+    };
+    let listPosition = 0;
+    popups.forEach(popup => {
+        // Only include startDate/endDate when the value is a parseable date (not
+        // free-text strings like "Ongoing"), to keep the JSON-LD schema valid.
+        const parsedStart = parsePopupDate(popup.start_datetime);
+        const parsedEnd = parsePopupDate(popup.end_datetime);
+        const hasLocation = Boolean(popup.location);
+        if (!parsedStart && !hasLocation) return;
+        listPosition += 1;
+        const listItem = {
+            '@type': 'ListItem',
+            position: listPosition,
+            item: {
+                '@type': 'Event',
+                name: popup.name,
+                startDate: parsedStart ? popup.start_datetime : undefined,
+                endDate: parsedEnd ? popup.end_datetime : undefined,
+                eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                eventStatus: 'https://schema.org/EventScheduled',
+                location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
+                image: popup.img || undefined,
+                url: baseUrl + '/pop-up.html?id=' + popup.id
+            }
+        };
+        // Remove undefined values for clean output
+        Object.keys(listItem.item).forEach(k => {
+            if (listItem.item[k] === undefined) delete listItem.item[k];
+        });
+        jsonLd.mainEntity.itemListElement.push(listItem);
+    });
+    // Escape characters that could break inline script embedding:
+    // - '<' becomes '\u003c' (prevents </script> from closing the tag early)
+    // - '\u2028' and '\u2029' are not valid in JS string literals in older parsers
+    const safeJson = JSON.stringify(jsonLd, null, 2)
+        .replace(/</g, '\\u003c')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029');
+    return `<script type="application/ld+json" data-static-jsonld="collection-page">\n${safeJson}\n</script>`;
+}
+
 // ---------------------------------------------------------------------------
 // Sanity API fetch (no third-party dependencies — uses built-in https)
 // ---------------------------------------------------------------------------
@@ -411,6 +468,15 @@ async function main() {
         process.exit(1);
     }
 
+    const jsonLdHtml = generateCollectionJsonLd(popups);
+    try {
+        injectStaticTiles(popupsHtmlPath, jsonLdHtml, STATIC_JSONLD_START, STATIC_JSONLD_END);
+        console.log('Updated pop-ups.html with static JSON-LD structured data.');
+    } catch (err) {
+        console.error(err.message);
+        process.exit(1);
+    }
+
     // --- Date Ideas ---
     const dateIdeasHtmlPath = path.resolve(__dirname, '..', 'date-ideas.html');
 
@@ -440,7 +506,21 @@ async function main() {
     }
 }
 
-main().catch(err => {
-    console.error(err);
-    process.exit(1);
-});
+if (require.main === module) {
+    main().catch(err => {
+        console.error(err);
+        process.exit(1);
+    });
+}
+
+// Export utility functions for testing
+module.exports = {
+    generateCollectionJsonLd,
+    generatePopupTileHtml,
+    generateDateIdeaTileHtml,
+    escapeHtml,
+    formatPopupDate,
+    mapSanityPopup,
+    mapSanityDateIdea,
+    injectStaticTiles,
+};
