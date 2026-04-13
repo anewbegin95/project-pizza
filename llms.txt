@@ -1,0 +1,21 @@
+# NYC Slice of Life
+
+> NYC Slice of Life is a New York City food events guide specializing in pizza
+> pop-ups, curated date ideas, and local dining experiences. The site surfaces
+> upcoming pop-up events, maintains a full events calendar, and provides
+> detailed information about each event and venue.
+
+> See also: sitemap.xml for a complete machine-readable page index.
+
+## Pages
+
+- [Homepage](https://nycsliceoflife.com/): Discover upcoming NYC pizza pop-ups, curated date ideas, and local food events.
+- [Upcoming NYC Pop-ups](https://nycsliceoflife.com/pop-ups.html): Browse all active and upcoming pizza and food pop-up events in New York City.
+- [Date Ideas](https://nycsliceoflife.com/date-ideas.html): Curated date ideas in NYC centered on food, dining, and shared experiences.
+- [Events Calendar](https://nycsliceoflife.com/calendar.html): Full calendar view of NYC pop-up food events.
+- [About Us](https://nycsliceoflife.com/about.html): Learn about NYC Slice of Life and our mission to surface great food experiences.
+- [Contact Us](https://nycsliceoflife.com/contact_us.html): Get in touch with the NYC Slice of Life team.
+
+## Optional
+
+- [Privacy Policy](https://nycsliceoflife.com/privacy_policy.html): Site privacy policy and data practices.
