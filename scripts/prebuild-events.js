@@ -333,7 +333,14 @@ function generateCollectionJsonLd(popups) {
         });
         jsonLd.mainEntity.itemListElement.push(listItem);
     });
-    return `<script type="application/ld+json" data-static-jsonld="collection-page">\n${JSON.stringify(jsonLd, null, 2)}\n</script>`;
+    // Escape characters that could break inline script embedding:
+    // - '<' becomes '\u003c' (prevents </script> from closing the tag early)
+    // - '\u2028' and '\u2029' are not valid in JS string literals in older parsers
+    const safeJson = JSON.stringify(jsonLd, null, 2)
+        .replace(/</g, '\\u003c')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029');
+    return `<script type="application/ld+json" data-static-jsonld="collection-page">\n${safeJson}\n</script>`;
 }
 
 // ---------------------------------------------------------------------------

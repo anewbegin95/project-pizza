@@ -143,6 +143,22 @@ describe('generateCollectionJsonLd', () => {
     expect(parsed.mainEntity.itemListElement).toHaveLength(1)
     expect(parsed.mainEntity.itemListElement[0].item.name).toBe('With Date')
   })
+
+  it('escapes < to \\u003c in serialized JSON to prevent script tag injection', () => {
+    const popups = [
+      {
+        id: 'xss-event',
+        name: 'Event </script><script>alert(1)</script>',
+        start_datetime: '2025-06-01T10:00:00',
+        end_datetime: '',
+        location: 'NYC',
+        img: '',
+      },
+    ]
+    const result = generateCollectionJsonLd(popups)
+    expect(result).not.toContain('</script><script>')
+    expect(result).toContain('\\u003c/script')
+  })
 })
 
 describe('injectStaticTiles', () => {

@@ -697,6 +697,7 @@ function loadAndDisplayPopups() {
                     } else {
                         const script = document.createElement('script');
                         script.type = 'application/ld+json';
+                        script.dataset.staticJsonld = 'collection-page';
                         script.textContent = JSON.stringify(collectionJsonLd);
                         document.head.appendChild(script);
                     }
