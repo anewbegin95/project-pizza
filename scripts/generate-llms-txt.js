@@ -199,7 +199,7 @@ function buildLlmsTxt(popups, dateIdeas) {
         for (const popup of visiblePopups) {
             const desc = popup.short_description
                 ? popup.short_description.replace(/\n/g, ' ').trim()
-                : 'NYC pizza or food pop-up event.';
+                : 'NYC pop-up event.';
             lines.push(`- [${popup.name}](${popupUrl(popup)}): ${desc}`);
         }
         lines.push('');
