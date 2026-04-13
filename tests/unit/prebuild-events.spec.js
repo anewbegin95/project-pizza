@@ -256,11 +256,16 @@ describe('generateSitemap', () => {
   })
 
   it('includes a today lastmod date in YYYY-MM-DD format on every url', () => {
-    const xml = generateSitemap([], [])
-    const today = new Date().toISOString().slice(0, 10)
-    const lastmodMatches = xml.match(/<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/g) || []
-    expect(lastmodMatches.length).toBeGreaterThan(0)
-    lastmodMatches.forEach(tag => expect(tag).toContain(today))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-06-15T12:00:00Z'))
+    try {
+      const xml = generateSitemap([], [])
+      const lastmodMatches = xml.match(/<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/g) || []
+      expect(lastmodMatches.length).toBeGreaterThan(0)
+      lastmodMatches.forEach(tag => expect(tag).toContain('2025-06-15'))
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('URL-encodes special characters in dynamic IDs', () => {

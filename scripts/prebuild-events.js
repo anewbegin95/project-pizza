@@ -348,7 +348,7 @@ function generateSitemap(popups, dateIdeas) {
     for (const popup of popups) {
         urlEntries.push(
             `  <url>\n` +
-            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${escapeXml(popup.id)}</loc>\n` +
+            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${encodeURIComponent(popup.id)}</loc>\n` +
             `    <lastmod>${today}</lastmod>\n` +
             `    <changefreq>weekly</changefreq>\n` +
             `    <priority>0.7</priority>\n` +
@@ -359,7 +359,7 @@ function generateSitemap(popups, dateIdeas) {
     for (const idea of dateIdeas) {
         urlEntries.push(
             `  <url>\n` +
-            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${escapeXml(idea.id)}</loc>\n` +
+            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${encodeURIComponent(idea.id)}</loc>\n` +
             `    <lastmod>${today}</lastmod>\n` +
             `    <changefreq>monthly</changefreq>\n` +
             `    <priority>0.7</priority>\n` +
