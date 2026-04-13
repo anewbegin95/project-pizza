@@ -66,6 +66,10 @@ const DATE_IDEAS_QUERY = `*[_type == "date_ideas"] | order(name asc) {
 const STATIC_POPUPS_START = '<!-- STATIC_POPUPS_START -->';
 const STATIC_POPUPS_END = '<!-- STATIC_POPUPS_END -->';
 
+/** Markers that delimit the static JSON-LD block inside pop-ups.html */
+const STATIC_JSONLD_START = '<!-- STATIC_JSONLD_START -->';
+const STATIC_JSONLD_END = '<!-- STATIC_JSONLD_END -->';
+
 /** Markers that delimit the static block inside date-ideas.html */
 const STATIC_DATE_IDEAS_START = '<!-- STATIC_DATE_IDEAS_START -->';
 const STATIC_DATE_IDEAS_END = '<!-- STATIC_DATE_IDEAS_END -->';
@@ -290,6 +294,141 @@ function generateDateIdeaTileHtml(idea) {
 }
 
 // ---------------------------------------------------------------------------
+// Sitemap generation
+// ---------------------------------------------------------------------------
+
+const SITE_BASE_URL = 'https://nycsliceoflife.com';
+
+const STATIC_PAGES = [
+    { loc: '/',                    changefreq: 'weekly',  priority: '1.0' },
+    { loc: '/pop-ups.html',        changefreq: 'daily',   priority: '0.9' },
+    { loc: '/date-ideas.html',     changefreq: 'weekly',  priority: '0.8' },
+    { loc: '/calendar.html',       changefreq: 'daily',   priority: '0.9' },
+    { loc: '/about.html',          changefreq: 'monthly', priority: '0.5' },
+    { loc: '/contact_us.html',     changefreq: 'monthly', priority: '0.5' },
+    { loc: '/privacy_policy.html', changefreq: 'monthly', priority: '0.3' },
+];
+
+/**
+ * Escape characters that are special in XML/HTML so they are safe to embed
+ * inside an XML element such as a <loc> tag.
+ */
+function escapeXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+/**
+ * Generate the XML content for sitemap.xml.
+ *
+ * @param {Array} popups    - Active popup objects with an `id` property
+ * @param {Array} dateIdeas - Active date-idea objects with an `id` property
+ * @returns {string} XML string ready to write to sitemap.xml
+ */
+function generateSitemap(popups, dateIdeas) {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const urlEntries = [];
+
+    for (const page of STATIC_PAGES) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}${page.loc}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>${page.changefreq}</changefreq>\n` +
+            `    <priority>${page.priority}</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    for (const popup of popups) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${encodeURIComponent(popup.id)}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>weekly</changefreq>\n` +
+            `    <priority>0.7</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    for (const idea of dateIdeas) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${encodeURIComponent(idea.id)}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>monthly</changefreq>\n` +
+            `    <priority>0.7</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    return (
+        `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+        urlEntries.join('\n') + '\n' +
+        `</urlset>\n`
+    );
+}
+
+function generateCollectionJsonLd(popups) {
+    const baseUrl = 'https://nycsliceoflife.com';
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Upcoming NYC Pop-Ups',
+        description: 'Browse upcoming pop-ups in New York City this week. NYC pop-up events calendar featuring pop-up shops, markets, art and food pop-ups.',
+        url: baseUrl + '/pop-ups.html',
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: []
+        }
+    };
+    let listPosition = 0;
+    popups.forEach(popup => {
+        // Only include startDate/endDate when the value is a parseable date (not
+        // free-text strings like "Ongoing"), to keep the JSON-LD schema valid.
+        const parsedStart = parsePopupDate(popup.start_datetime);
+        const parsedEnd = parsePopupDate(popup.end_datetime);
+        const hasLocation = Boolean(popup.location);
+        if (!parsedStart && !hasLocation) return;
+        listPosition += 1;
+        const listItem = {
+            '@type': 'ListItem',
+            position: listPosition,
+            item: {
+                '@type': 'Event',
+                name: popup.name,
+                startDate: parsedStart ? popup.start_datetime : undefined,
+                endDate: parsedEnd ? popup.end_datetime : undefined,
+                eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                eventStatus: 'https://schema.org/EventScheduled',
+                location: popup.location ? { '@type': 'Place', name: popup.location } : undefined,
+                image: popup.img || undefined,
+                url: baseUrl + '/pop-up.html?id=' + popup.id
+            }
+        };
+        // Remove undefined values for clean output
+        Object.keys(listItem.item).forEach(k => {
+            if (listItem.item[k] === undefined) delete listItem.item[k];
+        });
+        jsonLd.mainEntity.itemListElement.push(listItem);
+    });
+    // Escape characters that could break inline script embedding:
+    // - '<' becomes '\u003c' (prevents </script> from closing the tag early)
+    // - '\u2028' and '\u2029' are not valid in JS string literals in older parsers
+    const safeJson = JSON.stringify(jsonLd, null, 2)
+        .replace(/</g, '\\u003c')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029');
+    return `<script type="application/ld+json" data-static-jsonld="collection-page">\n${safeJson}\n</script>`;
+}
+
+// ---------------------------------------------------------------------------
 // Sanity API fetch (no third-party dependencies — uses built-in https)
 // ---------------------------------------------------------------------------
 
@@ -411,6 +550,15 @@ async function main() {
         process.exit(1);
     }
 
+    const jsonLdHtml = generateCollectionJsonLd(popups);
+    try {
+        injectStaticTiles(popupsHtmlPath, jsonLdHtml, STATIC_JSONLD_START, STATIC_JSONLD_END);
+        console.log('Updated pop-ups.html with static JSON-LD structured data.');
+    } catch (err) {
+        console.error(err.message);
+        process.exit(1);
+    }
+
     // --- Date Ideas ---
     const dateIdeasHtmlPath = path.resolve(__dirname, '..', 'date-ideas.html');
 
@@ -438,9 +586,31 @@ async function main() {
         console.error(err.message);
         process.exit(1);
     }
+
+    // --- Sitemap ---
+    const sitemapPath = path.resolve(__dirname, '..', 'sitemap.xml');
+    const sitemapXml = generateSitemap(popups, dateIdeas);
+    fs.writeFileSync(sitemapPath, sitemapXml, 'utf8');
+    console.log(`Generated sitemap.xml with ${popups.length} pop-up(s) and ${dateIdeas.length} date idea(s).`);
 }
 
-main().catch(err => {
-    console.error(err);
-    process.exit(1);
-});
+if (require.main === module) {
+    main().catch(err => {
+        console.error(err);
+        process.exit(1);
+    });
+}
+
+// Export utility functions for testing
+module.exports = {
+    generateCollectionJsonLd,
+    generatePopupTileHtml,
+    generateDateIdeaTileHtml,
+    generateSitemap,
+    escapeHtml,
+    escapeXml,
+    formatPopupDate,
+    mapSanityPopup,
+    mapSanityDateIdea,
+    injectStaticTiles,
+};

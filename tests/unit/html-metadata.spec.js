@@ -7,6 +7,44 @@ function read(relativePath) {
   return fs.readFileSync(path.join(projectRoot, relativePath), 'utf8')
 }
 
+describe('llms.txt', () => {
+  it('exists at the project root', () => {
+    const filePath = path.join(projectRoot, 'llms.txt')
+    expect(fs.existsSync(filePath)).toBe(true)
+  })
+
+  it('starts with an H1 title', () => {
+    const txt = read('llms.txt')
+    expect(txt).toMatch(/^# NYC Slice of Life/)
+  })
+
+  it('contains a blockquote description', () => {
+    const txt = read('llms.txt')
+    expect(txt).toContain('> NYC Slice of Life')
+  })
+
+  it('lists all key static page URLs', () => {
+    const txt = read('llms.txt')
+    expect(txt).toContain('https://nycsliceoflife.com/')
+    expect(txt).toContain('https://nycsliceoflife.com/pop-ups.html')
+    expect(txt).toContain('https://nycsliceoflife.com/date-ideas.html')
+    expect(txt).toContain('https://nycsliceoflife.com/calendar.html')
+    expect(txt).toContain('https://nycsliceoflife.com/about.html')
+    expect(txt).toContain('https://nycsliceoflife.com/contact_us.html')
+  })
+
+  it('contains a ## Pages section', () => {
+    const txt = read('llms.txt')
+    expect(txt).toContain('## Pages')
+  })
+
+  it('contains an ## Optional section with the privacy policy', () => {
+    const txt = read('llms.txt')
+    expect(txt).toContain('## Optional')
+    expect(txt).toContain('https://nycsliceoflife.com/privacy_policy.html')
+  })
+})
+
 describe('static html metadata', () => {
   it('homepage has title metadata attributes and hero heading', () => {
     const html = read('index.html')
@@ -34,5 +72,20 @@ describe('static html metadata', () => {
     expect(html).toContain('property="og:description"')
     expect(html).toContain('property="og:image"')
     expect(html).toContain('property="og:type"')
+  })
+
+  it('pop-ups listing page has JSON-LD injection markers in <head>', () => {
+    const html = read('pop-ups.html')
+    expect(html).toContain('<!-- STATIC_JSONLD_START -->')
+    expect(html).toContain('<!-- STATIC_JSONLD_END -->')
+    // Markers must appear inside <head> and in the correct order
+    const headEnd = html.indexOf('</head>')
+    const markerStart = html.indexOf('<!-- STATIC_JSONLD_START -->')
+    const markerEnd = html.indexOf('<!-- STATIC_JSONLD_END -->')
+    expect(markerStart).toBeGreaterThan(-1)
+    expect(markerEnd).toBeGreaterThan(-1)
+    expect(markerStart).toBeLessThan(markerEnd)
+    expect(markerStart).toBeLessThan(headEnd)
+    expect(markerEnd).toBeLessThan(headEnd)
   })
 })
