@@ -310,6 +310,19 @@ const STATIC_PAGES = [
 ];
 
 /**
+ * Escape characters that are special in XML/HTML so they are safe to embed
+ * inside an XML element such as a <loc> tag.
+ */
+function escapeXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+/**
  * Generate the XML content for sitemap.xml.
  *
  * @param {Array} popups    - Active popup objects with an `id` property
@@ -335,7 +348,7 @@ function generateSitemap(popups, dateIdeas) {
     for (const popup of popups) {
         urlEntries.push(
             `  <url>\n` +
-            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${popup.id}</loc>\n` +
+            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${escapeXml(popup.id)}</loc>\n` +
             `    <lastmod>${today}</lastmod>\n` +
             `    <changefreq>weekly</changefreq>\n` +
             `    <priority>0.7</priority>\n` +
@@ -346,7 +359,7 @@ function generateSitemap(popups, dateIdeas) {
     for (const idea of dateIdeas) {
         urlEntries.push(
             `  <url>\n` +
-            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${idea.id}</loc>\n` +
+            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${escapeXml(idea.id)}</loc>\n` +
             `    <lastmod>${today}</lastmod>\n` +
             `    <changefreq>monthly</changefreq>\n` +
             `    <priority>0.7</priority>\n` +
@@ -595,6 +608,7 @@ module.exports = {
     generateDateIdeaTileHtml,
     generateSitemap,
     escapeHtml,
+    escapeXml,
     formatPopupDate,
     mapSanityPopup,
     mapSanityDateIdea,
