@@ -689,7 +689,9 @@ function loadAndDisplayPopups() {
                     });
                     // Update the existing static JSON-LD tag if present (injected at build time),
                     // otherwise append a new one. This avoids duplicate structured-data blocks.
-                    const existingScript = document.querySelector('script[type="application/ld+json"]');
+                    const existingScript = document.querySelector(
+                        'script[type="application/ld+json"][data-static-jsonld="collection-page"]'
+                    );
                     if (existingScript) {
                         existingScript.textContent = JSON.stringify(collectionJsonLd);
                     } else {

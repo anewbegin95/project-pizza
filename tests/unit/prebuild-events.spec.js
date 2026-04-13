@@ -87,15 +87,16 @@ describe('generatePopupTileHtml', () => {
 })
 
 describe('generateCollectionJsonLd', () => {
-  it('returns a script tag with application/ld+json type', () => {
+  it('returns a script tag with application/ld+json type and data-static-jsonld attribute', () => {
     const result = generateCollectionJsonLd([])
-    expect(result).toContain('<script type="application/ld+json">')
+    expect(result).toContain('<script type="application/ld+json"')
+    expect(result).toContain('data-static-jsonld="collection-page"')
     expect(result).toContain('</script>')
   })
 
   it('includes CollectionPage schema with correct name and url', () => {
     const result = generateCollectionJsonLd([])
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/)
+    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
     expect(match).not.toBeNull()
     const parsed = JSON.parse(match[1])
     expect(parsed['@type']).toBe('CollectionPage')
@@ -116,7 +117,7 @@ describe('generateCollectionJsonLd', () => {
       },
     ]
     const result = generateCollectionJsonLd(popups)
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/)
+    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
     const parsed = JSON.parse(match[1])
     const items = parsed.mainEntity.itemListElement
     expect(items).toHaveLength(1)
@@ -133,7 +134,7 @@ describe('generateCollectionJsonLd', () => {
       { id: 'with-date', name: 'With Date', start_datetime: '2025-06-01T10:00:00', end_datetime: '', location: '', img: '' },
     ]
     const result = generateCollectionJsonLd(popups)
-    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/)
+    const match = result.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
     const parsed = JSON.parse(match[1])
     expect(parsed.mainEntity.itemListElement).toHaveLength(1)
     expect(parsed.mainEntity.itemListElement[0].item.name).toBe('With Date')

@@ -333,7 +333,7 @@ function generateCollectionJsonLd(popups) {
         });
         jsonLd.mainEntity.itemListElement.push(listItem);
     });
-    return `<script type="application/ld+json">\n        ${JSON.stringify(jsonLd, null, 2).replace(/\n/g, '\n        ')}\n        </script>`;
+    return `<script type="application/ld+json" data-static-jsonld="collection-page">\n${JSON.stringify(jsonLd, null, 2)}\n        </script>`;
 }
 
 // ---------------------------------------------------------------------------
