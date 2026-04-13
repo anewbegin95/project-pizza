@@ -293,6 +293,75 @@ function generateDateIdeaTileHtml(idea) {
             </a>`;
 }
 
+// ---------------------------------------------------------------------------
+// Sitemap generation
+// ---------------------------------------------------------------------------
+
+const SITE_BASE_URL = 'https://nycsliceoflife.com';
+
+const STATIC_PAGES = [
+    { loc: '/',                    changefreq: 'weekly',  priority: '1.0' },
+    { loc: '/pop-ups.html',        changefreq: 'daily',   priority: '0.9' },
+    { loc: '/date-ideas.html',     changefreq: 'weekly',  priority: '0.8' },
+    { loc: '/calendar.html',       changefreq: 'daily',   priority: '0.9' },
+    { loc: '/about.html',          changefreq: 'monthly', priority: '0.5' },
+    { loc: '/contact_us.html',     changefreq: 'monthly', priority: '0.5' },
+    { loc: '/privacy_policy.html', changefreq: 'monthly', priority: '0.3' },
+];
+
+/**
+ * Generate the XML content for sitemap.xml.
+ *
+ * @param {Array} popups    - Active popup objects with an `id` property
+ * @param {Array} dateIdeas - Active date-idea objects with an `id` property
+ * @returns {string} XML string ready to write to sitemap.xml
+ */
+function generateSitemap(popups, dateIdeas) {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const urlEntries = [];
+
+    for (const page of STATIC_PAGES) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}${page.loc}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>${page.changefreq}</changefreq>\n` +
+            `    <priority>${page.priority}</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    for (const popup of popups) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}/pop-up.html?id=${popup.id}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>weekly</changefreq>\n` +
+            `    <priority>0.7</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    for (const idea of dateIdeas) {
+        urlEntries.push(
+            `  <url>\n` +
+            `    <loc>${SITE_BASE_URL}/date-idea.html?id=${idea.id}</loc>\n` +
+            `    <lastmod>${today}</lastmod>\n` +
+            `    <changefreq>monthly</changefreq>\n` +
+            `    <priority>0.7</priority>\n` +
+            `  </url>`
+        );
+    }
+
+    return (
+        `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+        urlEntries.join('\n') + '\n' +
+        `</urlset>\n`
+    );
+}
+
 function generateCollectionJsonLd(popups) {
     const baseUrl = 'https://nycsliceoflife.com';
     const jsonLd = {
@@ -504,6 +573,12 @@ async function main() {
         console.error(err.message);
         process.exit(1);
     }
+
+    // --- Sitemap ---
+    const sitemapPath = path.resolve(__dirname, '..', 'sitemap.xml');
+    const sitemapXml = generateSitemap(popups, dateIdeas);
+    fs.writeFileSync(sitemapPath, sitemapXml, 'utf8');
+    console.log(`Generated sitemap.xml with ${popups.length} pop-up(s) and ${dateIdeas.length} date idea(s).`);
 }
 
 if (require.main === module) {
@@ -518,6 +593,7 @@ module.exports = {
     generateCollectionJsonLd,
     generatePopupTileHtml,
     generateDateIdeaTileHtml,
+    generateSitemap,
     escapeHtml,
     formatPopupDate,
     mapSanityPopup,
