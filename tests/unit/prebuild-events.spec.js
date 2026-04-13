@@ -1,6 +1,7 @@
 const {
   generateCollectionJsonLd,
   generatePopupTileHtml,
+  generateSitemap,
   escapeHtml,
   mapSanityPopup,
   injectStaticTiles,
@@ -209,5 +210,70 @@ describe('injectStaticTiles', () => {
     expect(() =>
       injectStaticTiles(tmpFile, '<p>Hi</p>', '<!-- START -->', '<!-- END -->')
     ).toThrow(/Markers not found/)
+  })
+})
+
+describe('generateSitemap', () => {
+  it('returns a valid XML document with the urlset root element', () => {
+    const xml = generateSitemap([], [])
+    expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>')
+    expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    expect(xml).toContain('</urlset>')
+  })
+
+  it('includes all static pages', () => {
+    const xml = generateSitemap([], [])
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/pop-ups.html</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/date-ideas.html</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/calendar.html</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/contact_us.html</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/privacy_policy.html</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/about.html</loc>')
+  })
+
+  it('includes a pop-up detail URL for each active popup', () => {
+    const popups = [{ id: 'pizza-pop-up' }, { id: 'art-market' }]
+    const xml = generateSitemap(popups, [])
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/pop-up.html?id=pizza-pop-up</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/pop-up.html?id=art-market</loc>')
+  })
+
+  it('includes a date-idea detail URL for each active date idea', () => {
+    const ideas = [{ id: 'rooftop-dinner' }, { id: 'art-gallery-tour' }]
+    const xml = generateSitemap([], ideas)
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/date-idea.html?id=rooftop-dinner</loc>')
+    expect(xml).toContain('<loc>https://nycsliceoflife.com/date-idea.html?id=art-gallery-tour</loc>')
+  })
+
+  it('includes changefreq and priority for every url entry', () => {
+    const xml = generateSitemap([{ id: 'test-popup' }], [{ id: 'test-idea' }])
+    const urlCount = (xml.match(/<url>/g) || []).length
+    const changefreqCount = (xml.match(/<changefreq>/g) || []).length
+    const priorityCount = (xml.match(/<priority>/g) || []).length
+    expect(changefreqCount).toBe(urlCount)
+    expect(priorityCount).toBe(urlCount)
+  })
+
+  it('includes a today lastmod date in YYYY-MM-DD format on every url', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-06-15T12:00:00Z'))
+    try {
+      const xml = generateSitemap([], [])
+      const lastmodMatches = xml.match(/<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/g) || []
+      expect(lastmodMatches.length).toBeGreaterThan(0)
+      lastmodMatches.forEach(tag => expect(tag).toContain('2025-06-15'))
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('URL-encodes special characters in dynamic IDs', () => {
+    const popups = [{ id: 'event&<special>' }]
+    const ideas = [{ id: 'idea&test' }]
+    const xml = generateSitemap(popups, ideas)
+    expect(xml).not.toContain('id=event&<special>')
+    expect(xml).toContain('id=event%26%3Cspecial%3E')
+    expect(xml).toContain('id=idea%26test')
   })
 })
