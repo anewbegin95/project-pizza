@@ -687,10 +687,17 @@ function loadAndDisplayPopups() {
                         };
                         collectionJsonLd.mainEntity.itemListElement.push(listItem);
                     });
-                    const script = document.createElement('script');
-                    script.type = 'application/ld+json';
-                    script.textContent = JSON.stringify(collectionJsonLd);
-                    document.head.appendChild(script);
+                    // Update the existing static JSON-LD tag if present (injected at build time),
+                    // otherwise append a new one. This avoids duplicate structured-data blocks.
+                    const existingScript = document.querySelector('script[type="application/ld+json"]');
+                    if (existingScript) {
+                        existingScript.textContent = JSON.stringify(collectionJsonLd);
+                    } else {
+                        const script = document.createElement('script');
+                        script.type = 'application/ld+json';
+                        script.textContent = JSON.stringify(collectionJsonLd);
+                        document.head.appendChild(script);
+                    }
                 } catch (e) {
                     console.warn('JSON-LD injection failed:', e);
                 }

@@ -35,4 +35,15 @@ describe('static html metadata', () => {
     expect(html).toContain('property="og:image"')
     expect(html).toContain('property="og:type"')
   })
+
+  it('pop-ups listing page has JSON-LD injection markers in <head>', () => {
+    const html = read('pop-ups.html')
+    expect(html).toContain('<!-- STATIC_JSONLD_START -->')
+    expect(html).toContain('<!-- STATIC_JSONLD_END -->')
+    // Markers must appear inside <head>
+    const headEnd = html.indexOf('</head>')
+    const markerStart = html.indexOf('<!-- STATIC_JSONLD_START -->')
+    expect(markerStart).toBeGreaterThan(-1)
+    expect(markerStart).toBeLessThan(headEnd)
+  })
 })
