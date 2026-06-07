@@ -68,6 +68,61 @@ button:hover,
   color: var(--nyc-fuschia);
 }
 
+/* Shared redesign-ready button primitives */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  padding: 10px 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ui-btn:hover {
+  background-color: var(--nyc-light-gray);
+  color: var(--nyc-navy);
+}
+
+.ui-btn--primary {
+  background-color: var(--nyc-green);
+  border-color: var(--nyc-green);
+  color: var(--nyc-white);
+}
+
+.ui-btn--primary:hover {
+  background-color: var(--nyc-green-hover);
+  border-color: var(--nyc-green-hover);
+  color: var(--nyc-white);
+}
+
+.ui-btn--pill {
+  border-radius: var(--radius-pill);
+}
+
+.ui-btn--text {
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--nyc-fuschia);
+  padding: 0;
+}
+
+.ui-btn--text:hover {
+  background-color: transparent;
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+
 /* Links */
 a {
   color: var(--nyc-fuschia);
