@@ -43,6 +43,10 @@
   --space-sm-md: 24px;
   --space-sm: 16px;
   --space-xs: 8px;
+  --space-xs-sm: 6px;
+  --space-chip-x: 14px;
+  --space-input-y: 12px;
+  --space-input-x: 16px;
   --space-xxs: 4px;
   --space-xxxs: 2px;
 
@@ -181,8 +185,8 @@ p, ul, ol {
 .ui-filter-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: var(--space-xs) 14px;
+  gap: var(--space-xs-sm);
+  padding: var(--space-xs) var(--space-chip-x);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-card);
@@ -200,7 +204,7 @@ p, ul, ol {
 
 .ui-input {
   width: 100%;
-  padding: 12px 16px;
+  padding: var(--space-input-y) var(--space-input-x);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-elevated);
