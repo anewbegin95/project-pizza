@@ -14,8 +14,8 @@
   --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
   --nyc-cream: #FAF8F5;      /* Page background for redesigned surfaces */
   --nyc-green: #2D6A4F;      /* Primary interactive accent */
-  --nyc-green-light: #EAF2ED;/* Active filter and badge backgrounds */
-  --nyc-green-hover: #235A40;/* Hover state for green buttons */
+  --nyc-green-light: #EAF2ED; /* Active filter and badge backgrounds */
+  --nyc-green-hover: #235A40; /* Hover state for green buttons */
   --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
   --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
   --nyc-light-green: #A1C7B6;/* Success messages */
@@ -54,6 +54,7 @@
   --font-md: 24px;
   --font-md-sm: 20px; /* nav, collapsible menu */
   --font-sm: 16px;  /* body, p, ul, ol, small text, etc. */
+  --font-sm-compact: 14px; /* compact controls: chips, labels, metadata */
   --font-xs-sm: 12px; /* Small font for responsive buttons/labels */
   --font-xs: 8px;
 
@@ -172,7 +173,7 @@ p, ul, ol {
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--radius-pill);
   font-family: var(--nyc-font-body);
-  font-size: 14px;
+  font-size: var(--font-sm-compact);
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
 }
@@ -186,7 +187,7 @@ p, ul, ol {
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-card);
   font-family: var(--nyc-font-body);
-  font-size: 14px;
+  font-size: var(--font-sm-compact);
   font-weight: var(--font-weight-medium);
   color: var(--nyc-navy);
 }
