@@ -27,6 +27,8 @@ describe('redesign foundation styles', () => {
     expect(css).toContain("--nyc-font-body: 'Work Sans', 'Arial', sans-serif;")
     expect(css).toContain(':root[data-redesign=\'on\'],')
     expect(css).toContain('body.redesign-enabled {')
+    expect(css).toContain('--nyc-font-heading-h1: var(--nyc-font-display);')
+    expect(css).toContain('--nyc-page-background: var(--nyc-surface-page);')
   })
 
   it('includes reusable shared primitive classes', () => {

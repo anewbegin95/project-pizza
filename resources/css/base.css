@@ -43,7 +43,7 @@
   --space-sm-md: 24px;
   --space-sm: 16px;
   --space-xs: 8px;
-  --space-xs-sm: 6px;
+  --space-xxs-xs: 6px;
   --space-xxs: 4px;
   --space-xxxs: 2px;
 
@@ -55,7 +55,7 @@
   --font-md: 24px;
   --font-md-sm: 20px; /* nav, collapsible menu */
   --font-sm: 16px;  /* body, p, ul, ol, small text, etc. */
-  --font-sm-compact: 14px; /* compact controls: chips, labels, metadata */
+  --font-xs-md: 14px; /* compact controls: chips, labels, metadata */
   --font-xs-sm: 12px; /* Small font for responsive buttons/labels */
   --font-xs: 8px;
 
@@ -174,7 +174,7 @@ p, ul, ol {
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--radius-pill);
   font-family: var(--nyc-font-body);
-  font-size: var(--font-sm-compact);
+  font-size: var(--font-xs-md);
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
 }
@@ -182,13 +182,13 @@ p, ul, ol {
 .ui-filter-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs-sm);
+  gap: var(--space-xxs-xs);
   padding: var(--space-xs) var(--space-sm);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-card);
   font-family: var(--nyc-font-body);
-  font-size: var(--font-sm-compact);
+  font-size: var(--font-xs-md);
   font-weight: var(--font-weight-medium);
   color: var(--nyc-navy);
 }
