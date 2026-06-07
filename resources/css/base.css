@@ -98,6 +98,7 @@
   --nyc-page-background: var(--nyc-surface-page-legacy);
 }
 
+/* Redesign can be toggled either at the document root or on body for incremental rollout. */
 :root[data-redesign='on'],
 body.redesign-enabled {
   --nyc-font-heading-h1: var(--nyc-font-display);
