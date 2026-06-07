@@ -44,9 +44,6 @@
   --space-sm: 16px;
   --space-xs: 8px;
   --space-xs-sm: 6px;
-  --space-chip-x: 14px;
-  --space-input-y: 12px;
-  --space-input-x: 16px;
   --space-xxs: 4px;
   --space-xxxs: 2px;
 
@@ -162,8 +159,7 @@ p, ul, ol {
   SHARED PRIMITIVES (REDESIGN-READY)
 ----------------------------------------------------------------------------- */
 
-.ui-card,
-.surface-card {
+.ui-card {
   background-color: var(--nyc-surface-card);
   border: 1px solid var(--nyc-surface-border);
   border-radius: var(--radius-lg);
@@ -187,7 +183,7 @@ p, ul, ol {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs-sm);
-  padding: var(--space-xs) var(--space-chip-x);
+  padding: var(--space-xs) var(--space-sm);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-card);
@@ -205,7 +201,7 @@ p, ul, ol {
 
 .ui-input {
   width: 100%;
-  padding: var(--space-input-y) var(--space-input-x);
+  padding: var(--space-xs) var(--space-sm);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-pill);
   background-color: var(--nyc-surface-elevated);
@@ -214,8 +210,7 @@ p, ul, ol {
   font-size: var(--font-sm);
 }
 
-.ui-divider,
-.section-divider {
+.ui-divider {
   border: 0;
   border-top: 1px solid var(--nyc-section-divider);
 }
