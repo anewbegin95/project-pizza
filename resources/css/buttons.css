@@ -93,6 +93,11 @@ button:hover,
   color: var(--nyc-navy);
 }
 
+.ui-btn:focus-visible {
+  outline: 2px solid var(--nyc-fuschia);
+  outline-offset: 2px;
+}
+
 .ui-btn--primary {
   background-color: var(--nyc-green);
   border-color: var(--nyc-green);
