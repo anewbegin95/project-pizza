@@ -8,7 +8,10 @@ function read(relativePath) {
 }
 
 function expectCssToMatch(css, pattern) {
-  const escapedPattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regexSpecialCharacters = new Set(['\\', '^', '$', '.', '*', '+', '?', '(', ')', '[', ']', '{', '}', '|'])
+  const escapedPattern = [...pattern]
+    .map((character) => (regexSpecialCharacters.has(character) ? `\\${character}` : character))
+    .join('')
   expect(css).toMatch(new RegExp(escapedPattern.replaceAll(/\s+/g, '\\s*')))
 }
 
@@ -30,8 +33,7 @@ describe('redesign foundation styles', () => {
 
     expectCssToMatch(css, "--nyc-font-display: 'Playfair Display', Georgia, serif;")
     expectCssToMatch(css, "--nyc-font-body: 'Work Sans', 'Arial', sans-serif;")
-    expectCssToMatch(css, ":root[data-redesign='on'],")
-    expectCssToMatch(css, 'body.redesign-enabled {')
+    expectCssToMatch(css, ":root[data-redesign='on'], body.redesign-enabled {")
     expectCssToMatch(css, '--nyc-font-heading-h1: var(--nyc-font-display);')
     expectCssToMatch(css, '--nyc-page-background: var(--nyc-surface-page);')
   })

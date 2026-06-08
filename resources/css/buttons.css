@@ -116,7 +116,6 @@ button:hover,
 
 .ui-btn--text {
   border: none;
-  border-radius: 0;
   background-color: transparent;
   color: var(--nyc-fuschia);
   padding: 0;
