@@ -7,6 +7,11 @@ function read(relativePath) {
   return fs.readFileSync(path.join(projectRoot, relativePath), 'utf8')
 }
 
+function expectCssToMatch(css, pattern) {
+  const escapedPattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  expect(css).toMatch(new RegExp(escapedPattern.replaceAll(/\s+/g, '\\s*')))
+}
+
 describe('redesign foundation styles', () => {
   it('defines redesign color and surface tokens in base.css :root', () => {
     const css = read('resources/css/base.css')
@@ -23,12 +28,12 @@ describe('redesign foundation styles', () => {
   it('defines global typography roles for display and body fonts', () => {
     const css = read('resources/css/base.css')
 
-    expect(css).toContain("--nyc-font-display: 'Playfair Display', Georgia, serif;")
-    expect(css).toContain("--nyc-font-body: 'Work Sans', 'Arial', sans-serif;")
-    expect(css).toContain(':root[data-redesign=\'on\'],')
-    expect(css).toContain('body.redesign-enabled {')
-    expect(css).toContain('--nyc-font-heading-h1: var(--nyc-font-display);')
-    expect(css).toContain('--nyc-page-background: var(--nyc-surface-page);')
+    expectCssToMatch(css, "--nyc-font-display: 'Playfair Display', Georgia, serif;")
+    expectCssToMatch(css, "--nyc-font-body: 'Work Sans', 'Arial', sans-serif;")
+    expectCssToMatch(css, ":root[data-redesign='on'],")
+    expectCssToMatch(css, 'body.redesign-enabled {')
+    expectCssToMatch(css, '--nyc-font-heading-h1: var(--nyc-font-display);')
+    expectCssToMatch(css, '--nyc-page-background: var(--nyc-surface-page);')
   })
 
   it('includes reusable shared primitive classes', () => {
