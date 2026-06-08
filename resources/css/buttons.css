@@ -82,7 +82,7 @@ button:hover,
   font-size: var(--font-sm);
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
-  padding: 10px 16px;
+  padding: var(--space-xs) var(--space-sm);
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
