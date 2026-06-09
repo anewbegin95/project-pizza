@@ -49,14 +49,18 @@ describe('redesign flag configuration', () => {
   })
 
   it('ignores invalid redesignByEnv values without throwing', () => {
-    const state = resolveRedesignState(
-      { hostname: 'nycsliceoflife.com', href: 'https://nycsliceoflife.com/' },
-      { redesignByEnv: 'production' }
-    )
+    const invalidValues = ['production', ['production'], null, 1]
 
-    expect(state.environment).toBe('production')
-    expect(state.enabled).toBe(false)
-    expect(state.source).toBe('environment-default')
+    invalidValues.forEach((redesignByEnv) => {
+      const state = resolveRedesignState(
+        { hostname: 'nycsliceoflife.com', href: 'https://nycsliceoflife.com/' },
+        { redesignByEnv }
+      )
+
+      expect(state.environment).toBe('production')
+      expect(state.enabled).toBe(false)
+      expect(state.source).toBe('environment-default')
+    })
   })
 })
 
