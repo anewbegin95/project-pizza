@@ -47,6 +47,17 @@ describe('redesign flag configuration', () => {
     expect(state.enabled).toBe(true)
     expect(state.source).toBe('config')
   })
+
+  it('ignores invalid redesignByEnv values without throwing', () => {
+    const state = resolveRedesignState(
+      { hostname: 'nycsliceoflife.com', href: 'https://nycsliceoflife.com/' },
+      { redesignByEnv: 'production' }
+    )
+
+    expect(state.environment).toBe('production')
+    expect(state.enabled).toBe(false)
+    expect(state.source).toBe('environment-default')
+  })
 })
 
 describe('redesign flag DOM application', () => {

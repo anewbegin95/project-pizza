@@ -59,23 +59,30 @@ The redesign is gated by `resources/js/redesign-flag.js` and is **OFF by default
 
 ### Config-based enablement
 
-Set `window.REDESIGN_CONFIG` before `resources/js/redesign-flag.js` loads:
+Load a separate config script before `resources/js/redesign-flag.js`:
+
+```javascript
+// resources/js/redesign-config.js
+window.REDESIGN_CONFIG = { enabled: true };
+```
 
 ```html
-<script>
-  window.REDESIGN_CONFIG = { enabled: true };
-</script>
+<script src="resources/js/redesign-config.js"></script>
 <script src="resources/js/redesign-flag.js"></script>
 ```
 
 You can also set per-environment defaults:
 
+```javascript
+// resources/js/redesign-config.js
+window.REDESIGN_CONFIG = {
+  redesignByEnv: { development: true, staging: false, production: false }
+};
+```
+
 ```html
-<script>
-  window.REDESIGN_CONFIG = {
-    redesignByEnv: { development: true, staging: false, production: false }
-  };
-</script>
+<script src="resources/js/redesign-config.js"></script>
+<script src="resources/js/redesign-flag.js"></script>
 ```
 
 ### QA URL override

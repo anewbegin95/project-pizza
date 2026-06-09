@@ -63,7 +63,9 @@
   function resolveRedesignState(locationLike, config = {}) {
     const hostname = (locationLike && locationLike.hostname ? locationLike.hostname : '').toLowerCase();
     const environment = resolveEnvironment(hostname, config);
-    const redesignByEnv = config.redesignByEnv || DEFAULT_REDESIGN_BY_ENV;
+    const redesignByEnv = config.redesignByEnv && typeof config.redesignByEnv === 'object'
+      ? config.redesignByEnv
+      : DEFAULT_REDESIGN_BY_ENV;
     const configuredEnabled = normalizeBoolean(config.enabled);
     const defaultEnabled = environment in redesignByEnv
       ? redesignByEnv[environment]
