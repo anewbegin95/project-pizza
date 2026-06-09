@@ -43,7 +43,7 @@ describe('redesign foundation styles', () => {
     const buttonsCss = read('resources/css/buttons.css')
 
     expectCssToMatch(baseCss, '.ui-card {')
-    expectCssToMatch(baseCss, '.ui-pill {')
+    expectCssToMatch(baseCss, '.ui-pill, .ui-chip {')
     expectCssToMatch(baseCss, '.ui-filter-chip {')
     expectCssToMatch(baseCss, '.ui-input {')
     expectCssToMatch(baseCss, '.ui-divider {')
