@@ -46,6 +46,28 @@ describe('llms.txt', () => {
 })
 
 describe('static html metadata', () => {
+  it('static pages only request the font families used by the design system', () => {
+    const pages = [
+      'about.html',
+      'calendar.html',
+      'contact_us.html',
+      'date-idea.html',
+      'date-ideas.html',
+      'index.html',
+      'pop-up.html',
+      'pop-ups.html',
+      'privacy_policy.html',
+    ]
+
+    for (const page of pages) {
+      const html = read(page)
+      expect(html).toContain('family=Montserrat:wght@500;600;700')
+      expect(html).toContain('family=Playfair+Display:wght@400;700')
+      expect(html).toContain('family=Work+Sans:wght@400;500;600;700')
+      expect(html).not.toContain('Source+Sans+Pro')
+    }
+  })
+
   it('homepage has title metadata attributes and hero heading', () => {
     const html = read('index.html')
     expect(html).toContain('data-title="NYC Slice of Life"')
