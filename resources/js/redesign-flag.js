@@ -69,9 +69,9 @@
       ? config.redesignByEnv
       : DEFAULT_REDESIGN_BY_ENV;
     const configuredEnabled = normalizeBoolean(config.enabled);
-    const defaultEnabled = environment in redesignByEnv
-      ? redesignByEnv[environment]
-      : false;
+    const defaultEnabled = normalizeBoolean(
+      environment in redesignByEnv ? redesignByEnv[environment] : null
+    );
     const searchParams = getSearchParams(locationLike);
     const overrideEnabled = normalizeOverride(searchParams.get('redesign'));
 
@@ -79,8 +79,9 @@
       ? overrideEnabled
       : configuredEnabled !== null
         ? configuredEnabled
-        : Boolean(defaultEnabled);
-
+        : defaultEnabled !== null
+          ? defaultEnabled
+          : false;
     const source = overrideEnabled !== null
       ? 'url-override'
       : configuredEnabled !== null
