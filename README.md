@@ -45,6 +45,50 @@ npx serve .
 
 ---
 
+## 🚩 Redesign Feature Flag Rollout
+
+The redesign is gated by `resources/js/redesign-flag.js` and is **OFF by default**.
+
+### Default behavior by environment
+
+| Environment | Hostname | Default |
+| --- | --- | --- |
+| development | `localhost`, `127.0.0.1` | OFF |
+| staging | `staging.nycsliceoflife.com` | OFF |
+| production | `nycsliceoflife.com`, `www.nycsliceoflife.com` | OFF |
+
+### Config-based enablement
+
+Set `window.REDESIGN_CONFIG` before `resources/js/redesign-flag.js` loads:
+
+```html
+<script>
+  window.REDESIGN_CONFIG = { enabled: true };
+</script>
+<script src="resources/js/redesign-flag.js"></script>
+```
+
+You can also set per-environment defaults:
+
+```html
+<script>
+  window.REDESIGN_CONFIG = {
+    redesignByEnv: { development: true, staging: false, production: false }
+  };
+</script>
+```
+
+### QA URL override
+
+Use query params for temporary QA validation without changing config:
+
+- `?redesign=on` → force ON
+- `?redesign=off` → force OFF
+
+URL override always wins over environment/config defaults.
+
+---
+
 ## 🔒 Security + CI/CD Automation
 
 GitHub Actions now enforces branch-specific quality gates:

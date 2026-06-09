@@ -65,6 +65,7 @@ describe('static html metadata', () => {
       expect(html).toContain('family=Playfair+Display:wght@400;700')
       expect(html).toContain('family=Work+Sans:wght@400;500;600;700')
       expect(html).not.toContain('Source+Sans+Pro')
+      expect(html).toContain('src="resources/js/redesign-flag.js"')
     }
   })
 

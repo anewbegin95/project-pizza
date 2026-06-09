@@ -31,6 +31,15 @@
 
 ---
 
+## Rollout Controls (Feature Flag)
+
+All redesign UI must remain gated behind `resources/js/redesign-flag.js` until launch.
+
+- Default state is OFF for development, staging, and production hostnames.
+- Environment/config enablement is controlled through `window.REDESIGN_CONFIG`.
+- QA can temporarily force behavior with URL params: `?redesign=on` / `?redesign=off`.
+- Never ship redesigned markup/behavior as default-on before explicit rollout approval.
+
 ## 1. Design Goals & Principles
 
 ### Goals
