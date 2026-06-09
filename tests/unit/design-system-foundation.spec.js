@@ -19,13 +19,13 @@ describe('redesign foundation styles', () => {
   it('defines redesign color and surface tokens in base.css :root', () => {
     const css = read('resources/css/base.css')
 
-    expect(css).toContain('--nyc-cream: #FAF8F5;')
-    expect(css).toContain('--nyc-green: #2D6A4F;')
-    expect(css).toContain('--nyc-green-light: #EAF2ED;')
-    expect(css).toContain('--nyc-green-hover: #235A40;')
-    expect(css).toContain('--nyc-section-divider: #E5E5E5;')
-    expect(css).toContain('--nyc-surface-page: var(--nyc-cream);')
-    expect(css).toContain('--nyc-surface-card: var(--nyc-white);')
+    expect(css).toMatch(/--nyc-cream:\s*#FAF8F5\s*;/)
+    expect(css).toMatch(/--nyc-green:\s*#2D6A4F\s*;/)
+    expect(css).toMatch(/--nyc-green-light:\s*#EAF2ED\s*;/)
+    expect(css).toMatch(/--nyc-green-hover:\s*#235A40\s*;/)
+    expect(css).toMatch(/--nyc-section-divider:\s*#E5E5E5\s*;/)
+    expect(css).toMatch(/--nyc-surface-page:\s*var\(--nyc-cream\)\s*;/)
+    expect(css).toMatch(/--nyc-surface-card:\s*var\(--nyc-white\)\s*;/)
   })
 
   it('defines global typography roles for display and body fonts', () => {
