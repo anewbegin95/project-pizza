@@ -94,7 +94,7 @@ describe('redesign flag DOM application', () => {
 
     applyRedesignState(mock.document, { enabled: false, environment: 'production' })
     expect(mock.attrs.get('data-env')).toBe('production')
-    expect(mock.attrs.has('data-redesign')).toBe(false)
+    expect(mock.attrs.get('data-redesign')).toBeUndefined()
     expect(mock.bodyClasses.has('redesign-enabled')).toBe(false)
   })
 })

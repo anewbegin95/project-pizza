@@ -65,7 +65,7 @@
     const environment = resolveEnvironment(hostname, config);
     const redesignByEnv = config.redesignByEnv || DEFAULT_REDESIGN_BY_ENV;
     const configuredEnabled = normalizeBoolean(config.enabled);
-    const defaultEnabled = Object.prototype.hasOwnProperty.call(redesignByEnv, environment)
+    const defaultEnabled = environment in redesignByEnv
       ? redesignByEnv[environment]
       : false;
     const searchParams = getSearchParams(locationLike);
@@ -113,13 +113,21 @@
     applyRedesignState(scope.document, state);
 
     if (scope.document && !scope.document.body) {
-      scope.document.addEventListener('DOMContentLoaded', () => {
-        applyRedesignState(scope.document, state);
-      }, { once: true });
+      const applyWhenBodyReady = () => {
+        if (scope.document && scope.document.body) {
+          applyRedesignState(scope.document, state);
+        }
+      };
+
+      if (scope.document.readyState === 'loading') {
+        scope.document.addEventListener('DOMContentLoaded', applyWhenBodyReady, { once: true });
+      } else {
+        applyWhenBodyReady();
+      }
     }
 
     scope.REDESIGN_FLAG = state;
-    scope.isRedesignEnabled = () => state.enabled;
+    scope.REDESIGN_FLAG.isEnabled = () => state.enabled;
     return state;
   }
 
@@ -137,7 +145,7 @@
   }
 
   if (typeof window !== 'undefined') {
-    window.RedesignFlag = api;
+    window.redesignFlag = api;
     initRedesignFlag(window);
   }
 }(typeof globalThis !== 'undefined' ? globalThis : this));
