@@ -28,7 +28,7 @@ The site follows a **mobile-first** approach. Base styles target the smallest vi
 | Token | Value | Usage |
 |---|---|---|
 | `--container-max-width` | 1200px | Max content width on wide screens |
-| `--section-max-width` | 1000px | Max width for narrower content sections |
+| `--section-max-width` | 900px | Max width for narrower content sections |
 
 ### CSS Media Query Convention
 
