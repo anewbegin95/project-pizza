@@ -137,7 +137,7 @@ The site follows a **mobile-first** approach. Base styles target the smallest vi
 |---|---|
 | Mobile (<600px) | Single column; text centered; images stack above text |
 | Tablet (600–1023px) | Single column with wider max-width |
-| Desktop (1024px+) | `flex` row layout (image + text side by side) with `max-width: --section-max-width` |
+| Desktop (1024px+) | `flex` row layout (image + text side by side) with `max-width: var(--section-max-width)` |
 
 ---
 
