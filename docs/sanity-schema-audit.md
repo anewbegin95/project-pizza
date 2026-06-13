@@ -70,7 +70,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 |---|---|
 | **No controlled vocabulary for location** | `location` is a free-text `string` on both `pop-ups` and `date_ideas`. No borough, neighborhood, or structured geo data exists. Content likely contains inconsistent location names (e.g. "Williamsburg" vs. "Williamsburg, Brooklyn"). |
 | **No event category/type taxonomy** | Neither schema defines a category/type field. The redesign requires 7 predefined types with emoji icons for filtering and map pins. |
-| **`display_in_*` flags only on `pop-ups`** | `pop-ups` has `display_in_calendar`, `display_in_popups_page`, `display_in_carousel`. `date_ideas` lacks `display_in_calendar` and `display_in_carousel` despite calendar.html rendering both types. |
+| **`display_in_*` flags only on `pop-ups`** | `pop-ups` has `display_in_calendar`, `display_in_popups_page`, `display_in_carousel`. `date_ideas` lacks `display_in_calendar` and `display_in_carousel`; adding date ideas to the calendar/carousel would require new fields plus calendar rendering support. |
 | **Inconsistent date gating** | `date_ideas` uses `has_date_and_time` boolean to gate date fields; `pop-ups` does not (dates are always applicable). This divergence complicates shared rendering logic. |
 | **`featured_post` is minimal** | Only 4 fields (name, embed_url, caption, display_overall). No image, no date, no category — insufficient for the restyled carousel cards. |
 | **No price/cost information** | Neither `pop-ups` nor `date_ideas` captures cost data. The redesign calls for price pills on cards and a Budget filter for date ideas. |
