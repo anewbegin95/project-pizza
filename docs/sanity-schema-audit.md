@@ -81,7 +81,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 
 | Query | Gap |
 |---|---|
-| `SANITY_QUERIES.DATE_IDEAS` | Does not project `display_in_calendar` or `display_in_carousel` (fields exist on schema but not queried for date ideas). |
+| `SANITY_QUERIES.DATE_IDEAS` | Does not project `display_in_calendar` or `display_in_carousel` (these fields do not exist on the `date_ideas` schema today; add them first, then project them for client gating). |
 | `SANITY_QUERIES.POPUPS` | Projects all display flags, but lacks future fields (borough, neighborhood, type, lat/lng, price) once they are added. |
 | `SANITY_QUERIES.FEATURED_POSTS` | Does not project `image` (field doesn't exist yet). |
 | All queries | No filter parameters — all filtering is client-side. As content grows, server-side filtering or pagination may be needed. |
