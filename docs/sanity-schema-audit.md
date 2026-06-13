@@ -10,8 +10,8 @@
 
 | Document type | File | Fields (count) |
 |---|---|---|
-| `pop-ups` | `sanity/schemaTypes/popup.ts` | 24 |
-| `date_ideas` | `sanity/schemaTypes/dateIdea.ts` | 25 |
+| `pop-ups` | `sanity/schemaTypes/popup.ts` | 26 |
+| `date_ideas` | `sanity/schemaTypes/dateIdea.ts` | 24 |
 | `featured_post` | `sanity/schemaTypes/featuredPost.ts` | 4 |
 
 Supporting files:
