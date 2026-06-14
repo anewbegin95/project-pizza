@@ -221,8 +221,6 @@ function mapSanityPopup(item) {
         neighborhood: item.neighborhood || '',
         venue_name: item.venue_name || '',
         address: item.address || '',
-        latitude: item.latitude ?? null,
-        longitude: item.longitude ?? null,
         price: item.price || '',
         is_featured: Boolean(item.is_featured),
         location: item.location || '',

@@ -33,8 +33,8 @@ Supporting files:
 | `borough` (string/enum) | Filter bar: Borough dropdown (Manhattan, Brooklyn, Queens, etc.) | ✅ Added |
 | `neighborhood` (string) | Filter bar: Neighborhood dropdown (Chelsea, Harlem, SoHo, etc.) | ✅ Added |
 | `category` (string/enum) | Filter bar: Type dropdown with emoji (Food & Drink, Market, Art & Culture, Fashion, Wellness, Music, Vintage & Thrift) | ✅ Added |
-| `latitude` (number) | Map view: pin placement | ✅ Added |
-| `longitude` (number) | Map view: pin placement | ✅ Added |
+| `latitude` (number) | Map view: pin placement | ✅ Derived from `address` via geocoding at build time (no manual entry) |
+| `longitude` (number) | Map view: pin placement | ✅ Derived from `address` via geocoding at build time (no manual entry) |
 | `price` (string) | Event card: price badge pill (e.g. "Free", "$15–30") | ✅ Added |
 | `venue_name` (string) | Event card & modal: venue name displayed separately from address | ✅ Added |
 | `address` (text) | Modal: full address below venue name | ✅ Added |

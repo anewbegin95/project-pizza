@@ -53,9 +53,7 @@
 | `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`. |
 | `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
 | `venue_name` | string | — | Name of the hosting venue. |
-| `address` | text | — | Full street address of the venue. |
-| `latitude` | number | — | Latitude for map pin placement. Range: -90 to 90. |
-| `longitude` | number | — | Longitude for map pin placement. Range: -180 to 180. |
+| `address` | text | — | Full street address of the venue. Coordinates for the map view are geocoded from this field at build time. |
 | `location` | string | — | Legacy free-text location. Prefer `venue_name` + `address` for new content. |
 
 ### Pricing
@@ -95,7 +93,7 @@ Key fields: `name`, `slug`, `start_datetime`/`start_date`, `category`, `borough`
 ### Map View
 
 Query: `SANITY_QUERIES.POPUPS` (filtered client-side by coordinates)  
-Key fields: `latitude`, `longitude`, `category` (pin icon), `venue_name`, `address`, `name`, `price`
+Key fields: `address` (geocoded to coordinates at build time), `category` (pin icon), `venue_name`, `name`, `price`
 
 ### Calendar View
 
@@ -113,7 +111,8 @@ Key fields: All fields. Supports share (via `name`, `slug`, `short_description`,
 
 Both `POPUPS` and `POPUP_BY_ID` queries project all schema fields including:
 - `category`, `borough`, `neighborhood`, `venue_name`, `address`
-- `latitude`, `longitude`
 - `price`, `is_featured`
 - Computed `display_in_popups_page` and `display_in_carousel` (auto-hide expired events)
 - `imageUrl` (resolved from `image.asset->url`)
+
+> **Note:** Coordinates for the map view are derived from the `address` field via geocoding at build time — no manual lat/lng entry is required from CMS users.

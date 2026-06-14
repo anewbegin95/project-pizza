@@ -293,29 +293,8 @@ export const popupType = defineType({
       name: 'address',
       type: 'text',
       rows: 2,
-      description: 'Full street address of the venue.',
-    }),
-    defineField({
-      name: 'latitude',
-      type: 'number',
-      description: 'Latitude coordinate for map pin placement.',
-      validation: (rule) =>
-        rule.custom((value) => {
-          if (value === undefined || value === null) return true;
-          if (value < -90 || value > 90) return 'Latitude must be between -90 and 90.';
-          return true;
-        }),
-    }),
-    defineField({
-      name: 'longitude',
-      type: 'number',
-      description: 'Longitude coordinate for map pin placement.',
-      validation: (rule) =>
-        rule.custom((value) => {
-          if (value === undefined || value === null) return true;
-          if (value < -180 || value > 180) return 'Longitude must be between -180 and 180.';
-          return true;
-        }),
+      description:
+        'Full street address of the venue. Coordinates for the map view are geocoded from this field at build time.',
     }),
     defineField({
       name: 'price',
