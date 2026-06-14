@@ -39,6 +39,13 @@ const POPUPS_QUERY = `*[_type == "pop-ups"] | order(coalesce(start_datetime, sta
   end_date,
   all_day,
   recurring,
+  category,
+  borough,
+  neighborhood,
+  venue_name,
+  address,
+  price,
+  is_featured,
   location,
   display_overall,
   "display_in_popups_page": select(
