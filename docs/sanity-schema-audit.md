@@ -26,7 +26,7 @@ Supporting files:
 
 ### 2.1 Pop-ups (`pop-ups`)
 
-> ✅ **Resolved** — All fields below were added in the schema update (2026-06-14).
+> ✅ **Partially resolved** — Most fields below were added in the schema update (2026-06-14). `latitude` and `longitude` are still pending (see ⏳ rows).
 
 | Field | Redesign requirement | Status |
 |---|---|---|

@@ -92,8 +92,8 @@ Key fields: `name`, `slug`, `start_datetime`/`start_date`, `category`, `borough`
 
 ### Map View
 
-Query: `SANITY_QUERIES.POPUPS` (filtered client-side by coordinates)  
-Key fields: `address` (geocoded to coordinates at build time), `category` (pin icon), `venue_name`, `name`, `price`
+Query: `SANITY_QUERIES.POPUPS` (coordinate-based filtering not yet available — pending geocoding implementation)  
+Key fields: `address` (coordinates will be geocoded from this field once geocoding is implemented), `category` (pin icon), `venue_name`, `name`, `price`
 
 ### Calendar View
 
@@ -103,13 +103,13 @@ Key fields: `name`, `start_datetime`/`start_date`, `end_datetime`/`end_date`, `a
 ### Detail View
 
 Query: `SANITY_QUERIES.POPUP_BY_ID`  
-Key fields: All fields. Supports share (via `name`, `slug`, `short_description`, `imageUrl`) and add-to-calendar (via date/time and location fields).
+Key fields: All projected fields (note: `imageUrl` is projected rather than the raw `image` object). Supports share (via `name`, `slug`, `short_description`, `imageUrl`) and add-to-calendar (via date/time and location fields).
 
 ---
 
 ## GROQ Query Projections
 
-Both `POPUPS` and `POPUP_BY_ID` queries project all schema fields including:
+Both `POPUPS` and `POPUP_BY_ID` queries project the fields needed by the front end, including:
 - `category`, `borough`, `neighborhood`, `venue_name`, `address`
 - `price`, `is_featured`
 - Computed `display_in_popups_page` and `display_in_carousel` (auto-hide expired events)
