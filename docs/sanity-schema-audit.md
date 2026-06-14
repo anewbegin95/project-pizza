@@ -33,8 +33,8 @@ Supporting files:
 | `borough` (string/enum) | Filter bar: Borough dropdown (Manhattan, Brooklyn, Queens, etc.) | ✅ Added |
 | `neighborhood` (string) | Filter bar: Neighborhood dropdown (Chelsea, Harlem, SoHo, etc.) | ✅ Added |
 | `category` (string/enum) | Filter bar: Type dropdown with emoji (Food & Drink, Market, Art & Culture, Fashion, Wellness, Music, Vintage & Thrift) | ✅ Added |
-| `latitude` (number) | Map view: pin placement | ✅ Derived from `address` via geocoding at build time (no manual entry) |
-| `longitude` (number) | Map view: pin placement | ✅ Derived from `address` via geocoding at build time (no manual entry) |
+| `latitude` (number) | Map view: pin placement | ⏳ Planned — will be derived from `address` via build-time geocoding (not yet implemented) |
+| `longitude` (number) | Map view: pin placement | ⏳ Planned — will be derived from `address` via build-time geocoding (not yet implemented) |
 | `price` (string) | Event card: price badge pill (e.g. "Free", "$15–30") | ✅ Added |
 | `venue_name` (string) | Event card & modal: venue name displayed separately from address | ✅ Added |
 | `address` (text) | Modal: full address below venue name | ✅ Added |
@@ -84,7 +84,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 | Query | Gap |
 |---|---|
 | `SANITY_QUERIES.DATE_IDEAS` | Does not project `display_in_calendar` or `display_in_carousel` (these fields do not exist on the `date_ideas` schema today; add them first, then project them for client gating). |
-| `SANITY_QUERIES.POPUPS` | ✅ Projects all new fields (borough, neighborhood, category, lat/lng, price, is_featured, venue_name, address). |
+| `SANITY_QUERIES.POPUPS` | ✅ Projects all new fields (borough, neighborhood, category, price, is_featured, venue_name, address). Lat/lng not yet projected (pending geocoding implementation). |
 | `SANITY_QUERIES.FEATURED_POSTS` | Does not project `image` (field doesn't exist yet). |
 | All queries | No filter parameters — all filtering is client-side. As content grows, server-side filtering or pagination may be needed. |
 

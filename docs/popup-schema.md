@@ -53,7 +53,7 @@
 | `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`. |
 | `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
 | `venue_name` | string | — | Name of the hosting venue. |
-| `address` | text | — | Full street address of the venue. Coordinates for the map view are geocoded from this field at build time. |
+| `address` | text | — | Full street address of the venue. Coordinates for the map view will be geocoded from this field at build time (pending implementation). |
 | `location` | string | — | Legacy free-text location. Prefer `venue_name` + `address` for new content. |
 
 ### Pricing
@@ -115,4 +115,4 @@ Both `POPUPS` and `POPUP_BY_ID` queries project all schema fields including:
 - Computed `display_in_popups_page` and `display_in_carousel` (auto-hide expired events)
 - `imageUrl` (resolved from `image.asset->url`)
 
-> **Note:** Coordinates for the map view are derived from the `address` field via geocoding at build time — no manual lat/lng entry is required from CMS users.
+> **Note:** Coordinates for the map view will be derived from the `address` field via build-time geocoding (not yet implemented) — no manual lat/lng entry will be required from CMS users.

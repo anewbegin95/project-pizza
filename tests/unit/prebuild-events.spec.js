@@ -42,6 +42,13 @@ describe('mapSanityPopup', () => {
       end_datetime: '2025-06-01T14:00:00',
       all_day: false,
       recurring: false,
+      category: 'food_drink',
+      borough: 'brooklyn',
+      neighborhood: 'Williamsburg',
+      venue_name: 'Pizza Palace',
+      address: '123 Main St, Brooklyn, NY',
+      price: '$15–30',
+      is_featured: true,
       location: 'Brooklyn, NY',
       display_overall: true,
       display_in_popups_page: true,
@@ -54,6 +61,30 @@ describe('mapSanityPopup', () => {
     expect(result.master_display).toBe('TRUE')
     expect(result.popups_page).toBe('TRUE')
     expect(result.img).toBe('https://cdn.example.com/img.jpg')
+    expect(result.category).toBe('food_drink')
+    expect(result.borough).toBe('brooklyn')
+    expect(result.neighborhood).toBe('Williamsburg')
+    expect(result.venue_name).toBe('Pizza Palace')
+    expect(result.address).toBe('123 Main St, Brooklyn, NY')
+    expect(result.price).toBe('$15–30')
+    expect(result.is_featured).toBe(true)
+  })
+
+  it('provides default values when new fields are undefined', () => {
+    const item = {
+      _id: 'minimal123',
+      name: 'Minimal Pop-Up',
+      display_overall: true,
+      display_in_popups_page: true,
+    }
+    const result = mapSanityPopup(item)
+    expect(result.category).toBe('')
+    expect(result.borough).toBe('')
+    expect(result.neighborhood).toBe('')
+    expect(result.venue_name).toBe('')
+    expect(result.address).toBe('')
+    expect(result.price).toBe('')
+    expect(result.is_featured).toBe(false)
   })
 })
 
