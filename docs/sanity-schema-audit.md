@@ -26,15 +26,15 @@ Supporting files:
 
 ### 2.1 Pop-ups (`pop-ups`)
 
-> ✅ **Partially resolved** — Most fields below were added in the schema update (2026-06-14). `latitude` and `longitude` are still pending (see ⏳ rows).
+> ✅ **Resolved** — all fields below have been added.
 
 | Field | Redesign requirement | Status |
 |---|---|---|
 | `borough` (string/enum) | Filter bar: Borough dropdown (Manhattan, Brooklyn, Queens, etc.) | ✅ Added |
 | `neighborhood` (string) | Filter bar: Neighborhood dropdown (Chelsea, Harlem, SoHo, etc.) | ✅ Added |
 | `category` (string/enum) | Filter bar: Type dropdown with emoji (Food & Drink, Market, Art & Culture, Fashion, Wellness, Music, Vintage & Thrift) | ✅ Added |
-| `latitude` (number) | Map view: pin placement | ⏳ Planned — will be derived from `address` via build-time geocoding (not yet implemented) |
-| `longitude` (number) | Map view: pin placement | ⏳ Planned — will be derived from `address` via build-time geocoding (not yet implemented) |
+| `latitude` (number) | Map view: pin placement | ✅ Added — read-only, auto-populated from `address` by `scripts/geocode-popups.js` (Nominatim) |
+| `longitude` (number) | Map view: pin placement | ✅ Added — read-only, auto-populated from `address` by `scripts/geocode-popups.js` (Nominatim) |
 | `price` (string) | Event card: price badge pill (e.g. "Free", "$15–30") | ✅ Added |
 | `venue_name` (string) | Event card & modal: venue name displayed separately from address | ✅ Added |
 | `address` (text) | Modal: full address below venue name | ✅ Added |
@@ -84,7 +84,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 | Query | Gap |
 |---|---|
 | `SANITY_QUERIES.DATE_IDEAS` | Does not project `display_in_calendar` or `display_in_carousel` (these fields do not exist on the `date_ideas` schema today; add them first, then project them for client gating). |
-| `SANITY_QUERIES.POPUPS` | ✅ Projects all new fields (borough, neighborhood, category, price, is_featured, venue_name, address). Lat/lng not yet projected (pending geocoding implementation). |
+| `SANITY_QUERIES.POPUPS` | ✅ Projects all new fields (borough, neighborhood, category, price, is_featured, venue_name, address, latitude, longitude). |
 | `SANITY_QUERIES.FEATURED_POSTS` | Does not project `image` (field doesn't exist yet). |
 | All queries | No filter parameters — all filtering is client-side. As content grows, server-side filtering or pagination may be needed. |
 
@@ -96,7 +96,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 |---|---|
 | **Free-text `location`** | Cannot reliably extract borough/neighborhood for filter dropdowns without manual backfill. |
 | **Missing images** | `image` is optional on both `pop-ups` and `date_ideas`. Cards with missing images will break the redesigned card layout (image column is structural). |
-| **No lat/lng data** | Map view is blocked until coordinates are backfilled for every pop-up. |
+| **Lat/lng backfill in progress** | `geocode-popups.yml` runs daily and geocodes any pop-up with an `address` but no coordinates yet; existing documents are backfilled incrementally rather than all at once. |
 | **No content audit of existing documents** | Without querying live Sanity data, we cannot confirm how many documents lack `short_description`, `image`, or other fields the redesign relies on. A content completeness report should be generated. |
 
 ---
@@ -105,15 +105,15 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 
 The following schema and backfill work should be tracked as separate issues referencing this audit:
 
-1. **Schema: Add geo fields to `pop-ups`** — ✅ `borough`, `neighborhood`, `category`, `price`, `venue_name`, `address`, `is_featured` were added (2026-06-14). Still pending: `latitude`, `longitude` (blocked on geocoding implementation).
+1. **Schema: Add geo fields to `pop-ups`** — ✅ `borough`, `neighborhood`, `category`, `price`, `venue_name`, `address`, `is_featured` were added (2026-06-14). `latitude`/`longitude` added and auto-populated via `scripts/geocode-popups.js`.
 2. **Schema: Add taxonomy fields to `date_ideas`** — Add `vibe`, `budget`, `neighborhood`, `borough`, `price`, `venue_name`, `address`.
 3. **Schema: Enhance `featured_post`** — Add `image`, `link`, `publish_date`.
 4. **Schema: Create homepage singleton** — Or hardcode quick-nav content; decide approach.
-5. **Content backfill: Geo-code existing pop-ups** — Populate `latitude`, `longitude`, `borough`, `neighborhood` for all existing documents. (`borough` and `neighborhood` fields now exist; `latitude`/`longitude` blocked on geocoding implementation.)
+5. **Content backfill: Geo-code existing pop-ups** — ✅ `borough`/`neighborhood` exist; `latitude`/`longitude` are backfilled automatically by the daily `geocode-popups.yml` workflow (`scripts/geocode-popups.js`) for any document missing coordinates.
 6. **Content backfill: Categorize existing pop-ups** — Assign `category` to all existing documents. (`category` field now exists.)
 7. **Content backfill: Add vibe/budget to date ideas** — Populate taxonomy fields.
 8. **Content backfill: Ensure image coverage** — Identify and fill documents with missing images.
-9. **Query update: Align GROQ projections** — ✅ `sanity-queries.js` and `prebuild-events.js` POPUPS queries now project new fields. Still pending: `DATE_IDEAS` query updates once `date_ideas` schema adds new fields; add filter parameters if server-side filtering becomes needed.
+9. **Query update: Align GROQ projections** — ✅ `sanity-queries.js` and `prebuild-events.js` POPUPS queries now project new fields, including `latitude`/`longitude`. Still pending: `DATE_IDEAS` query updates once `date_ideas` schema adds new fields; add filter parameters if server-side filtering becomes needed.
 10. **Content completeness report** — Run a GROQ query against production to quantify documents missing `short_description`, `image`, `location`, and other key fields.
 
 ---
@@ -130,6 +130,7 @@ The following schema and backfill work should be tracked as separate issues refe
 | `resources/js/sanity-client.js` | Front-end Sanity fetch helper |
 | `resources/js/sanity-queries.js` | GROQ query definitions |
 | `scripts/prebuild-events.js` | Server-side event pre-build |
+| `scripts/geocode-popups.js` | Geocodes `address` via Nominatim and writes `latitude`/`longitude` back to Sanity |
 | `scripts/generate-llms-txt.js` | LLM export script |
 | `REDESIGN.md` | Full redesign specification |
 | `index.html` | Homepage (current) |

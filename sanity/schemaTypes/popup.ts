@@ -294,7 +294,19 @@ export const popupType = defineType({
       type: 'text',
       rows: 2,
       description:
-        'Full street address of the venue. Coordinates for the map view will be geocoded from this field at build time (integration pending).',
+        'Full street address of the venue. Coordinates for the map view are geocoded from this field automatically.',
+    }),
+    defineField({
+      name: 'latitude',
+      type: 'number',
+      readOnly: true,
+      description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
+    }),
+    defineField({
+      name: 'longitude',
+      type: 'number',
+      readOnly: true,
+      description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
     }),
     defineField({
       name: 'price',
