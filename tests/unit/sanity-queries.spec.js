@@ -3,9 +3,13 @@
 // copy (scripts/prebuild-events.js) must both project the fields the front
 // end consumes.
 
-global.window = global.window || {}
+// sanity-queries.js assigns to window at load time; stub it only for the
+// duration of the require so no global state leaks into other specs.
+vi.stubGlobal('window', {})
 require('../../resources/js/sanity-queries.js')
 const SANITY_QUERIES = global.window.SANITY_QUERIES
+vi.unstubAllGlobals()
+
 const { DATE_IDEAS_QUERY } = require('../../scripts/prebuild-events.js')
 
 const DATE_IDEA_TAXONOMY_FIELDS = [
