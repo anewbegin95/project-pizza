@@ -24,6 +24,14 @@ function mapSanityDateIdea(item, index) {
     return {
         id: item.slug || item._id || generateEventId(item, index),
         name: item.name || '',
+        vibe: item.vibe || '',
+        budget: item.budget || '',
+        borough: item.borough || '',
+        neighborhood: item.neighborhood || '',
+        venue_name: item.venue_name || '',
+        address: item.address || '',
+        price: item.price || '',
+        is_featured: Boolean(item.is_featured),
         location: item.location || '',
         link: item.link || '',
         link_text: item.link_text || '',
@@ -77,19 +85,25 @@ function createDateIdeaTile(idea) {
 }
 
 // === MAIN FUNCTIONALITY ===
-document.addEventListener('DOMContentLoaded', () => {
-    sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
-        .then(results => {
-            const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
-            const grid = document.getElementById('dateIdeasGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            dateIdeas.forEach(idea => {
-                const tile = createDateIdeaTile(idea);
-                if (tile) grid.appendChild(tile);
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
+            .then(results => {
+                const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
+                const grid = document.getElementById('dateIdeasGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                dateIdeas.forEach(idea => {
+                    const tile = createDateIdeaTile(idea);
+                    if (tile) grid.appendChild(tile);
+                });
+            })
+            .catch(error => {
+                console.error('Failed to fetch date ideas:', error);
             });
-        })
-        .catch(error => {
-            console.error('Failed to fetch date ideas:', error);
-        });
-});
+    });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mapSanityDateIdea, generateEventId };
+}

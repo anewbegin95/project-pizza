@@ -63,6 +63,14 @@ const DATE_IDEAS_QUERY = `*[_type == "date_ideas"] | order(name asc) {
   _id,
   name,
   "slug": slug.current,
+  vibe,
+  budget,
+  borough,
+  neighborhood,
+  venue_name,
+  address,
+  price,
+  is_featured,
   location,
   link,
   link_text,
@@ -247,6 +255,14 @@ function mapSanityDateIdea(item, index) {
     return {
         id: item.slug || item._id || fallbackId,
         name: item.name || '',
+        vibe: item.vibe || '',
+        budget: item.budget || '',
+        borough: item.borough || '',
+        neighborhood: item.neighborhood || '',
+        venue_name: item.venue_name || '',
+        address: item.address || '',
+        price: item.price || '',
+        is_featured: Boolean(item.is_featured),
         location: item.location || '',
         link: item.link || '',
         link_text: item.link_text || '',
@@ -621,6 +637,7 @@ if (require.main === module) {
 
 // Export utility functions for testing
 module.exports = {
+    DATE_IDEAS_QUERY,
     generateCollectionJsonLd,
     generatePopupTileHtml,
     generateDateIdeaTileHtml,

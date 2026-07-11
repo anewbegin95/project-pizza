@@ -2,7 +2,7 @@
 
 > **Purpose:** Identify gaps between current Sanity schema/content and the redesign requirements documented in `REDESIGN.md`.  
 > **Scope:** Schema definitions, GROQ queries, and front-end data contracts only — no schema changes are made in this audit.  
-> **Date:** 2026-06-14 (updated 2026-06-14 for schema additions)
+> **Date:** 2026-06-14 (updated 2026-07-11 for `date_ideas` schema additions)
 
 ---
 
@@ -11,7 +11,7 @@
 | Document type | File | Fields (count) |
 |---|---|---|
 | `pop-ups` | `sanity/schemaTypes/popup.ts` | 33 |
-| `date_ideas` | `sanity/schemaTypes/dateIdea.ts` | 24 |
+| `date_ideas` | `sanity/schemaTypes/dateIdea.ts` | 32 |
 | `featured_post` | `sanity/schemaTypes/featuredPost.ts` | 4 |
 
 Supporting files:
@@ -42,15 +42,18 @@ Supporting files:
 
 ### 2.2 Date Ideas (`date_ideas`)
 
-| Missing field | Redesign requirement | Reference |
+> ✅ **Resolved** — all fields below have been added (2026-07-11). See `docs/dateidea-schema.md`.
+
+| Field | Redesign requirement | Status |
 |---|---|---|
-| `vibe` (string/enum) | Filter bar: Vibe dropdown (Romantic, Adventurous, Chill, Foodie, Cultural, Free) | REDESIGN.md §7.2 |
-| `budget` (string/enum) | Filter bar: Budget dropdown (Free, Under $30, $30–$75, $75+) | REDESIGN.md §7.2 |
-| `neighborhood` (string/enum) | Filter bar: Neighborhood dropdown | REDESIGN.md §7.2 |
-| `borough` (string/enum) | Implied by neighborhood filter (grouping) | REDESIGN.md §7.2 |
-| `price` / `price_label` (string) | Card badge pill | REDESIGN.md §6.4 |
-| `venue_name` (string) | Card & modal: venue vs. generic location string | REDESIGN.md §6.4 |
-| `address` (string/text) | Modal: full address | REDESIGN.md §6.5 |
+| `vibe` (string/enum) | Filter bar: Vibe dropdown (Romantic, Adventurous, Chill, Foodie, Cultural, Free) | ✅ Added |
+| `budget` (string/enum) | Filter bar: Budget dropdown (Free, Under $30, $30–$75, $75+) | ✅ Added |
+| `neighborhood` (string) | Filter bar: Neighborhood dropdown | ✅ Added |
+| `borough` (string/enum) | Implied by neighborhood filter (grouping) | ✅ Added |
+| `price` (string) | Card badge pill | ✅ Added |
+| `venue_name` (string) | Card & modal: venue vs. generic location string | ✅ Added |
+| `address` (text) | Modal: full address | ✅ Added |
+| `is_featured` (boolean) | Featured card variant | ✅ Added |
 
 ### 2.3 Featured Posts (`featured_post`)
 
@@ -70,12 +73,12 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 
 | Issue | Details |
 |---|---|
-| **No controlled vocabulary for location** | `location` is a free-text `string` on both `pop-ups` and `date_ideas`. `pop-ups` now has structured `borough` and `neighborhood` fields (added 2026-06-14), but `date_ideas` still lacks these. Existing `location` values may contain inconsistent free-text (e.g. "Williamsburg" vs. "Williamsburg, Brooklyn"). |
-| **No event category/type taxonomy for `date_ideas`** | `pop-ups` now has a `category` field (added 2026-06-14). `date_ideas` still lacks a category/type field. |
+| **No controlled vocabulary for location** | `location` is a free-text `string` on both `pop-ups` and `date_ideas`. Both types now have structured `borough` and `neighborhood` fields (`pop-ups` 2026-06-14, `date_ideas` 2026-07-11). Existing `location` values may contain inconsistent free-text (e.g. "Williamsburg" vs. "Williamsburg, Brooklyn") pending backfill. |
+| **No event category/type taxonomy for `date_ideas`** | `pop-ups` has a `category` field (added 2026-06-14). `date_ideas` now has `vibe` and `budget` taxonomy fields (added 2026-07-11). |
 | **`display_in_*` flags only on `pop-ups`** | `pop-ups` has `display_in_calendar`, `display_in_popups_page`, `display_in_carousel`. `date_ideas` lacks `display_in_calendar` and `display_in_carousel`; adding date ideas to the calendar/carousel would require new fields plus calendar rendering support. |
 | **Inconsistent date gating** | `date_ideas` uses `has_date_and_time` boolean to gate date fields; `pop-ups` does not (dates are always applicable). This divergence complicates shared rendering logic. |
 | **`featured_post` is minimal** | Only 4 fields (name, embed_url, caption, display_overall). No image, no date, no category — insufficient for the restyled carousel cards. |
-| **No price/cost information on `date_ideas`** | `pop-ups` now has a `price` field (added 2026-06-14). `date_ideas` still lacks cost data. The redesign calls for a Budget filter for date ideas. |
+| **No price/cost information on `date_ideas`** | ✅ Resolved — `date_ideas` now has `price` and `budget` fields (added 2026-07-11). Content backfill still pending. |
 
 ---
 
@@ -83,7 +86,7 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 
 | Query | Gap |
 |---|---|
-| `SANITY_QUERIES.DATE_IDEAS` | Does not project `display_in_calendar` or `display_in_carousel` (these fields do not exist on the `date_ideas` schema today; add them first, then project them for client gating). |
+| `SANITY_QUERIES.DATE_IDEAS` | ✅ Projects the new taxonomy fields (vibe, budget, borough, neighborhood, venue_name, address, price, is_featured) as of 2026-07-11. Still does not project `display_in_calendar` or `display_in_carousel` (these fields do not exist on the `date_ideas` schema; add them first, then project them for client gating). |
 | `SANITY_QUERIES.POPUPS` | ✅ Projects all new fields (borough, neighborhood, category, price, is_featured, venue_name, address, latitude, longitude). |
 | `SANITY_QUERIES.FEATURED_POSTS` | Does not project `image` (field doesn't exist yet). |
 | All queries | No filter parameters — all filtering is client-side. As content grows, server-side filtering or pagination may be needed. |
@@ -106,14 +109,14 @@ The redesign specifies quick-navigation cards (NYC Pop-Ups, Date Ideas, Substack
 The following schema and backfill work should be tracked as separate issues referencing this audit:
 
 1. **Schema: Add geo fields to `pop-ups`** — ✅ `borough`, `neighborhood`, `category`, `price`, `venue_name`, `address`, `is_featured` were added (2026-06-14). `latitude`/`longitude` added and auto-populated via `scripts/geocode-popups.js`.
-2. **Schema: Add taxonomy fields to `date_ideas`** — Add `vibe`, `budget`, `neighborhood`, `borough`, `price`, `venue_name`, `address`.
+2. **Schema: Add taxonomy fields to `date_ideas`** — ✅ `vibe`, `budget`, `neighborhood`, `borough`, `price`, `venue_name`, `address`, `is_featured` added (2026-07-11). See `docs/dateidea-schema.md`.
 3. **Schema: Enhance `featured_post`** — Add `image`, `link`, `publish_date`.
 4. **Schema: Create homepage singleton** — Or hardcode quick-nav content; decide approach.
 5. **Content backfill: Geo-code existing pop-ups** — ✅ `borough`/`neighborhood` exist; `latitude`/`longitude` are backfilled automatically by the daily `geocode-popups.yml` workflow (`scripts/geocode-popups.js`) for any document missing coordinates.
 6. **Content backfill: Categorize existing pop-ups** — Assign `category` to all existing documents. (`category` field now exists.)
 7. **Content backfill: Add vibe/budget to date ideas** — Populate taxonomy fields.
 8. **Content backfill: Ensure image coverage** — Identify and fill documents with missing images.
-9. **Query update: Align GROQ projections** — ✅ `sanity-queries.js` and `prebuild-events.js` POPUPS queries now project new fields, including `latitude`/`longitude`. Still pending: `DATE_IDEAS` query updates once `date_ideas` schema adds new fields; add filter parameters if server-side filtering becomes needed.
+9. **Query update: Align GROQ projections** — ✅ `sanity-queries.js` and `prebuild-events.js` POPUPS queries project new fields, including `latitude`/`longitude`; DATE_IDEAS queries project the new taxonomy fields as of 2026-07-11. Still pending: add filter parameters if server-side filtering becomes needed.
 10. **Content completeness report** — Run a GROQ query against production to quantify documents missing `short_description`, `image`, `location`, and other key fields.
 
 ---
