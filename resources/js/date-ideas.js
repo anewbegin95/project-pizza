@@ -85,19 +85,25 @@ function createDateIdeaTile(idea) {
 }
 
 // === MAIN FUNCTIONALITY ===
-document.addEventListener('DOMContentLoaded', () => {
-    sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
-        .then(results => {
-            const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
-            const grid = document.getElementById('dateIdeasGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            dateIdeas.forEach(idea => {
-                const tile = createDateIdeaTile(idea);
-                if (tile) grid.appendChild(tile);
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
+            .then(results => {
+                const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
+                const grid = document.getElementById('dateIdeasGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                dateIdeas.forEach(idea => {
+                    const tile = createDateIdeaTile(idea);
+                    if (tile) grid.appendChild(tile);
+                });
+            })
+            .catch(error => {
+                console.error('Failed to fetch date ideas:', error);
             });
-        })
-        .catch(error => {
-            console.error('Failed to fetch date ideas:', error);
-        });
-});
+    });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mapSanityDateIdea, generateEventId };
+}

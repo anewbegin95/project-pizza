@@ -637,6 +637,7 @@ if (require.main === module) {
 
 // Export utility functions for testing
 module.exports = {
+    DATE_IDEAS_QUERY,
     generateCollectionJsonLd,
     generatePopupTileHtml,
     generateDateIdeaTileHtml,
