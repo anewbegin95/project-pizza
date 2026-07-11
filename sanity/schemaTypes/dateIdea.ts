@@ -275,8 +275,81 @@ export const dateIdeaType = defineType({
         hidden: ({document}) => !document?.has_date_and_time || !document?.recurring,
     }),
     defineField({
+        name: 'vibe',
+        type: 'string',
+        description: 'Vibe used for filtering and the card vibe label.',
+        options: {
+          list: [
+            {title: 'Romantic', value: 'romantic'},
+            {title: 'Adventurous', value: 'adventurous'},
+            {title: 'Chill', value: 'chill'},
+            {title: 'Foodie', value: 'foodie'},
+            {title: 'Cultural', value: 'cultural'},
+            {title: 'Free', value: 'free'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'budget',
+        type: 'string',
+        description: 'Budget tier used for the budget filter dropdown.',
+        options: {
+          list: [
+            {title: 'Free', value: 'free'},
+            {title: 'Under $30', value: 'under_30'},
+            {title: '$30–$75', value: '30_to_75'},
+            {title: '$75+', value: '75_plus'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'borough',
+        type: 'string',
+        description: 'NYC borough for geographic filtering.',
+        options: {
+          list: [
+            {title: 'Manhattan', value: 'manhattan'},
+            {title: 'Brooklyn', value: 'brooklyn'},
+            {title: 'Queens', value: 'queens'},
+            {title: 'Bronx', value: 'bronx'},
+            {title: 'Staten Island', value: 'staten_island'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'neighborhood',
+        type: 'string',
+        description: 'Neighborhood within the borough (e.g., Chelsea, SoHo, Williamsburg).',
+    }),
+    defineField({
+        name: 'venue_name',
+        type: 'string',
+        description: 'Name of the venue for the date idea.',
+    }),
+    defineField({
+        name: 'address',
+        type: 'text',
+        rows: 2,
+        description: 'Full street address of the venue.',
+    }),
+    defineField({
+        name: 'price',
+        type: 'string',
+        description: 'Price label shown as a badge on cards (e.g., "Free", "$40 per person").',
+    }),
+    defineField({
+        name: 'is_featured',
+        type: 'boolean',
+        description: 'Enable to display this date idea as a featured card with expanded image.',
+        initialValue: false,
+    }),
+    defineField({
         name: 'location',
         type: 'string',
+        description: 'Legacy free-text location field. Prefer venue_name + address for new content.',
     }),
     defineField({
         name: 'link',

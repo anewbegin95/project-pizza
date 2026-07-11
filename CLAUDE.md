@@ -56,12 +56,12 @@ Each top-level page (`index.html`, `pop-ups.html`, `date-ideas.html`, `calendar.
 
 ### Sanity CMS integration
 
-- Schema lives in `sanity/schemaTypes/` (`popup.ts`, `dateIdea.ts`, `featuredPost.ts`). `docs/popup-schema.md` is the field reference for the `pop-ups` document type — keep it in sync when editing `popup.ts`.
+- Schema lives in `sanity/schemaTypes/` (`popup.ts`, `dateIdea.ts`, `featuredPost.ts`). `docs/popup-schema.md` and `docs/dateidea-schema.md` are the field references for the `pop-ups` and `date_ideas` document types — keep them in sync when editing `popup.ts` / `dateIdea.ts`.
 - `resources/js/sanity-client.js` defines `window.SANITY_CONFIG` (project ID, dataset, API version) and `window.sanityFetch(query, params)`, a thin fetch wrapper around Sanity's public GROQ HTTP API (CDN, read-only, no token, `perspective=published`).
 - `resources/js/sanity-queries.js` defines `window.SANITY_QUERIES` (`POPUPS`, `POPUP_BY_ID`, `DATE_IDEAS`, `DATE_IDEA_BY_ID`, `FEATURED_POSTS`) — the canonical GROQ query strings used by page scripts (`pop-ups.js`, `calendar.js`, `pop-up-details.js`, `date-ideas.js`, `date-idea-details.js`).
-- **Query duplication**: `scripts/prebuild-events.js` maintains its own copies of the `POPUPS`/`DATE_IDEAS` GROQ queries (Node script, can't `require` the browser globals). When changing a query or schema field used in listings, update it in *both* `resources/js/sanity-queries.js` and `scripts/prebuild-events.js`, and update `docs/popup-schema.md` if the field is documented there.
+- **Query duplication**: `scripts/prebuild-events.js` maintains its own copies of the `POPUPS`/`DATE_IDEAS` GROQ queries (Node script, can't `require` the browser globals). When changing a query or schema field used in listings, update it in *both* `resources/js/sanity-queries.js` and `scripts/prebuild-events.js`, and update `docs/popup-schema.md` / `docs/dateidea-schema.md` if the field is documented there.
 - `display_overall` / `display_in_calendar` / `display_in_popups_page` / `display_in_carousel` are independent visibility toggles per pop-up; the latter two are also computed server-side in GROQ to auto-hide events whose end date has passed.
-- Coordinates for map views are intended to be geocoded from the `address` field at build time — not yet implemented (see `docs/popup-schema.md`).
+- Coordinates for map views are geocoded from the pop-up `address` field by `scripts/geocode-popups.js` (Nominatim, runs on a schedule via `.github/workflows/geocode-popups.yml`), which writes read-only `latitude`/`longitude` back into Sanity (see `docs/popup-schema.md`).
 
 ### Prebuild static rendering (`scripts/prebuild-events.js`)
 
