@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -65,7 +67,9 @@ jobs:
           SCRIPT_EXIT_CODE=$?
           set -e
 
-          git add data/geocode-cache.json
+          if [ -f data/geocode-cache.json ]; then
+            git add data/geocode-cache.json
+          fi
           if git diff --staged --quiet; then
             echo "No changes to the geocode cache."
           else

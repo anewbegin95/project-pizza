@@ -1,6 +1,7 @@
 const {
   normalizeAddressKey,
   resolveCoordinates,
+  parseMutateResponse,
 } = require('../../scripts/geocode-popups.js')
 
 describe('normalizeAddressKey', () => {
@@ -60,5 +61,25 @@ describe('resolveCoordinates', () => {
       resolveCoordinates('addr-1', cache, { geocode, sleep })
     ).rejects.toThrow('network error')
     expect(cache).not.toHaveProperty('addr-1')
+  })
+})
+
+describe('parseMutateResponse', () => {
+  it('returns the parsed body on a 200 with no error field', () => {
+    const body = JSON.stringify({ transactionId: 'abc', results: [] })
+    expect(parseMutateResponse(200, body)).toEqual({ transactionId: 'abc', results: [] })
+  })
+
+  it('throws when the response body contains an error field, even with a 2xx status', () => {
+    const body = JSON.stringify({ error: { description: 'Insufficient permissions' } })
+    expect(() => parseMutateResponse(200, body)).toThrow(/Insufficient permissions/)
+  })
+
+  it('throws on a non-2xx status code', () => {
+    expect(() => parseMutateResponse(400, '{"error":"bad request"}')).toThrow(/HTTP 400/)
+  })
+
+  it('throws when the body is not valid JSON', () => {
+    expect(() => parseMutateResponse(200, 'not json')).toThrow(/parse/i)
   })
 })

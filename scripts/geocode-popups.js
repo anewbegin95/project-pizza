@@ -87,6 +87,31 @@ function sanityFetch(query, timeoutMs = 15000) {
     });
 }
 
+/**
+ * Parses a Sanity Mutate API response, throwing on a non-2xx status or on
+ * an `error` field in the body (Sanity's documented error shape is a non-2xx
+ * status, but this check is defensive, matching sanityFetch's same check on
+ * the read side).
+ */
+function parseMutateResponse(statusCode, rawBody) {
+    if (statusCode < 200 || statusCode >= 300) {
+        throw new Error(`Sanity mutate failed with HTTP ${statusCode}. Body: ${rawBody.slice(0, 500)}`);
+    }
+
+    let parsed;
+    try {
+        parsed = JSON.parse(rawBody);
+    } catch (e) {
+        throw new Error(`Failed to parse Sanity mutate response as JSON: ${e.message}`);
+    }
+
+    if (parsed.error) {
+        throw new Error(`Sanity mutate error: ${JSON.stringify(parsed.error)}`);
+    }
+
+    return parsed;
+}
+
 function sanityMutate(mutations, token, timeoutMs = 15000) {
     return new Promise((resolve, reject) => {
         const body = JSON.stringify({ mutations });
@@ -109,11 +134,12 @@ function sanityMutate(mutations, token, timeoutMs = 15000) {
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => {
                     clearTimeout(timer);
-                    if (res.statusCode < 200 || res.statusCode >= 300) {
-                        reject(new Error(`Sanity mutate failed with HTTP ${res.statusCode}. Body: ${data.slice(0, 500)}`));
-                        return;
+                    try {
+                        parseMutateResponse(res.statusCode, data);
+                        resolve();
+                    } catch (err) {
+                        reject(err);
                     }
-                    resolve();
                 });
             }
         );
@@ -325,4 +351,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { normalizeAddressKey, geocodeAddress, sanityFetch, sanityMutate, loadCache, saveCache, resolveCoordinates };
+module.exports = { normalizeAddressKey, geocodeAddress, sanityFetch, sanityMutate, parseMutateResponse, loadCache, saveCache, resolveCoordinates };
