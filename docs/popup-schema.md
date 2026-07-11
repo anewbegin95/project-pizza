@@ -53,7 +53,9 @@
 | `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`. |
 | `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
 | `venue_name` | string | — | Name of the hosting venue. |
-| `address` | text | — | Full street address of the venue. Coordinates for the map view will be geocoded from this field at build time (pending implementation). |
+| `address` | text | — | Full street address of the venue. Coordinates for the map view are geocoded from this field automatically. |
+| `latitude` | number | — | Read-only. Auto-populated from `address` by `scripts/geocode-popups.js`. |
+| `longitude` | number | — | Read-only. Auto-populated from `address` by `scripts/geocode-popups.js`. |
 | `location` | string | — | Legacy free-text location. Prefer `venue_name` + `address` for new content. |
 
 ### Pricing
@@ -92,8 +94,8 @@ Key fields: `name`, `slug`, `start_datetime`/`start_date`, `category`, `borough`
 
 ### Map View
 
-Query: `SANITY_QUERIES.POPUPS` (coordinate-based filtering not yet available — pending geocoding implementation)  
-Key fields: `address` (coordinates will be geocoded from this field once geocoding is implemented), `category` (pin icon), `venue_name`, `name`, `price`
+Query: `SANITY_QUERIES.POPUPS`  
+Key fields: `latitude`, `longitude` (geocoded from `address`), `category` (pin icon), `venue_name`, `name`, `price`
 
 ### Calendar View
 
@@ -110,9 +112,9 @@ Key fields: All projected fields (note: `imageUrl` is projected rather than the 
 ## GROQ Query Projections
 
 Both `POPUPS` and `POPUP_BY_ID` queries project the fields needed by the front end, including:
-- `category`, `borough`, `neighborhood`, `venue_name`, `address`
+- `category`, `borough`, `neighborhood`, `venue_name`, `address`, `latitude`, `longitude`
 - `price`, `is_featured`
 - Computed `display_in_popups_page` and `display_in_carousel` (auto-hide expired events)
 - `imageUrl` (resolved from `image.asset->url`)
 
-> **Note:** Coordinates for the map view will be derived from the `address` field via build-time geocoding (not yet implemented) — no manual lat/lng entry will be required from CMS users.
+> **Note:** `latitude`/`longitude` are derived from the `address` field by `scripts/geocode-popups.js`, which geocodes via Nominatim (OpenStreetMap, no API key) and writes the coordinates back into Sanity through the write-enabled Mutate API. It runs on a schedule via `.github/workflows/geocode-popups.yml` (and can be triggered manually) and caches lookups in `data/geocode-cache.json` to avoid re-geocoding unchanged addresses. CMS editors never enter coordinates by hand — the fields are marked `readOnly` in Studio.

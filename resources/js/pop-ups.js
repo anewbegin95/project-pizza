@@ -50,6 +50,8 @@ function mapSanityPopup(item) {
         neighborhood: item.neighborhood || '',
         venue_name: item.venue_name || '',
         address: item.address || '',
+        latitude: typeof item.latitude === 'number' ? item.latitude : null,
+        longitude: typeof item.longitude === 'number' ? item.longitude : null,
         price: item.price || '',
         is_featured: Boolean(item.is_featured),
         location: item.location || '',
@@ -762,35 +764,37 @@ function loadAndDisplayPopups() {
 
 // === EVENT LISTENERS ===
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Only run on pop-ups.html
-    if (document.getElementById('popupsGrid')) {
-        loadAndDisplayPopups();
-    }
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Only run on pop-ups.html
+        if (document.getElementById('popupsGrid')) {
+            loadAndDisplayPopups();
+        }
 
-    const returnButton = document.querySelector('.return-button');
-    if (returnButton) {
-        returnButton.addEventListener('click', () => {
-            const modal = document.getElementById('popupModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                // Remove highlight from all bars when modal closes
-                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
-            }
-        });
-    }
+        const returnButton = document.querySelector('.return-button');
+        if (returnButton) {
+            returnButton.addEventListener('click', () => {
+                const modal = document.getElementById('popupModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    // Remove highlight from all bars when modal closes
+                    document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+                }
+            });
+        }
 
-    const modal = document.getElementById('popupModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-                // Remove highlight from all bars when modal closes
-                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
-            }
-        });
-    }
-});
+        const modal = document.getElementById('popupModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    // Remove highlight from all bars when modal closes
+                    document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+                }
+            });
+        }
+    });
+}
 
 // Compatibility/fallback: support legacy populate function name if present
 function populatePopupModal(popup) {
@@ -801,6 +805,10 @@ function populatePopupModal(popup) {
     if (popup && popup.id) {
         window.location.href = `pop-up.html?id=${popup.id}`;
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mapSanityPopup, generatePopupId, toDisplayFlag };
 }
 
 // filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/pop-ups.js
