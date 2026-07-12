@@ -1,0 +1,205 @@
+[
+  {
+    "_id": "ae37750f-6cda-4c6b-ae07-90a7ee72bde2",
+    "name": "Armani Beauty Dolci Makeup Blush Pop-Up",
+    "fields": {
+      "category": "wellness",
+      "borough": "manhattan",
+      "neighborhood": "Chelsea",
+      "venue_name": "Chelsea Triangle",
+      "address": "W 14th St & 9th Ave, New York, NY 10014",
+      "price": "Free",
+      "short_description": "One-day Armani beauty pop-up with makeup artistry, a photo booth, café treats, and a free full-size Dolci blush to take home."
+    }
+  },
+  {
+    "_id": "97a47e54-92b0-456a-86c2-f1952c640d18",
+    "name": "DailyPay Diner",
+    "fields": {
+      "category": "food_drink",
+      "borough": "manhattan",
+      "neighborhood": "Lower East Side",
+      "venue_name": "Remedy Diner",
+      "address": "245 E Houston St, New York, NY 10002",
+      "price": "Free",
+      "short_description": "Step into an immersive 1930s diner where food, music, and storytelling revisit the moment the modern pay cycle was born."
+    }
+  },
+  {
+    "_id": "3c7f15a9-e828-4c22-ba79-74c9887a4889",
+    "name": "Flavia Flavor Lounge Pop-Up",
+    "fields": {
+      "category": "food_drink",
+      "borough": "manhattan",
+      "neighborhood": "SoHo",
+      "venue_name": "22 Wooster",
+      "address": "22 Wooster St, New York, NY 10013",
+      "price": "Free",
+      "short_description": "Sip complimentary coffee and tea, watch brewer demos, and match a drink to your mood at Flavia's two-day SoHo lounge."
+    }
+  },
+  {
+    "_id": "e4b836f5-1b7b-4895-abb3-68727fe437c0",
+    "name": "Liquid IV x Spider-Man Brand New Day Wall Crawl",
+    "fields": {
+      "category": "wellness",
+      "borough": "brooklyn",
+      "neighborhood": "Williamsburg",
+      "venue_name": "Domino Park",
+      "address": "15 River St, Brooklyn, NY 11249",
+      "price": "Free",
+      "short_description": "Scale a Spider-Man wall crawl in Domino Park, hydrate with Liquid I.V., and support disaster-relief heroes."
+    }
+  },
+  {
+    "_id": "5440e262-3341-45db-b81d-499327737cfc",
+    "name": "Odd One In Taste of Love Pop-Up",
+    "fields": {
+      "category": "market",
+      "borough": "manhattan",
+      "neighborhood": "SoHo",
+      "venue_name": "Shopify NY",
+      "address": "131 Greene St, New York, NY 10012",
+      "price": "Free",
+      "short_description": "File a summer crush, meet your Hanhan match, and hunt collectibles at this interactive Taste of Love pop-up shop."
+    }
+  },
+  {
+    "_id": "66285dd8-437b-411a-b06d-f771352a5468",
+    "name": "The Present Times by Headspace",
+    "fields": {
+      "category": "wellness",
+      "borough": "manhattan",
+      "neighborhood": "East Village",
+      "venue_name": "Sunday Club Newsstand",
+      "address": "E 14th St & 3rd Ave, New York, NY 10003",
+      "price": "Free",
+      "short_description": "Headspace takes over a newsstand with a free special-edition paper of mindful games and puzzles — all fun, no news."
+    }
+  },
+  {
+    "_id": "49420e81-8640-4129-b672-20c5dfb15e04",
+    "name": "UNI Summer Pop-Up",
+    "fields": {
+      "category": "wellness",
+      "borough": "manhattan",
+      "neighborhood": "SoHo",
+      "venue_name": "The Shack",
+      "address": "569 Broadway, New York, NY 10012",
+      "price": "Free",
+      "short_description": "Open-air body-care pop-up with complimentary coffee, first looks at new launches, and samples of UNI bestsellers."
+    }
+  },
+  {
+    "_id": "ad23ec4d-25b2-4511-82ff-fe9e1e1f5485",
+    "name": "Archery in NYC Parks",
+    "fields": {
+      "vibe": "adventurous",
+      "budget": "free",
+      "borough": null,
+      "neighborhood": null,
+      "venue_name": "NYC Parks (various)",
+      "address": null,
+      "price": "Free",
+      "short_description": "Free ranger-led archery lessons in parks across the city — all equipment and instruction provided, no RSVP needed."
+    }
+  },
+  {
+    "_id": "50e89b35-592a-4d43-9c6b-3628889fd5e9",
+    "name": "Budgie Landing at the Bronx Zoo",
+    "fields": {
+      "vibe": "chill",
+      "budget": "under_30",
+      "borough": "bronx",
+      "neighborhood": "Fordham",
+      "venue_name": "Bronx Zoo",
+      "address": "2300 Southern Blvd, Bronx, NY 10460",
+      "price": "$3–5 + zoo admission",
+      "short_description": "Feed free-flying budgies from a seed stick inside the Bronx Zoo's colorful summer aviary."
+    }
+  },
+  {
+    "_id": "b25c6058-7ca5-4d83-a392-10a42543bb79",
+    "name": "Free Garden Tours at the Met Cloisters",
+    "fields": {
+      "vibe": "romantic",
+      "budget": "free",
+      "borough": "manhattan",
+      "neighborhood": "Washington Heights",
+      "venue_name": "The Met Cloisters",
+      "address": "99 Margaret Corbin Dr, New York, NY 10040",
+      "price": "Free with admission",
+      "short_description": "Wander medieval gardens and learn the medicinal, artistic, and magical uses of their plants on a daily guided tour."
+    }
+  },
+  {
+    "_id": "58ac27b9-32ab-4a64-9438-47ef6181f312",
+    "name": "Lincoln Center Choose-What-You-Pay Shows",
+    "fields": {
+      "vibe": "cultural",
+      "budget": "under_30",
+      "borough": "manhattan",
+      "neighborhood": "Lincoln Square",
+      "venue_name": "Lincoln Center",
+      "address": "10 Lincoln Center Plaza, New York, NY 10023",
+      "price": "From $5",
+      "short_description": "Catch jazz, R&B, musical theater, and orchestral shows at Lincoln Center's iconic venues from just $5."
+    }
+  },
+  {
+    "_id": "87822a55-7c1d-4269-800c-5ed11f65b928",
+    "name": "Met Cloisters Open Studio",
+    "fields": {
+      "vibe": "cultural",
+      "budget": "free",
+      "borough": "manhattan",
+      "neighborhood": "Washington Heights",
+      "venue_name": "The Met Cloisters",
+      "address": "99 Margaret Corbin Dr, New York, NY 10040",
+      "price": "Free with admission",
+      "short_description": "Drop into artist-led demos and hands-on art-making at the Cloisters — all materials provided, all ages welcome."
+    }
+  },
+  {
+    "_id": "246eebc0-eb95-4b6f-82df-4d0ce1475120",
+    "name": "MoMA Free Fridays & Drawing Sessions",
+    "fields": {
+      "vibe": "cultural",
+      "budget": "free",
+      "borough": "manhattan",
+      "neighborhood": "Midtown",
+      "venue_name": "MoMA",
+      "address": "11 W 53rd St, New York, NY 10019",
+      "price": "Free for NY residents",
+      "short_description": "MoMA stays open late every Friday with free admission for New York State residents, plus galleries and drawing sessions."
+    }
+  },
+  {
+    "_id": "0c092892-57b8-410a-85b4-9e5d79c0821c",
+    "name": "Whitney Museum Free Fridays",
+    "fields": {
+      "vibe": "cultural",
+      "budget": "free",
+      "borough": "manhattan",
+      "neighborhood": "Meatpacking District",
+      "venue_name": "Whitney Museum of American Art",
+      "address": "99 Gansevoort St, New York, NY 10014",
+      "price": "Free",
+      "short_description": "Free Friday evenings at the Whitney with art, drinks, music, and skyline views — advance tickets recommended."
+    }
+  },
+  {
+    "_id": "db46cff5-4a84-4f2e-a67e-b41cf72ac5b2",
+    "name": "World Cup Watch Parties at Louis Armstrong Stadium",
+    "fields": {
+      "vibe": "chill",
+      "budget": "free",
+      "borough": "queens",
+      "neighborhood": "Corona",
+      "venue_name": "Louis Armstrong Stadium",
+      "address": "124-02 Roosevelt Ave, Corona, NY 11368",
+      "price": "Free with ticket",
+      "short_description": "Watch World Cup matches on the big screen at Louis Armstrong Stadium with performances, local food, and global fans."
+    }
+  }
+]
