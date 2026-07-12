@@ -1,0 +1,30 @@
+{
+  "22 Wooster, 22 Wooster St, New York, NY 10013, New York, NY": {
+    "lat": 40.7215235,
+    "lon": -74.0030602
+  },
+  "The Shack, 569 Broadway, New York, NY 10012, New York, NY": {
+    "lat": 40.724383,
+    "lon": -73.997788
+  },
+  "Shopify NY, 131 Greene St, New York, NY 10012, New York, NY": {
+    "lat": 40.7256642,
+    "lon": -73.9989626
+  },
+  "Sunday Club Newsstand, E 14th St & 3rd Ave, New York, NY 10003, New York, NY": {
+    "lat": 40.7330046,
+    "lon": -73.9867222
+  },
+  "Remedy Diner, 245 E Houston St, New York, NY 10002, New York, NY": {
+    "lat": 40.7217736,
+    "lon": -73.9854765
+  },
+  "Chelsea Triangle, W 14th St & 9th Ave, New York, NY 10014, New York, NY": {
+    "lat": 40.7412313,
+    "lon": -74.005763
+  },
+  "Domino Park, 15 River St, Brooklyn, NY 11249, New York, NY": {
+    "lat": 40.7166283,
+    "lon": -73.9665073
+  }
+}

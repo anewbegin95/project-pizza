@@ -1,5 +1,6 @@
 const {
   normalizeAddressKey,
+  buildGeocodeQueries,
   resolveCoordinates,
   parseMutateResponse,
 } = require('../../scripts/geocode-popups.js')
@@ -17,6 +18,37 @@ describe('normalizeAddressKey', () => {
   })
 })
 
+describe('buildGeocodeQueries', () => {
+  it('tries the bare address first, then the venue as a landmark', () => {
+    expect(buildGeocodeQueries('Remedy Diner', '245 E Houston St')).toEqual([
+      '245 E Houston St, New York, NY',
+      'Remedy Diner, New York, NY',
+    ])
+  })
+
+  it('does not duplicate the city suffix when the address already includes NY', () => {
+    expect(buildGeocodeQueries('22 Wooster', '22 Wooster St, New York, NY 10013')).toEqual([
+      '22 Wooster St, New York, NY 10013',
+      '22 Wooster, New York, NY',
+    ])
+  })
+
+  it('adds an intersection variant with "and" when the address contains an ampersand', () => {
+    expect(
+      buildGeocodeQueries('Chelsea Triangle', 'W 14th St & 9th Ave, New York, NY 10014')
+    ).toEqual([
+      'W 14th St & 9th Ave, New York, NY 10014',
+      'W 14th St and 9th Ave, New York, NY 10014',
+      'Chelsea Triangle, New York, NY',
+    ])
+  })
+
+  it('drops blank parts and returns no queries when everything is blank', () => {
+    expect(buildGeocodeQueries('Domino Park', '')).toEqual(['Domino Park, New York, NY'])
+    expect(buildGeocodeQueries('', '')).toEqual([])
+  })
+})
+
 describe('resolveCoordinates', () => {
   it('throttles after a failed geocode attempt just like after a successful one', async () => {
     const cache = {}
@@ -31,11 +63,11 @@ describe('resolveCoordinates', () => {
       .mockResolvedValueOnce({ lat: 1, lon: 2 })
 
     await expect(
-      resolveCoordinates('addr-1', cache, { geocode, sleep })
+      resolveCoordinates('addr-1', ['query 1'], cache, { geocode, sleep })
     ).rejects.toThrow('boom')
     expect(sleepCalls).toHaveLength(1)
 
-    const result = await resolveCoordinates('addr-2', cache, { geocode, sleep })
+    const result = await resolveCoordinates('addr-2', ['query 2'], cache, { geocode, sleep })
     expect(result).toEqual({ coords: { lat: 1, lon: 2 }, cacheDirty: true })
     expect(sleepCalls).toHaveLength(2)
   })
@@ -45,7 +77,7 @@ describe('resolveCoordinates', () => {
     const geocode = vi.fn()
     const sleep = vi.fn()
 
-    const result = await resolveCoordinates('addr-1', cache, { geocode, sleep })
+    const result = await resolveCoordinates('addr-1', ['query 1'], cache, { geocode, sleep })
 
     expect(result).toEqual({ coords: { lat: 1, lon: 2 }, cacheDirty: false })
     expect(geocode).not.toHaveBeenCalled()
@@ -58,9 +90,63 @@ describe('resolveCoordinates', () => {
     const sleep = vi.fn().mockResolvedValue(undefined)
 
     await expect(
-      resolveCoordinates('addr-1', cache, { geocode, sleep })
+      resolveCoordinates('addr-1', ['query 1'], cache, { geocode, sleep })
     ).rejects.toThrow('network error')
     expect(cache).not.toHaveProperty('addr-1')
+  })
+
+  it('falls through the query chain until one matches, throttling each attempt', async () => {
+    const cache = {}
+    const sleep = vi.fn().mockResolvedValue(undefined)
+    const geocode = vi
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ lat: 40.7, lon: -74.0 })
+
+    const result = await resolveCoordinates(
+      'addr-1',
+      ['query 1', 'query 2', 'query 3'],
+      cache,
+      { geocode, sleep }
+    )
+
+    expect(geocode.mock.calls.map(c => c[0])).toEqual(['query 1', 'query 2', 'query 3'])
+    expect(result).toEqual({ coords: { lat: 40.7, lon: -74.0 }, cacheDirty: true })
+    expect(cache['addr-1']).toEqual({ lat: 40.7, lon: -74.0 })
+    expect(sleep).toHaveBeenCalledTimes(3)
+  })
+
+  it('stops at the first query that matches without trying the rest', async () => {
+    const cache = {}
+    const sleep = vi.fn().mockResolvedValue(undefined)
+    const geocode = vi.fn().mockResolvedValue({ lat: 1, lon: 2 })
+
+    await resolveCoordinates('addr-1', ['query 1', 'query 2'], cache, { geocode, sleep })
+
+    expect(geocode).toHaveBeenCalledTimes(1)
+  })
+
+  it('retries a cached null miss instead of treating it as permanent', async () => {
+    const cache = { 'addr-1': null }
+    const sleep = vi.fn().mockResolvedValue(undefined)
+    const geocode = vi.fn().mockResolvedValue({ lat: 3, lon: 4 })
+
+    const result = await resolveCoordinates('addr-1', ['query 1'], cache, { geocode, sleep })
+
+    expect(geocode).toHaveBeenCalled()
+    expect(result).toEqual({ coords: { lat: 3, lon: 4 }, cacheDirty: true })
+    expect(cache['addr-1']).toEqual({ lat: 3, lon: 4 })
+  })
+
+  it('reports a clean cache when a retried miss is still a miss', async () => {
+    const cache = { 'addr-1': null }
+    const sleep = vi.fn().mockResolvedValue(undefined)
+    const geocode = vi.fn().mockResolvedValue(null)
+
+    const result = await resolveCoordinates('addr-1', ['query 1'], cache, { geocode, sleep })
+
+    expect(result).toEqual({ coords: null, cacheDirty: false })
   })
 })
 

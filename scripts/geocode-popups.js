@@ -210,13 +210,40 @@ function geocodeAddress(queryText, timeoutMs = 15000) {
 // Cache + helpers
 // ---------------------------------------------------------------------------
 
-/** Builds the geocoder query string / cache key for a pop-up. Address is a
- * single unstructured text field with no city/state, so "New York, NY" is
- * appended for disambiguation. */
+/** Builds the cache key for a pop-up's location. Kept stable (venue + address
+ * + suffix) so existing cache entries stay valid even as the query strategy
+ * evolves. */
 function normalizeAddressKey(venueName, address) {
     const parts = [venueName, address].map(s => (s || '').trim()).filter(Boolean);
     if (parts.length === 0) return '';
     return `${parts.join(', ')}, New York, NY`;
+}
+
+/** Appends ", New York, NY" unless the text already names New York / NY. */
+function withCitySuffix(text) {
+    return /new york|,\s*ny\b/i.test(text) ? text : `${text}, New York, NY`;
+}
+
+/**
+ * Ordered Nominatim query candidates for a pop-up, most to least precise:
+ * the street address, an intersection-friendly "&" → "and" variant, then the
+ * venue name alone as a landmark lookup (catches parks, plazas, and stores
+ * whose address text Nominatim can't parse).
+ */
+function buildGeocodeQueries(venueName, address) {
+    const venue = (venueName || '').trim();
+    const addr = (address || '').trim();
+    const queries = [];
+    if (addr) {
+        queries.push(withCitySuffix(addr));
+        if (addr.includes('&')) {
+            queries.push(withCitySuffix(addr.replace(/\s*&\s*/g, ' and ')));
+        }
+    }
+    if (venue) {
+        queries.push(withCitySuffix(venue));
+    }
+    return [...new Set(queries)];
 }
 
 function loadCache() {
@@ -238,25 +265,34 @@ function sleep(ms) {
 }
 
 /**
- * Resolves coordinates for a cache key, geocoding via Nominatim on a cache
- * miss. Throttles after every real network attempt — success or failure —
- * so a failing address can't skip the 1 req/sec delay before the next call.
+ * Resolves coordinates for a cache key, trying each candidate query against
+ * Nominatim until one matches. Cached coordinates are trusted, but a cached
+ * null miss is retried — addresses get fixed and the query strategy improves,
+ * so misses must not be permanent. Throttles after every real network attempt
+ * — success or failure — so a failing address can't skip the 1 req/sec delay
+ * before the next call.
  */
-async function resolveCoordinates(key, cache, deps = {}) {
+async function resolveCoordinates(key, queries, cache, deps = {}) {
     const geocode = deps.geocode || geocodeAddress;
     const wait = deps.sleep || sleep;
 
-    if (Object.prototype.hasOwnProperty.call(cache, key)) {
+    if (cache[key]) {
         return { coords: cache[key], cacheDirty: false };
     }
 
-    try {
-        const coords = await geocode(key);
-        cache[key] = coords;
-        return { coords, cacheDirty: true };
-    } finally {
-        await wait(NOMINATIM_THROTTLE_MS);
+    const hadCachedMiss = Object.prototype.hasOwnProperty.call(cache, key);
+    let coords = null;
+    for (const query of queries) {
+        try {
+            coords = await geocode(query);
+        } finally {
+            await wait(NOMINATIM_THROTTLE_MS);
+        }
+        if (coords) break;
     }
+
+    cache[key] = coords;
+    return { coords, cacheDirty: !(hadCachedMiss && coords === null) };
 }
 
 // ---------------------------------------------------------------------------
@@ -291,14 +327,15 @@ async function main() {
 
     for (const popup of popups) {
         const key = normalizeAddressKey(popup.venue_name, popup.address);
-        if (!key) {
+        const queries = buildGeocodeQueries(popup.venue_name, popup.address);
+        if (!key || queries.length === 0) {
             skipped++;
             continue;
         }
 
         let coords;
         try {
-            const result = await resolveCoordinates(key, cache);
+            const result = await resolveCoordinates(key, queries, cache);
             coords = result.coords;
             if (result.cacheDirty) cacheDirty = true;
         } catch (err) {
@@ -351,4 +388,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { normalizeAddressKey, geocodeAddress, sanityFetch, sanityMutate, parseMutateResponse, loadCache, saveCache, resolveCoordinates };
+module.exports = { normalizeAddressKey, buildGeocodeQueries, geocodeAddress, sanityFetch, sanityMutate, parseMutateResponse, loadCache, saveCache, resolveCoordinates };
