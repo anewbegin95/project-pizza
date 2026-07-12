@@ -43,14 +43,14 @@
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `category` | string (enum) | — | Event type for filtering and map pin icons. Values: `food_drink`, `market`, `art_culture`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
+| `category` | string (enum) | — | Event type for filtering and map pin icons. Values: `food_drink`, `market`, `art_culture`, `beauty`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
 | `is_featured` | boolean | — | Featured card variant with expanded image. Default: `false`. |
 
 ### Location & Geography
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`. |
+| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
 | `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
 | `venue_name` | string | — | Name of the hosting venue. |
 | `address` | text | — | Full street address of the venue. Coordinates for the map view are geocoded from this field automatically. |

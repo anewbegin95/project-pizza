@@ -58,7 +58,7 @@ All recurrence fields are hidden unless `has_date_and_time` and `recurring` are 
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`. |
+| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
 | `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
 | `venue_name` | string | — | Name of the venue for the date idea. |
 | `address` | text | — | Full street address of the venue. (Not geocoded — date ideas have no map view.) |
