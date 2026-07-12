@@ -276,6 +276,7 @@ export const popupType = defineType({
           {title: 'Queens', value: 'queens'},
           {title: 'Bronx', value: 'bronx'},
           {title: 'Staten Island', value: 'staten_island'},
+          {title: 'Citywide', value: 'citywide'},
         ],
         layout: 'dropdown',
       },

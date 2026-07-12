@@ -96,7 +96,7 @@
     "fields": {
       "vibe": "adventurous",
       "budget": "free",
-      "borough": null,
+      "borough": "citywide",
       "neighborhood": null,
       "venue_name": "NYC Parks (various)",
       "address": null,

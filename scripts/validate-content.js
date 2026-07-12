@@ -93,16 +93,25 @@ function isMissing(value) {
   return value === null || value === undefined || value === '' || value === false;
 }
 
+/** Fields that only make sense for a single location, not citywide content. */
+const LOCATION_SPECIFIC_FIELDS = ['neighborhood', 'address'];
+
 /**
  * Returns one entry per document that has gaps: {name, missing: [field, ...]}.
- * Documents with every required field populated are omitted.
+ * Documents with every required field populated are omitted. Citywide
+ * documents (borough == 'citywide') are exempt from location-specific fields.
  */
 function validateDocs(docs, requiredFields) {
     return docs
-        .map(doc => ({
-            name: doc.name || '(unnamed)',
-            missing: requiredFields.filter(field => isMissing(doc[field])),
-        }))
+        .map(doc => {
+            const fields = doc.borough === 'citywide'
+                ? requiredFields.filter(field => !LOCATION_SPECIFIC_FIELDS.includes(field))
+                : requiredFields;
+            return {
+                name: doc.name || '(unnamed)',
+                missing: fields.filter(field => isMissing(doc[field])),
+            };
+        })
         .filter(entry => entry.missing.length > 0);
 }
 

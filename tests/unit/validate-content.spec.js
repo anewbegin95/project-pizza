@@ -41,6 +41,44 @@ describe('validateDocs', () => {
     ])
   })
 
+  it('does not require neighborhood or address for citywide documents', () => {
+    const docs = [
+      {
+        name: 'Citywide Idea',
+        vibe: 'adventurous',
+        budget: 'free',
+        borough: 'citywide',
+        neighborhood: null,
+        venue_name: 'NYC Parks (various)',
+        address: null,
+        price: 'Free',
+        short_description: 'Teaser.',
+        hasImage: true,
+      },
+    ]
+    expect(validateDocs(docs, DATE_IDEA_REQUIRED_FIELDS)).toEqual([])
+  })
+
+  it('still requires neighborhood and address for borough-specific documents', () => {
+    const docs = [
+      {
+        name: 'Local Idea',
+        vibe: 'chill',
+        budget: 'free',
+        borough: 'queens',
+        neighborhood: null,
+        venue_name: 'Park',
+        address: null,
+        price: 'Free',
+        short_description: 'Teaser.',
+        hasImage: true,
+      },
+    ]
+    expect(validateDocs(docs, DATE_IDEA_REQUIRED_FIELDS)).toEqual([
+      { name: 'Local Idea', missing: ['neighborhood', 'address'] },
+    ])
+  })
+
   it('treats a false hasImage as a missing image', () => {
     const docs = [{ name: 'No Image Idea', vibe: 'chill', budget: 'free', borough: 'queens', neighborhood: 'Astoria', venue_name: 'Park', address: 'Astoria Park', price: 'Free', short_description: 'Teaser.', hasImage: false }]
     expect(validateDocs(docs, DATE_IDEA_REQUIRED_FIELDS)).toEqual([
