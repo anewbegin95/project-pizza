@@ -43,7 +43,7 @@
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `category` | string (enum) | — | Event type for filtering and map pin icons. Values: `food_drink`, `market`, `art_culture`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
+| `category` | string (enum) | — | Event type for filtering and map pin icons. Values: `food_drink`, `market`, `art_culture`, `beauty`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
 | `is_featured` | boolean | — | Featured card variant with expanded image. Default: `false`. |
 
 ### Location & Geography

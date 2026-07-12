@@ -256,6 +256,7 @@ export const popupType = defineType({
           {title: 'Food & Drink', value: 'food_drink'},
           {title: 'Market', value: 'market'},
           {title: 'Art & Culture', value: 'art_culture'},
+          {title: 'Beauty', value: 'beauty'},
           {title: 'Fashion', value: 'fashion'},
           {title: 'Wellness', value: 'wellness'},
           {title: 'Music', value: 'music'},
