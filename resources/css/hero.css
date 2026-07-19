@@ -58,3 +58,110 @@
     font-size: var(--font-xl, 32px);
   }
 }
+
+/* -----------------------------------------------------------------------------
+  REDESIGN COLLAGE HERO (gated behind the redesign flag)
+  Collage-only elements are hidden by default so the legacy hero renders
+  unchanged when the flag is off. See REDESIGN.md section 6.1.
+----------------------------------------------------------------------------- */
+.hero__panels,
+.hero__supertitle {
+  display: none;
+}
+
+:root[data-redesign='on'] .hero--collage,
+body.redesign-enabled .hero--collage {
+  background-image: none;
+  height: auto;
+  min-height: max(60vh, 400px);
+}
+
+:root[data-redesign='on'] .hero--collage .hero__panels,
+body.redesign-enabled .hero--collage .hero__panels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+:root[data-redesign='on'] .hero--collage .hero__panel,
+body.redesign-enabled .hero--collage .hero__panel {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Placeholder photography: the single existing banner asset, cropped
+   differently per panel until dedicated collage images land. */
+:root[data-redesign='on'] .hero--collage .hero__panel--1,
+body.redesign-enabled .hero--collage .hero__panel--1 {
+  background-image: url('../images/banners/midtown_manhattan_skyline.webp');
+  background-position: left center;
+}
+
+:root[data-redesign='on'] .hero--collage .hero__panel--2,
+body.redesign-enabled .hero--collage .hero__panel--2 {
+  background-image: url('../images/banners/midtown_manhattan_skyline.webp');
+  background-position: center;
+}
+
+:root[data-redesign='on'] .hero--collage .hero__panel--3,
+body.redesign-enabled .hero--collage .hero__panel--3 {
+  background-image: url('../images/banners/midtown_manhattan_skyline.webp');
+  background-position: right center;
+}
+
+:root[data-redesign='on'] .hero--collage::after,
+body.redesign-enabled .hero--collage::after {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 27, 46, 0.75));
+}
+
+:root[data-redesign='on'] .hero--collage .hero__supertitle,
+body.redesign-enabled .hero--collage .hero__supertitle {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--nyc-pink);
+  font-family: var(--nyc-font-body);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+:root[data-redesign='on'] .hero--collage h1,
+body.redesign-enabled .hero--collage h1 {
+  color: var(--nyc-white);
+  font-size: clamp(48px, 8vw, 96px);
+}
+
+:root[data-redesign='on'] .hero--collage .hero__cta,
+body.redesign-enabled .hero--collage .hero__cta {
+  margin-top: var(--space-sm-md);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .hero--collage,
+  body.redesign-enabled .hero--collage {
+    min-height: 50vh;
+  }
+
+  :root[data-redesign='on'] .hero--collage .hero__panels,
+  body.redesign-enabled .hero--collage .hero__panels {
+    grid-template-columns: 1fr;
+  }
+
+  :root[data-redesign='on'] .hero--collage .hero__panel--1,
+  :root[data-redesign='on'] .hero--collage .hero__panel--3,
+  body.redesign-enabled .hero--collage .hero__panel--1,
+  body.redesign-enabled .hero--collage .hero__panel--3 {
+    display: none;
+  }
+
+  :root[data-redesign='on'] .hero--collage .hero__panel--2,
+  body.redesign-enabled .hero--collage .hero__panel--2 {
+    background-position: center;
+  }
+}
