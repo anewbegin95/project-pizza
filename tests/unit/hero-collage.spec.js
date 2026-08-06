@@ -33,13 +33,23 @@ describe('hero collage styles', () => {
     expectCssToMatch(css, 'grid-template-columns: repeat(3, 1fr);')
     expectCssToMatch(
       css,
-      'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 27, 46, 0.75))'
+      'linear-gradient(to bottom, rgba(0, 27, 46, 0.55), rgba(0, 27, 46, 0.8))'
     )
   })
 
-  it('uses the redesign hero heights on desktop and mobile', () => {
+  it('uses the redesign hero heights across all three breakpoints', () => {
     expectCssToMatch(css, 'min-height: max(60vh, 400px);')
+    expectCssToMatch(css, 'min-height: 55vh;')
     expectCssToMatch(css, 'min-height: 50vh;')
+    expectCssToMatch(css, '@media (min-width: 601px) and (max-width: 1023px) {')
+  })
+
+  it('steps the collage headline down on mobile at matching specificity', () => {
+    expectCssToMatch(css, 'font-size: clamp(32px, 8vw, 44px);')
+  })
+
+  it('keeps the supertitle upright despite the italic hero paragraph style', () => {
+    expectCssToMatch(css, 'font-style: normal;')
   })
 
   it('styles the supertitle per the redesign spec', () => {
