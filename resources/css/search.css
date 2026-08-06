@@ -1,0 +1,97 @@
+/* -----------------------------------------------------------------------------
+  SEARCH BAR + VIEW TOGGLE (redesign only)
+  Hidden by default so flag-off pages are unchanged; the layout is scoped to
+  the redesign flag. See REDESIGN.md section 6.2.
+----------------------------------------------------------------------------- */
+.search-bar-container {
+  display: none;
+}
+
+:root[data-redesign='on'] .search-bar-container,
+body.redesign-enabled .search-bar-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--space-sm-md) var(--space-sm-md) 0;
+}
+
+:root[data-redesign='on'] .search-bar,
+body.redesign-enabled .search-bar {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+:root[data-redesign='on'] .search-bar__icon,
+body.redesign-enabled .search-bar__icon {
+  position: absolute;
+  left: var(--space-sm);
+  width: 18px;
+  height: 18px;
+  color: var(--nyc-medium-gray);
+  pointer-events: none;
+}
+
+:root[data-redesign='on'] .search-bar__input,
+body.redesign-enabled .search-bar__input {
+  padding-left: 44px;
+  background-color: var(--nyc-white);
+  font-size: var(--font-sm);
+}
+
+/* View toggle -------------------------------------------------------------- */
+
+:root[data-redesign='on'] .view-toggle,
+body.redesign-enabled .view-toggle {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+:root[data-redesign='on'] .view-toggle__btn,
+body.redesign-enabled .view-toggle__btn {
+  padding: 10px var(--space-sm);
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .view-toggle__btn--active,
+body.redesign-enabled .view-toggle__btn--active {
+  border-color: var(--nyc-green);
+  background-color: var(--nyc-green);
+  color: var(--nyc-white);
+}
+
+:root[data-redesign='on'] .view-toggle__btn:focus-visible,
+:root[data-redesign='on'] .search-bar__input:focus-visible,
+body.redesign-enabled .view-toggle__btn:focus-visible,
+body.redesign-enabled .search-bar__input:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .search-bar-container,
+  body.redesign-enabled .search-bar-container {
+    flex-wrap: wrap;
+    padding: var(--space-sm) var(--space-sm) 0;
+  }
+
+  :root[data-redesign='on'] .search-bar,
+  body.redesign-enabled .search-bar {
+    flex-basis: 100%;
+  }
+
+  :root[data-redesign='on'] .view-toggle__btn,
+  body.redesign-enabled .view-toggle__btn {
+    flex: 1;
+  }
+}

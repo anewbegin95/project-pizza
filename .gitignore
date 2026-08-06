@@ -24,3 +24,6 @@ node_modules/
 playwright-report/
 test-results/
 .lighthouseci/
+
+# Local Claude Code tooling
+.claude/
