@@ -7,6 +7,10 @@
   display: none;
 }
 
+/* Constrained to --container-max-width per REDESIGN.md 6.2. The legacy
+   .popup-tile still centers itself inside a 950px cap, so the two do not
+   line up yet; that resolves in #291 when .event-card replaces the tile and
+   adopts the same container width. */
 :root[data-redesign='on'] .search-bar-container,
 body.redesign-enabled .search-bar-container {
   display: flex;
@@ -37,7 +41,8 @@ body.redesign-enabled .search-bar__icon {
 
 :root[data-redesign='on'] .search-bar__input,
 body.redesign-enabled .search-bar__input {
-  padding-left: 44px;
+  min-height: 44px;
+  padding: 12px var(--space-sm) 12px 44px;
   background-color: var(--nyc-white);
   font-size: var(--font-sm);
 }
@@ -52,6 +57,7 @@ body.redesign-enabled .view-toggle {
 
 :root[data-redesign='on'] .view-toggle__btn,
 body.redesign-enabled .view-toggle__btn {
+  min-height: 44px;
   padding: 10px var(--space-sm);
   border: 1px solid var(--nyc-medium-gray);
   border-radius: var(--radius-md);
@@ -88,6 +94,13 @@ body.redesign-enabled .search-bar__input:focus-visible {
   :root[data-redesign='on'] .search-bar,
   body.redesign-enabled .search-bar {
     flex-basis: 100%;
+  }
+
+  /* The toggle wraps to its own row, so stretch it before splitting the
+     buttons across it. */
+  :root[data-redesign='on'] .view-toggle,
+  body.redesign-enabled .view-toggle {
+    flex: 1 0 100%;
   }
 
   :root[data-redesign='on'] .view-toggle__btn,

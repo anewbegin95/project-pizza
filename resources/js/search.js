@@ -51,6 +51,14 @@ function normalizeSearchInput(value) {
 // === DOM WIRING ===
 
 /**
+ * Reflects the active view on the document root so CSS and view code can key
+ * off it, keeping the toggle's announced state tied to real page state.
+ */
+function reflectView(doc, view) {
+    if (doc.documentElement) doc.documentElement.setAttribute('data-view', view);
+}
+
+/**
  * Wires the view toggle and search input within the given document. Emits
  * `viewtoggle:change` and `search:change` so filtering/map code can react
  * without this module knowing about them.
@@ -69,6 +77,7 @@ function initSearchBar(doc) {
             if (!next.changed) return;
             currentView = next.view;
             applyToggleState(buttons, currentView);
+            reflectView(doc, currentView);
             container.dispatchEvent(
                 new CustomEvent('viewtoggle:change', {
                     bubbles: true,
@@ -78,7 +87,10 @@ function initSearchBar(doc) {
         });
     });
 
-    if (buttons.length > 0) applyToggleState(buttons, currentView);
+    if (buttons.length > 0) {
+        applyToggleState(buttons, currentView);
+        reflectView(doc, currentView);
+    }
 
     if (input) {
         input.addEventListener('input', () => {
