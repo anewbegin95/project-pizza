@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="resources/css/header.css">
     <link rel="stylesheet" href="resources/css/hero.css">
     <link rel="stylesheet" href="resources/css/buttons.css">
+    <link rel="stylesheet" href="resources/css/search.css">
     <link rel="stylesheet" href="resources/css/popups.css">
   <link rel="stylesheet" href="resources/css/date_ideas.css">
     <link rel="stylesheet" href="resources/css/popup_details.css">
@@ -26,6 +27,7 @@
     <script src="resources/js/sanity-client.js" defer></script>
     <script src="resources/js/sanity-queries.js" defer></script>
     <script src="resources/js/date-ideas.js" defer></script>
+    <script src="resources/js/search.js" defer></script>
     <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
   </head>
   <body>
@@ -44,6 +46,17 @@
           <p>Discover creative, fun, and unique things to do in NYC at any time!</p>
         </div>
       </section>
+
+      <!-- Search (redesign only; no map view for date ideas) -->
+      <div class="search-bar-container">
+        <div class="search-bar">
+          <svg class="search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          </svg>
+          <input class="ui-input search-bar__input" type="search" placeholder="Search events, venues, neighborhoods..." aria-label="Search events, venues, and neighborhoods">
+        </div>
+      </div>
 
       <!-- Date Ideas Tiles Grid -->
       <section class="date-ideas-grid" id="dateIdeasGrid">
