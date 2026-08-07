@@ -1,0 +1,283 @@
+/* -----------------------------------------------------------------------------
+  EVENT CARD SYSTEM (redesign only)
+  Shared by pop-ups and date ideas. Three columns on desktop — date, image,
+  details — collapsing to a vertical card on phones. Hidden by default so
+  flag-off pages keep the legacy .popup-tile. See REDESIGN.md section 6.4.
+----------------------------------------------------------------------------- */
+.event-card {
+  display: none;
+}
+
+:root[data-redesign='on'] .event-card,
+body.redesign-enabled .event-card {
+  display: grid;
+  grid-template-columns: 150px 35% 1fr;
+  align-items: stretch;
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-white);
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+:root[data-redesign='on'] .event-card:hover,
+:root[data-redesign='on'] .event-card:focus-visible,
+body.redesign-enabled .event-card:hover,
+body.redesign-enabled .event-card:focus-visible {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Column 1 — date ------------------------------------------------------------ */
+
+:root[data-redesign='on'] .event-card__date,
+body.redesign-enabled .event-card__date {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  align-items: flex-start;
+  padding: var(--space-sm-md) var(--space-sm);
+}
+
+:root[data-redesign='on'] .event-card__day-name,
+body.redesign-enabled .event-card__day-name {
+  color: var(--nyc-green);
+  font-family: var(--nyc-font-body);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-redesign='on'] .event-card__day-number,
+body.redesign-enabled .event-card__day-number {
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: 48px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+:root[data-redesign='on'] .event-card__month,
+body.redesign-enabled .event-card__month {
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: 14px;
+}
+
+:root[data-redesign='on'] .event-card__through,
+body.redesign-enabled .event-card__through {
+  color: var(--nyc-medium-gray);
+  font-family: var(--nyc-font-body);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Vibe label stands in for the date column on date ideas. */
+:root[data-redesign='on'] .event-card__vibe,
+body.redesign-enabled .event-card__vibe {
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+}
+
+:root[data-redesign='on'] .event-card__price,
+body.redesign-enabled .event-card__price {
+  margin-top: var(--space-xxs);
+  background-color: var(--nyc-light-gray);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .event-card__price--free,
+body.redesign-enabled .event-card__price--free {
+  background-color: var(--nyc-green-light);
+  color: var(--nyc-green);
+}
+
+/* Column 2 — image ----------------------------------------------------------- */
+
+:root[data-redesign='on'] .event-card__media,
+body.redesign-enabled .event-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+:root[data-redesign='on'] .event-card__image,
+body.redesign-enabled .event-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+}
+
+:root[data-redesign='on'] .event-card__tag,
+body.redesign-enabled .event-card__tag {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.92);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+}
+
+/* Column 3 — details --------------------------------------------------------- */
+
+:root[data-redesign='on'] .event-card__details,
+body.redesign-enabled .event-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm-md);
+}
+
+:root[data-redesign='on'] .event-card__title,
+body.redesign-enabled .event-card__title {
+  margin: 0;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: clamp(22px, 2vw, 28px);
+}
+
+:root[data-redesign='on'] .event-card__description,
+body.redesign-enabled .event-card__description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: 14px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+:root[data-redesign='on'] .event-card__meta,
+body.redesign-enabled .event-card__meta {
+  display: flex;
+  gap: var(--space-xxs);
+  align-items: baseline;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: 14px;
+}
+
+:root[data-redesign='on'] .event-card__venue,
+body.redesign-enabled .event-card__venue {
+  color: var(--nyc-navy);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .event-card__area,
+body.redesign-enabled .event-card__area {
+  color: var(--nyc-medium-gray);
+  font-size: var(--font-xs-md);
+}
+
+/* Featured variant ----------------------------------------------------------- */
+
+:root[data-redesign='on'] .event-card--featured,
+body.redesign-enabled .event-card--featured {
+  position: relative;
+  grid-template-columns: 1fr;
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__image,
+body.redesign-enabled .event-card--featured .event-card__image {
+  min-height: 320px;
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__details,
+body.redesign-enabled .event-card--featured .event-card__details {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to top, rgba(0, 27, 46, 0.85), rgba(0, 27, 46, 0));
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__title,
+body.redesign-enabled .event-card--featured .event-card__title {
+  color: var(--nyc-green-light);
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__description,
+:root[data-redesign='on'] .event-card--featured .event-card__meta,
+body.redesign-enabled .event-card--featured .event-card__description,
+body.redesign-enabled .event-card--featured .event-card__meta {
+  color: var(--nyc-white);
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__venue,
+body.redesign-enabled .event-card--featured .event-card__venue {
+  color: var(--nyc-white);
+}
+
+:root[data-redesign='on'] .event-card--featured .event-card__date,
+body.redesign-enabled .event-card--featured .event-card__date {
+  position: absolute;
+  z-index: 1;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+/* Responsive ----------------------------------------------------------------- */
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  :root[data-redesign='on'] .event-card,
+  body.redesign-enabled .event-card {
+    grid-template-columns: 100px 35% 1fr;
+  }
+
+  :root[data-redesign='on'] .event-card__day-number,
+  body.redesign-enabled .event-card__day-number {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 599px) {
+  :root[data-redesign='on'] .event-card,
+  body.redesign-enabled .event-card {
+    grid-template-columns: 1fr;
+  }
+
+  /* Date collapses to a bar above the image. */
+  :root[data-redesign='on'] .event-card__date,
+  body.redesign-enabled .event-card__date {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    align-items: baseline;
+    padding: var(--space-sm) var(--space-sm) 0;
+  }
+
+  :root[data-redesign='on'] .event-card__day-number,
+  body.redesign-enabled .event-card__day-number {
+    font-size: 28px;
+  }
+
+  :root[data-redesign='on'] .event-card__price,
+  body.redesign-enabled .event-card__price {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  :root[data-redesign='on'] .event-card--featured .event-card__date,
+  body.redesign-enabled .event-card--featured .event-card__date {
+    position: static;
+    background-color: transparent;
+  }
+}
