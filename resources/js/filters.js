@@ -14,6 +14,12 @@ const FILTER_SETS = {
 
 const ACTIVE_CHIP_CLASS = 'filter-chip--active';
 
+/** Where each page renders its results, so the count can report on them. */
+const RESULTS_CONTAINERS = {
+    popups: '#popupsGrid',
+    'date-ideas': '#dateIdeasGrid',
+};
+
 // === PURE STATE HELPERS ===
 
 /** Builds an empty state object keyed by the page's filters. */
@@ -52,6 +58,21 @@ function getActiveCount(state) {
 
 function isAnyActive(state) {
     return getActiveCount(state) > 0;
+}
+
+/**
+ * Resolves where roving focus should land inside a listbox. `currentIndex` is
+ * -1 when focus is still on the chip, so the list is entered from whichever
+ * end matches the direction. Returns null for unhandled keys or empty lists.
+ */
+function getNextOptionIndex(currentIndex, key, length) {
+    if (length === 0) return null;
+    if (key === 'Home') return 0;
+    if (key === 'End') return length - 1;
+    if (key !== 'ArrowDown' && key !== 'ArrowUp') return null;
+    if (currentIndex === -1) return key === 'ArrowDown' ? 0 : length - 1;
+    const step = key === 'ArrowDown' ? 1 : -1;
+    return (currentIndex + step + length) % length;
 }
 
 /** Chips show the selected option's label, falling back to the filter name. */
@@ -148,13 +169,47 @@ function initFilters(doc) {
 
         if (!dropdown) return;
 
-        dropdown.querySelectorAll('[role="option"]').forEach(option => {
-            option.addEventListener('click', () => {
-                state = selectOption(state, chip.dataset.filter, option.dataset.value);
-                render();
-                closeDropdown(chip, dropdown);
-                chip.focus();
-            });
+        const options = Array.from(dropdown.querySelectorAll('[role="option"]'));
+
+        // Options are focusable programmatically only; arrow keys move a
+        // roving focus through them, per the listbox pattern.
+        options.forEach(option => {
+            option.tabIndex = -1;
+        });
+
+        function choose(option) {
+            state = selectOption(state, chip.dataset.filter, option.dataset.value);
+            render();
+            closeDropdown(chip, dropdown);
+            chip.focus();
+        }
+
+        options.forEach(option => {
+            option.addEventListener('click', () => choose(option));
+        });
+
+        group.addEventListener('keydown', event => {
+            const index = options.indexOf(event.target);
+            const isArrow = event.key === 'ArrowDown' || event.key === 'ArrowUp';
+
+            // Home/End only apply once focus is already inside the list.
+            if (!isArrow && index === -1) return;
+
+            if ((event.key === 'Enter' || event.key === ' ') && index !== -1) {
+                event.preventDefault();
+                choose(options[index]);
+                return;
+            }
+
+            const nextIndex = getNextOptionIndex(index, event.key, options.length);
+            if (nextIndex === null) return;
+
+            event.preventDefault();
+            if (isArrow && dropdown.hidden) {
+                closeAll(chip);
+                openDropdown(chip, dropdown);
+            }
+            options[nextIndex].focus();
         });
     });
 
@@ -182,13 +237,27 @@ function initFilters(doc) {
         if (!bar.contains(event.target)) closeAll(null);
     });
 
+    function setResultsCount(count) {
+        if (resultsCount) resultsCount.textContent = getResultsCountText(count, noun);
+    }
+
+    // The count reflects whatever the page has rendered; results arrive
+    // asynchronously from Sanity, so watch the container rather than
+    // reporting a stale zero.
+    const resultsContainer = doc.querySelector(RESULTS_CONTAINERS[pageType] || '');
+    if (resultsContainer && resultsCount) {
+        const syncCount = () => setResultsCount(resultsContainer.childElementCount);
+        syncCount();
+        if (typeof MutationObserver !== 'undefined') {
+            new MutationObserver(syncCount).observe(resultsContainer, { childList: true });
+        }
+    }
+
     render();
 
     return {
         getState: () => ({ ...state }),
-        setResultsCount: count => {
-            if (resultsCount) resultsCount.textContent = getResultsCountText(count, noun);
-        },
+        setResultsCount,
     };
 }
 
@@ -204,6 +273,7 @@ if (typeof document !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         FILTER_SETS,
+        getNextOptionIndex,
         createFilterState,
         selectOption,
         clearFilter,

@@ -97,6 +97,87 @@ test('Escape closes the dropdown and returns focus to the chip', async ({ page }
   await expect(typeChip(page)).toBeFocused()
 })
 
+test('a keyboard user can open a filter and select an option', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await boroughChip(page).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('listbox', { name: 'Borough' })).toBeVisible()
+
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
+
+  await page.keyboard.press('Enter')
+
+  await expect(page.getByRole('button', { name: /^Manhattan/ })).toHaveClass(/filter-chip--active/)
+  await expect(page.getByRole('listbox', { name: 'Borough' })).toBeHidden()
+  await expect(page.getByRole('button', { name: /^Manhattan/ })).toBeFocused()
+})
+
+test('arrow keys move through the options and wrap around', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await boroughChip(page).focus()
+  await page.keyboard.press('Enter')
+
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: 'Brooklyn' })).toBeFocused()
+
+  await page.keyboard.press('ArrowUp')
+  await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
+
+  // Wrapping backwards from the first option lands on the last.
+  await page.keyboard.press('ArrowUp')
+  await expect(page.getByRole('option', { name: 'Citywide' })).toBeFocused()
+
+  // And forwards from the last wraps to the first.
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
+})
+
+test('Space selects the focused option', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await typeChip(page).focus()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press(' ')
+
+  await expect(page.getByRole('button', { name: /^Food & Drink/ })).toHaveClass(/filter-chip--active/)
+})
+
+test('the keyboard-focused option is visibly indicated', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await boroughChip(page).focus()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('ArrowDown')
+
+  const indicator = await page.getByRole('option', { name: 'Manhattan' }).evaluate((el) => {
+    const computed = getComputedStyle(el)
+    return {
+      outlineStyle: computed.outlineStyle,
+      outlineWidth: parseFloat(computed.outlineWidth),
+    }
+  })
+
+  expect(indicator.outlineStyle).not.toBe('none')
+  expect(indicator.outlineWidth).toBeGreaterThan(0)
+})
+
+test('Escape from inside the options closes the menu and restores focus', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await boroughChip(page).focus()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Escape')
+
+  await expect(page.getByRole('listbox', { name: 'Borough' })).toBeHidden()
+  await expect(boroughChip(page)).toBeFocused()
+})
+
 test('clear all resets every chip and hides itself', async ({ page }) => {
   await page.goto('/pop-ups.html?redesign=on')
 
@@ -179,6 +260,41 @@ test('hovering a chip keeps the redesign palette, not the legacy button fuchsia'
   })
   expect(activeHovered.isHovered).toBe(true)
   expect(activeHovered.background).not.toBe('rgb(216, 30, 91)')
+})
+
+test('the results count reports how many results are on the page', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await page.evaluate(() => {
+    const grid = document.getElementById('popupsGrid')
+    for (let i = 0; i < 3; i += 1) {
+      const tile = document.createElement('a')
+      tile.className = 'popup-tile'
+      tile.textContent = `Tile ${i}`
+      grid.appendChild(tile)
+    }
+  })
+
+  await expect(page.locator('.results-count')).toHaveText('3 events found')
+
+  await page.evaluate(() => {
+    document.querySelector('#popupsGrid .popup-tile').remove()
+  })
+
+  await expect(page.locator('.results-count')).toHaveText('2 events found')
+})
+
+test('the results count uses the date idea noun on date ideas', async ({ page }) => {
+  await page.goto('/date-ideas.html?redesign=on')
+
+  await page.evaluate(() => {
+    const grid = document.getElementById('dateIdeasGrid')
+    const tile = document.createElement('a')
+    tile.className = 'popup-tile'
+    grid.appendChild(tile)
+  })
+
+  await expect(page.locator('.results-count')).toHaveText('1 date idea found')
 })
 
 test('filter bar stays hidden when the redesign flag is off', async ({ page }) => {

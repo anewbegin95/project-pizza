@@ -3,6 +3,7 @@ const path = require('node:path')
 
 const {
   FILTER_SETS,
+  getNextOptionIndex,
   createFilterState,
   selectOption,
   clearFilter,
@@ -91,6 +92,33 @@ describe('filter state', () => {
     state = clearAll(state)
     expect(isAnyActive(state)).toBe(false)
     expect(Object.keys(state)).toEqual(FILTER_SETS.popups)
+  })
+})
+
+describe('getNextOptionIndex', () => {
+  it('enters the list at the first option going down, the last going up', () => {
+    expect(getNextOptionIndex(-1, 'ArrowDown', 6)).toBe(0)
+    expect(getNextOptionIndex(-1, 'ArrowUp', 6)).toBe(5)
+  })
+
+  it('steps through the list', () => {
+    expect(getNextOptionIndex(0, 'ArrowDown', 6)).toBe(1)
+    expect(getNextOptionIndex(3, 'ArrowUp', 6)).toBe(2)
+  })
+
+  it('wraps at both ends', () => {
+    expect(getNextOptionIndex(5, 'ArrowDown', 6)).toBe(0)
+    expect(getNextOptionIndex(0, 'ArrowUp', 6)).toBe(5)
+  })
+
+  it('jumps to either end for Home and End', () => {
+    expect(getNextOptionIndex(3, 'Home', 6)).toBe(0)
+    expect(getNextOptionIndex(3, 'End', 6)).toBe(5)
+  })
+
+  it('returns null for keys it does not handle or an empty list', () => {
+    expect(getNextOptionIndex(2, 'Tab', 6)).toBeNull()
+    expect(getNextOptionIndex(-1, 'ArrowDown', 0)).toBeNull()
   })
 })
 
