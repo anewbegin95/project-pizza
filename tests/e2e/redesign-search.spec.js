@@ -42,6 +42,21 @@ test('date ideas gets the search bar but no view toggle', async ({ page }) => {
   await expect(page.getByRole('group', { name: /view mode/i })).toHaveCount(0)
 })
 
+test('hovering the inactive toggle keeps the redesign palette', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await page.getByRole('button', { name: 'Map' }).hover()
+  const hovered = await page.getByRole('button', { name: 'Map' }).evaluate(async (el) => {
+    // Colour transitions must settle or the sample catches a mid-fade blend.
+    await Promise.all(el.getAnimations().map((animation) => animation.finished))
+    return { isHovered: el.matches(':hover'), background: getComputedStyle(el).backgroundColor }
+  })
+  // Guard against a vacuous pass if :hover never applies.
+  expect(hovered.isHovered).toBe(true)
+  // buttons.css styles bare `button:hover` fuchsia; the toggle must not inherit it.
+  expect(hovered.background).not.toBe('rgb(216, 30, 91)')
+})
+
 test('search controls stay hidden when the redesign flag is off', async ({ page }) => {
   await page.goto('/pop-ups.html')
 
