@@ -1,0 +1,181 @@
+/* -----------------------------------------------------------------------------
+  FILTER BAR, CHIPS + DROPDOWNS (redesign only)
+  Hidden by default so flag-off pages are unchanged. Chips compose the
+  .ui-filter-chip primitive from base.css and only add what it lacks.
+  See REDESIGN.md sections 6.2/6.3.
+----------------------------------------------------------------------------- */
+.filter-bar,
+.results-count {
+  display: none;
+}
+
+:root[data-redesign='on'] .filter-bar,
+body.redesign-enabled .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--space-sm) var(--space-sm-md) 0;
+}
+
+:root[data-redesign='on'] .filter-bar__group,
+body.redesign-enabled .filter-bar__group {
+  position: relative;
+}
+
+/* Chips -------------------------------------------------------------------- */
+
+/* buttons.css styles bare `button` and `button:hover` in the legacy palette.
+   Those beat .ui-filter-chip on specificity, so the chip's colours are
+   restated here inside the gated scope. */
+:root[data-redesign='on'] .filter-chip,
+body.redesign-enabled .filter-chip {
+  min-height: 44px;
+  border: 1px solid var(--nyc-medium-gray);
+  background-color: var(--nyc-surface-card);
+  color: var(--nyc-navy);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .filter-chip:hover,
+body.redesign-enabled .filter-chip:hover {
+  border-color: var(--nyc-green);
+  background-color: var(--nyc-surface-card);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .filter-chip--active,
+:root[data-redesign='on'] .filter-chip--active:hover,
+body.redesign-enabled .filter-chip--active,
+body.redesign-enabled .filter-chip--active:hover {
+  border-color: var(--nyc-green);
+  background-color: var(--nyc-surface-active);
+  color: var(--nyc-green);
+}
+
+:root[data-redesign='on'] .filter-chip:disabled,
+body.redesign-enabled .filter-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:root[data-redesign='on'] .filter-chip__chevron,
+body.redesign-enabled .filter-chip__chevron {
+  font-size: 10px;
+  color: var(--nyc-medium-gray);
+}
+
+:root[data-redesign='on'] .filter-chip--active .filter-chip__chevron,
+body.redesign-enabled .filter-chip--active .filter-chip__chevron {
+  color: var(--nyc-green);
+}
+
+:root[data-redesign='on'] .filter-chip:focus-visible,
+:root[data-redesign='on'] .filter-bar__clear:focus-visible,
+body.redesign-enabled .filter-chip:focus-visible,
+body.redesign-enabled .filter-bar__clear:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 2px;
+}
+
+/* Dropdown ----------------------------------------------------------------- */
+
+:root[data-redesign='on'] .filter-dropdown,
+body.redesign-enabled .filter-dropdown {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-xxs));
+  left: 0;
+  min-width: 220px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-xxs) 0;
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+}
+
+:root[data-redesign='on'] .filter-dropdown[hidden],
+body.redesign-enabled .filter-dropdown[hidden] {
+  display: none;
+}
+
+:root[data-redesign='on'] .filter-dropdown__option,
+body.redesign-enabled .filter-dropdown__option {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .filter-dropdown__option:hover,
+body.redesign-enabled .filter-dropdown__option:hover {
+  background-color: var(--nyc-light-gray);
+}
+
+:root[data-redesign='on'] .filter-dropdown__option[aria-selected='true'],
+body.redesign-enabled .filter-dropdown__option[aria-selected='true'] {
+  background-color: var(--nyc-light-pink);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Checkmark shows selection without relying on colour alone. */
+:root[data-redesign='on'] .filter-dropdown__option::after,
+body.redesign-enabled .filter-dropdown__option::after {
+  content: '';
+  color: var(--nyc-fuschia);
+}
+
+:root[data-redesign='on'] .filter-dropdown__option[aria-selected='true']::after,
+body.redesign-enabled .filter-dropdown__option[aria-selected='true']::after {
+  content: '\2713';
+}
+
+/* Clear all + results count ------------------------------------------------ */
+
+:root[data-redesign='on'] .filter-bar__clear,
+body.redesign-enabled .filter-bar__clear {
+  min-height: 44px;
+  padding-inline: var(--space-xs);
+  color: var(--nyc-fuschia);
+  font-size: var(--font-xs-md);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .filter-bar__clear[hidden],
+body.redesign-enabled .filter-bar__clear[hidden] {
+  display: none;
+}
+
+:root[data-redesign='on'] .results-count,
+body.redesign-enabled .results-count {
+  display: block;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--space-sm) var(--space-sm-md) var(--space-xs);
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .filter-bar,
+  body.redesign-enabled .filter-bar {
+    padding-inline: var(--space-sm);
+  }
+
+  :root[data-redesign='on'] .filter-dropdown,
+  body.redesign-enabled .filter-dropdown {
+    min-width: min(280px, calc(100vw - 2 * var(--space-sm)));
+  }
+}

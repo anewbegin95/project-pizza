@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="resources/css/hero.css">
     <link rel="stylesheet" href="resources/css/buttons.css">
     <link rel="stylesheet" href="resources/css/search.css">
+    <link rel="stylesheet" href="resources/css/filters.css">
     <link rel="stylesheet" href="resources/css/popups.css">
     <link rel="stylesheet" href="resources/css/footer.css">
     <!-- Removed broken style.css link -->
@@ -29,6 +30,7 @@
         <script src="resources/js/sanity-client.js" defer></script>
         <script src="resources/js/sanity-queries.js" defer></script>
         <script src="resources/js/search.js" defer></script>
+        <script src="resources/js/filters.js" defer></script>
         <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
         <!-- STATIC_JSONLD_START -->
         <!-- STATIC_JSONLD_END -->
@@ -64,6 +66,64 @@
                     <button type="button" class="view-toggle__btn" data-view="map" aria-pressed="false">Map</button>
                 </div>
             </div>
+
+            <!-- Filter bar (redesign only) -->
+            <div class="filter-bar" role="toolbar" aria-label="Filter pop-ups" data-filter-page="popups">
+                <div class="filter-bar__group">
+                    <button type="button" class="ui-filter-chip filter-chip" data-filter="borough" data-label="Borough" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="filter-chip__label">Borough</span>
+                        <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <ul class="filter-dropdown" role="listbox" aria-label="Borough" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="manhattan" data-label="Manhattan">Manhattan</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="brooklyn" data-label="Brooklyn">Brooklyn</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="queens" data-label="Queens">Queens</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="bronx" data-label="Bronx">Bronx</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="staten_island" data-label="Staten Island">Staten Island</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="citywide" data-label="Citywide">Citywide</li>
+                    </ul>
+                </div>
+                <div class="filter-bar__group">
+                    <button type="button" class="ui-filter-chip filter-chip" data-filter="neighborhood" data-label="Neighborhood" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="filter-chip__label">Neighborhood</span>
+                        <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <ul class="filter-dropdown" role="listbox" aria-label="Neighborhood" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Chelsea" data-label="Chelsea">Chelsea</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="East Village" data-label="East Village">East Village</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Lower East Side" data-label="Lower East Side">Lower East Side</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="SoHo" data-label="SoHo">SoHo</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Williamsburg" data-label="Williamsburg">Williamsburg</li>
+                    </ul>
+                </div>
+                <div class="filter-bar__group">
+                    <button type="button" class="ui-filter-chip filter-chip" data-filter="type" data-label="Type" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="filter-chip__label">Type</span>
+                        <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <ul class="filter-dropdown" role="listbox" aria-label="Type" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="food_drink" data-label="Food &amp; Drink">&#127829; Food &amp; Drink</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="market" data-label="Market">&#128717; Market</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="art_culture" data-label="Art &amp; Culture">&#127912; Art &amp; Culture</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="beauty" data-label="Beauty">&#128132; Beauty</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="fashion" data-label="Fashion">&#128087; Fashion</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="wellness" data-label="Wellness">&#129496; Wellness</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="music" data-label="Music">&#127925; Music</li>
+                        <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="vintage_thrift" data-label="Vintage &amp; Thrift">&#10024; Vintage &amp; Thrift</li>
+                    </ul>
+                </div>
+                <div class="filter-bar__group">
+                    <!-- Inert until the date picker lands (#290); disabled rather than
+                         announcing a menu it does not have yet. -->
+                    <button type="button" class="ui-filter-chip filter-chip" data-filter="dates" data-label="Pick dates" disabled>
+                        <span class="filter-chip__label">Pick dates</span>
+                        <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
+                    </button>
+                </div>
+                <button type="button" class="ui-btn--text filter-bar__clear" hidden>&#215; Clear all</button>
+            </div>
+            <p class="results-count" aria-live="polite">0 events found</p>
+            <hr class="ui-divider results-divider">
 
             <!-- Pop-up Tiles Grid -->
             <section class="popups-grid" id="popupsGrid">
