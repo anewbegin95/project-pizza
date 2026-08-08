@@ -573,13 +573,37 @@ Add/update the following in `:root` in `resources/css/base.css`:
 
 ---
 
+### 7.4 Supporting Pages (`about.html`, `contact_us.html`, `privacy_policy.html`)
+
+No mock exists for these pages. The shell built in #293 is **derived from the
+design system** rather than from a design, and is recorded here so it is not
+re-litigated:
+
+- Compact hero (30vh) with the redesign's darker gradient and a white headline,
+  replacing the pink headline on a 50vh banner
+- Reading column capped at `--section-max-width`, centred
+- Content on a white card (`--radius-lg`, `--shadow-sm`) over the cream page
+- Playfair section headings, Work Sans body at 16px / 1.7 line-height
+- Green links per §6.9; media (circular portrait) and CTA regions available
+
+Implementation: `resources/css/interior.css`. If a mock is produced later, that
+file is the single place to adjust.
+
+---
+
 ## 9. New CSS Files Needed
 
-| File | Purpose |
-|---|---|
-| `resources/css/filters.css` | Filter bar, filter chips, dropdowns, date range picker |
-| `resources/css/map.css` | Leaflet map container, legend, pin styles, map/list toggle |
-| `resources/css/search.css` | Search bar container, input field, view toggle buttons |
+| File | Purpose | Status |
+|---|---|---|
+| `resources/css/filters.css` | Filter bar, filter chips, dropdowns, date range picker | ✅ Built (#289, #290) |
+| `resources/css/search.css` | Search bar container, input field, view toggle buttons | ✅ Built (#288) |
+| `resources/css/cards.css` | Event card system, standard and featured variants | ✅ Built (#291) |
+| `resources/css/interior.css` | Shell for About/Contact/Privacy (derived — see §7.4) | ✅ Built (#293) |
+| `resources/css/map.css` | Leaflet map container, legend, pin styles | Pending (#299) |
+
+Plus gated additions to existing files: `hero.css` (collage hero, #287) and `modals.css` (detail modal, #292).
+
+Accompanying JS: `search.js`, `filters.js`, `date-picker.js`, `cards.js`, `modal.js` — all built in Epic 3. **See `docs/redesign-components.md` for their public APIs, the events they publish, and the conventions they follow.**
 
 These should be `<link>`ed in the relevant HTML pages only (e.g. `filters.css` and `map.css` only on `pop-ups.html` and `date-ideas.html`).
 
