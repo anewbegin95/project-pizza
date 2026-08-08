@@ -81,3 +81,186 @@
 .modal:not(.hidden) {
   display: flex;
 }
+
+/* -----------------------------------------------------------------------------
+  REDESIGNED DETAIL MODAL (gated behind the redesign flag)
+  Split text/photo card with a pink return bar. The legacy .modal styles above
+  are untouched, so flag-off pages are unchanged. See REDESIGN.md section 6.5.
+----------------------------------------------------------------------------- */
+:root[data-redesign='on'] .modal--detail,
+body.redesign-enabled .modal--detail {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+:root[data-redesign='on'] .modal--detail[hidden],
+body.redesign-enabled .modal--detail[hidden] {
+  display: none;
+}
+
+:root[data-redesign='on'] .modal-detail__card,
+body.redesign-enabled .modal-detail__card {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  grid-template-areas:
+    'bar bar'
+    'body media';
+  overflow: hidden;
+  width: 95vw;
+  max-width: 900px;
+  max-height: 90vh;
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-white);
+  box-shadow: var(--shadow-xl);
+}
+
+:root[data-redesign='on'] .modal-return-bar,
+body.redesign-enabled .modal-return-bar {
+  display: flex;
+  grid-area: bar;
+  gap: var(--space-xs);
+  align-items: center;
+  width: 100%;
+  padding: 12px 20px;
+  border: 0;
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
+  font-family: var(--nyc-font-body);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .modal-return-bar:hover,
+body.redesign-enabled .modal-return-bar:hover {
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-fuschia);
+  text-decoration: underline;
+}
+
+:root[data-redesign='on'] .modal-detail__body,
+body.redesign-enabled .modal-detail__body {
+  display: flex;
+  grid-area: body;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  padding: var(--space-sm-md);
+}
+
+:root[data-redesign='on'] .modal-detail__tags,
+body.redesign-enabled .modal-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+:root[data-redesign='on'] .modal-detail__title,
+body.redesign-enabled .modal-detail__title {
+  margin: 0;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+:root[data-redesign='on'] .modal-detail__when,
+:root[data-redesign='on'] .modal-detail__where,
+:root[data-redesign='on'] .modal-detail__description,
+body.redesign-enabled .modal-detail__when,
+body.redesign-enabled .modal-detail__where,
+body.redesign-enabled .modal-detail__description {
+  margin: 0;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: 16px;
+}
+
+:root[data-redesign='on'] .modal-detail__venue,
+body.redesign-enabled .modal-detail__venue {
+  display: block;
+  color: var(--nyc-navy);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .modal-detail__calendar-label,
+body.redesign-enabled .modal-detail__calendar-label {
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .modal-detail__calendar-link,
+body.redesign-enabled .modal-detail__calendar-link {
+  color: var(--nyc-fuschia);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+}
+
+:root[data-redesign='on'] .modal-detail__share,
+body.redesign-enabled .modal-detail__share {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-sm-md);
+  border: 1px solid var(--nyc-navy);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .modal-detail__share:hover,
+body.redesign-enabled .modal-detail__share:hover {
+  background-color: var(--nyc-surface-muted);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .modal-detail__media,
+body.redesign-enabled .modal-detail__media {
+  grid-area: media;
+  overflow: hidden;
+}
+
+:root[data-redesign='on'] .modal-detail__image,
+body.redesign-enabled .modal-detail__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:root[data-redesign='on'] .modal-detail__share:focus-visible,
+:root[data-redesign='on'] .modal-return-bar:focus-visible,
+:root[data-redesign='on'] .modal-detail__calendar-link:focus-visible,
+body.redesign-enabled .modal-detail__share:focus-visible,
+body.redesign-enabled .modal-return-bar:focus-visible,
+body.redesign-enabled .modal-detail__calendar-link:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  :root[data-redesign='on'] .modal-detail__card,
+  body.redesign-enabled .modal-detail__card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'bar'
+      'media'
+      'body';
+  }
+
+  :root[data-redesign='on'] .modal-detail__media,
+  body.redesign-enabled .modal-detail__media {
+    aspect-ratio: 16 / 9;
+  }
+}
