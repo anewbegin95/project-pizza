@@ -1,0 +1,194 @@
+/* -----------------------------------------------------------------------------
+  INTERIOR PAGE SHELL (redesign only)
+  Shared layout for the supporting pages — About, Contact, Privacy — so their
+  reading column, typography rhythm and spacing match the redesign.
+
+  REDESIGN.md section 7 specifies Pop-Ups, Date Ideas and Home only; there is
+  no interior-page mock. This shell is derived from the design system: cream
+  page, white content card, Playfair headings, Work Sans body, and green as
+  the interactive accent (section 6.9). Adjust here if a mock lands later.
+
+  Gated behind the redesign flag; the legacy per-page CSS is untouched.
+----------------------------------------------------------------------------- */
+
+:root[data-redesign='on'] .interior-page,
+body.redesign-enabled .interior-page {
+  display: block;
+  box-sizing: border-box;
+  /* The legacy per-page section still wraps this; flatten its surface so the
+     content card below is not nested inside a second card. */
+  border: 0;
+  background: none;
+  box-shadow: none;
+  width: 100%;
+  max-width: var(--section-max-width);
+  margin-inline: auto;
+  padding: var(--space-lg) var(--space-sm-md);
+}
+
+:root[data-redesign='on'] .interior-page__content,
+body.redesign-enabled .interior-page__content {
+  padding: var(--space-md);
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-white);
+  box-shadow: var(--shadow-sm);
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+/* Headings ------------------------------------------------------------------ */
+
+:root[data-redesign='on'] .interior-page__content h2,
+:root[data-redesign='on'] .interior-page__content h3,
+body.redesign-enabled .interior-page__content h2,
+body.redesign-enabled .interior-page__content h3 {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  line-height: 1.25;
+}
+
+:root[data-redesign='on'] .interior-page__content h2,
+body.redesign-enabled .interior-page__content h2 {
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+:root[data-redesign='on'] .interior-page__content h3,
+body.redesign-enabled .interior-page__content h3 {
+  font-size: clamp(20px, 2vw, 24px);
+}
+
+/* The first heading should not push away from the card's own padding. */
+:root[data-redesign='on'] .interior-page__content > :first-child,
+body.redesign-enabled .interior-page__content > :first-child {
+  margin-top: 0;
+}
+
+/* Body copy ----------------------------------------------------------------- */
+
+:root[data-redesign='on'] .interior-page__content p,
+:root[data-redesign='on'] .interior-page__content li,
+body.redesign-enabled .interior-page__content p,
+body.redesign-enabled .interior-page__content li {
+  margin-bottom: var(--space-sm);
+  color: var(--nyc-charcoal);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+:root[data-redesign='on'] .interior-page__content ul,
+:root[data-redesign='on'] .interior-page__content ol,
+body.redesign-enabled .interior-page__content ul,
+body.redesign-enabled .interior-page__content ol {
+  margin-bottom: var(--space-sm);
+  padding-left: var(--space-sm-md);
+}
+
+:root[data-redesign='on'] .interior-page__content strong,
+body.redesign-enabled .interior-page__content strong {
+  color: var(--nyc-navy);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .interior-page__content a,
+body.redesign-enabled .interior-page__content a {
+  color: var(--nyc-green);
+  text-decoration: underline;
+}
+
+:root[data-redesign='on'] .interior-page__content a:hover,
+body.redesign-enabled .interior-page__content a:hover {
+  color: var(--nyc-green-hover);
+}
+
+:root[data-redesign='on'] .interior-page__content a:focus-visible,
+body.redesign-enabled .interior-page__content a:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 2px;
+}
+
+/* Media region --------------------------------------------------------------- */
+
+:root[data-redesign='on'] .interior-page__media,
+body.redesign-enabled .interior-page__media {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+
+:root[data-redesign='on'] .interior-page__media img,
+body.redesign-enabled .interior-page__media img {
+  width: 100%;
+  max-width: 256px;
+  height: auto;
+  border-radius: var(--radius-round);
+  box-shadow: var(--shadow-md);
+  object-fit: cover;
+}
+
+/* CTA region ----------------------------------------------------------------- */
+
+:root[data-redesign='on'] .interior-page__cta,
+body.redesign-enabled .interior-page__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--nyc-section-divider);
+}
+
+/* Responsive ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  :root[data-redesign='on'] .interior-page,
+  body.redesign-enabled .interior-page {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  :root[data-redesign='on'] .interior-page__content,
+  body.redesign-enabled .interior-page__content {
+    padding: var(--space-sm-md);
+  }
+
+  /* Portrait leads the page rather than sitting beside the text. */
+  :root[data-redesign='on'] .interior-page__media,
+  body.redesign-enabled .interior-page__media {
+    margin-bottom: var(--space-sm-md);
+  }
+
+  :root[data-redesign='on'] .interior-page__cta,
+  body.redesign-enabled .interior-page__cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Compact hero -----------------------------------------------------------------
+   Supporting pages keep a single banner image rather than the collage, but the
+   headline follows the redesign treatment so they do not read as legacy pages.
+----------------------------------------------------------------------------- */
+
+:root[data-redesign='on'] .hero--interior,
+body.redesign-enabled .hero--interior {
+  height: auto;
+  min-height: 30vh;
+}
+
+:root[data-redesign='on'] .hero--interior::after,
+body.redesign-enabled .hero--interior::after {
+  background: linear-gradient(to bottom, rgba(0, 27, 46, 0.55), rgba(0, 27, 46, 0.8));
+}
+
+:root[data-redesign='on'] .hero--interior h1,
+body.redesign-enabled .hero--interior h1 {
+  margin-bottom: 0;
+  color: var(--nyc-white);
+  font-size: clamp(36px, 5vw, 56px);
+}
