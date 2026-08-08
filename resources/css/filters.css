@@ -11,6 +11,7 @@
 
 :root[data-redesign='on'] .filter-bar,
 body.redesign-enabled .filter-bar {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
@@ -139,6 +140,198 @@ body.redesign-enabled .filter-dropdown__option::after {
 :root[data-redesign='on'] .filter-dropdown__option[aria-selected='true']::after,
 body.redesign-enabled .filter-dropdown__option[aria-selected='true']::after {
   content: '\2713';
+}
+
+/* Date picker -------------------------------------------------------------- */
+
+/* The calendar needs a fixed width and no scroll clipping, unlike the option
+   dropdowns it shares a container class with. */
+:root[data-redesign='on'] .date-picker,
+body.redesign-enabled .date-picker {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  overflow: visible;
+  width: min(620px, calc(100vw - 2 * var(--space-sm)));
+  max-height: none;
+  padding: var(--space-sm);
+}
+
+/* Anchored to the filter bar rather than its own chip, so a 620px calendar
+   stays inside the viewport even though the chip sits well to the right. */
+:root[data-redesign='on'] .filter-bar__group--dates,
+body.redesign-enabled .filter-bar__group--dates {
+  position: static;
+}
+
+:root[data-redesign='on'] .date-picker__months,
+body.redesign-enabled .date-picker__months {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm-md);
+  /* Grid items default to min-width:auto, which would let the calendars'
+     min-content width push the panel far wider than its own width. */
+  min-width: 0;
+}
+
+:root[data-redesign='on'] .date-picker__month,
+body.redesign-enabled .date-picker__month {
+  min-width: 0;
+}
+
+:root[data-redesign='on'] .date-picker__header,
+body.redesign-enabled .date-picker__header {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
+}
+
+:root[data-redesign='on'] .date-picker__month-label,
+body.redesign-enabled .date-picker__month-label {
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .date-picker__nav,
+body.redesign-enabled .date-picker__nav {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-sm);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .date-picker__grid,
+body.redesign-enabled .date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+:root[data-redesign='on'] .date-picker__weekday,
+body.redesign-enabled .date-picker__weekday {
+  padding-bottom: var(--space-xxs);
+  color: var(--nyc-medium-gray);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs);
+  text-align: center;
+}
+
+:root[data-redesign='on'] .date-picker__day,
+body.redesign-enabled .date-picker__day {
+  aspect-ratio: 1;
+  min-height: 34px;
+  /* buttons.css pads bare `button` by 8px 32px, which would force each cell
+     to ~80px and overflow the calendar. */
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .date-picker__day:hover,
+body.redesign-enabled .date-picker__day:hover {
+  background-color: var(--nyc-light-gray);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .date-picker__day--outside,
+body.redesign-enabled .date-picker__day--outside {
+  color: var(--nyc-medium-gray);
+}
+
+/* Selected states are restated for :hover so the pointer resting on a chosen
+   day does not mask the selection. */
+:root[data-redesign='on'] .date-picker__day--in-range,
+:root[data-redesign='on'] .date-picker__day--in-range:hover,
+body.redesign-enabled .date-picker__day--in-range,
+body.redesign-enabled .date-picker__day--in-range:hover {
+  background-color: var(--nyc-light-pink);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .date-picker__day--edge,
+:root[data-redesign='on'] .date-picker__day--edge:hover,
+body.redesign-enabled .date-picker__day--edge,
+body.redesign-enabled .date-picker__day--edge:hover {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .date-picker__day--today,
+body.redesign-enabled .date-picker__day--today {
+  border-radius: var(--radius-round);
+  background-color: var(--nyc-pink);
+  color: var(--nyc-navy);
+}
+
+:root[data-redesign='on'] .date-picker__day:focus-visible,
+:root[data-redesign='on'] .date-picker__nav:focus-visible,
+body.redesign-enabled .date-picker__day:focus-visible,
+body.redesign-enabled .date-picker__nav:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 1px;
+}
+
+:root[data-redesign='on'] .date-picker__footer,
+body.redesign-enabled .date-picker__footer {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--nyc-section-divider);
+}
+
+:root[data-redesign='on'] .date-picker__clear,
+body.redesign-enabled .date-picker__clear {
+  min-height: 40px;
+  padding-inline: var(--space-sm);
+  border: 0;
+  background-color: transparent;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .date-picker__done,
+body.redesign-enabled .date-picker__done {
+  min-height: 40px;
+  padding-inline: var(--space-sm-md);
+  border: 1px solid var(--nyc-green);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-green);
+  color: var(--nyc-white);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .date-picker__done:hover,
+body.redesign-enabled .date-picker__done:hover {
+  background-color: var(--nyc-green-hover);
+  color: var(--nyc-white);
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .date-picker__months,
+  body.redesign-enabled .date-picker__months {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Clear all + results count ------------------------------------------------ */
