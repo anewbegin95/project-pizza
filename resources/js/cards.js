@@ -48,9 +48,19 @@
 
     // === PURE HELPERS ===
 
+    /**
+     * All-day events store a date-only string. `new Date('2026-07-25')` is
+     * UTC midnight, which is the previous evening in Eastern time and would
+     * render the card a day early, so those are anchored at noon UTC — the
+     * same approach scripts/prebuild-events.js takes.
+     */
     function parseDate(value) {
         if (!value) return null;
-        const date = new Date(value);
+        const raw = String(value);
+        const dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        const date = dateOnly
+            ? new Date(Date.UTC(+dateOnly[1], +dateOnly[2] - 1, +dateOnly[3], 12, 0, 0))
+            : new Date(raw);
         return Number.isNaN(date.getTime()) ? null : date;
     }
 
@@ -169,7 +179,9 @@
 
         const image = createElement(doc, 'img', 'event-card__image');
         image.src = data.img || DEFAULT_CARD_IMAGE;
-        image.alt = `${data.name || 'Event'} image`;
+        // Decorative: the card's title sits in the same link, so alt text
+        // here would just repeat it.
+        image.alt = '';
         image.loading = 'lazy';
         media.appendChild(image);
 

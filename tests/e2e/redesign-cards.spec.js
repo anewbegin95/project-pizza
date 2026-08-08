@@ -63,11 +63,28 @@ test('a pop-up card renders date, image and details columns', async ({ page }) =
   await expect(card.locator('.event-card__tag')).toHaveText('🍕 Food & Drink')
   await expect(card.locator('.event-card__title')).toHaveText('Flavia Flavor Lounge')
   await expect(card.locator('.event-card__venue')).toHaveText('22 Wooster')
-  await expect(card.locator('.event-card__image')).toHaveAttribute('alt', /flavia/i)
+  // The title sits beside it in the same link, so the photo is decorative and
+  // should not be announced a second time.
+  await expect(card.locator('.event-card__image')).toHaveAttribute('alt', '')
   await expect(card).toHaveAttribute('href', 'pop-up.html?id=flavia-lounge')
 
   const columns = await card.evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(' ').length)
   expect(columns).toBe(3)
+})
+
+test('an all-day event shows its own date, not the evening before', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+  // mapSanityPopup folds an all-day start_date into start_datetime as a
+  // date-only string.
+  const card = await renderCard(page, {
+    ...POPUP,
+    start_datetime: '2026-07-25',
+    end_datetime: '2026-07-26',
+  })
+
+  await expect(card.locator('.event-card__day-name')).toHaveText('SAT')
+  await expect(card.locator('.event-card__day-number')).toHaveText('25')
+  await expect(card.locator('.event-card__through')).toHaveText('through Jul 26')
 })
 
 test('a free price takes the green badge treatment', async ({ page }) => {
@@ -134,6 +151,39 @@ test('the date column shrinks on a tablet', async ({ page }) => {
     parseFloat(getComputedStyle(el).gridTemplateColumns.split(' ')[0])
   )
   expect(firstColumn).toBe(100)
+})
+
+test('a sparse record still renders a usable card', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+  const card = await renderCard(page, { id: 'bare', name: 'Untagged Pop-Up' })
+
+  await expect(card).toBeVisible()
+  await expect(card.locator('.event-card__title')).toHaveText('Untagged Pop-Up')
+  // Nothing empty is rendered for the fields that are missing.
+  await expect(card.locator('.event-card__tag')).toHaveCount(0)
+  await expect(card.locator('.event-card__price')).toHaveCount(0)
+  await expect(card.locator('.event-card__meta')).toHaveCount(0)
+  await expect(card.locator('.event-card__description')).toHaveCount(0)
+  // And it still falls back to the placeholder photo.
+  await expect(card.locator('.event-card__image')).toHaveAttribute(
+    'src',
+    /default-popup-image\.webp$/
+  )
+})
+
+test('a featured date idea keeps its vibe column readable over the image', async ({ page }) => {
+  await page.goto('/date-ideas.html?redesign=on')
+  const card = await renderCard(page, { ...DATE_IDEA, is_featured: true }, { type: 'date-idea' })
+
+  await expect(card).toHaveClass(/event-card--featured/)
+  await expect(card.locator('.event-card__vibe')).toHaveText('🎭 Cultural')
+
+  const overlaps = await card.evaluate((el) => {
+    const lead = el.querySelector('.event-card__date').getBoundingClientRect()
+    const details = el.querySelector('.event-card__details').getBoundingClientRect()
+    return !(lead.bottom <= details.top || details.bottom <= lead.top)
+  })
+  expect(overlaps).toBe(false)
 })
 
 test('cards stay hidden when the redesign flag is off', async ({ page }) => {

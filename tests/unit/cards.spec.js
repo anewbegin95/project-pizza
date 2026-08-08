@@ -48,6 +48,27 @@ describe('formatCardDate', () => {
   it('returns empty parts when there is no date, as date ideas have none', () => {
     expect(formatCardDate('')).toEqual({ dayName: '', dayNumber: '', monthYear: '', through: '' })
   })
+
+  // All-day events store a date-only string. Parsed as UTC midnight that
+  // lands on the previous evening in Eastern time, shifting the card a day.
+  it('keeps an all-day date on its own day rather than shifting it back', () => {
+    expect(formatCardDate('2026-07-25')).toEqual({
+      dayName: 'SAT',
+      dayNumber: '25',
+      monthYear: 'July 2026',
+      through: '',
+    })
+  })
+
+  it('keeps both ends of a multi-day all-day event on their own days', () => {
+    const parts = formatCardDate('2026-07-25', '2026-07-26')
+    expect(parts.dayNumber).toBe('25')
+    expect(parts.through).toBe('through Jul 26')
+  })
+
+  it('still handles a date-only value that ends the same day it starts', () => {
+    expect(formatCardDate('2026-07-25', '2026-07-25').through).toBe('')
+  })
 })
 
 describe('isFreePrice', () => {
