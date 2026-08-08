@@ -71,6 +71,16 @@ A Node script (no browser APIs) that queries Sanity directly over HTTPS and rewr
 
 Environment-aware feature flag gating an in-progress redesign, loaded first (blocking, not deferred) in every page's `<head>`. Resolves on/off via, in priority order: `?redesign=on|off` URL param > `window.REDESIGN_CONFIG` (optionally loaded from a separate untracked `resources/js/redesign-config.js`) > hostname-based environment default (dev/staging/prod all default OFF). See README for full config API.
 
+### Redesign shared components (`docs/redesign-components.md`)
+
+Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map toggle, filter bar/chips/dropdowns, date range picker, event cards, detail modal, interior-page shell. **`docs/redesign-components.md` is the reference**: component inventory, public APIs, the events they publish, deviations from REDESIGN.md, and the traps below. Read it before building on them (Epic 4 onwards).
+
+- **Everything is gated, in both halves.** CSS rules are scoped to `:root[data-redesign='on'], body.redesign-enabled`, and anything that must not appear flag-off carries an unscoped `display: none` default. JS bootstraps return early unless `window.REDESIGN_FLAG.isEnabled()`. A component doing only one half leaks into the legacy experience.
+- **New JS modules are wrapped in an IIFE exposing a single `window.NycX`** (`NycCards`, `NycModal`, `NycFilters`, `NycDatePicker`). Classic scripts share one global lexical scope, so a duplicate top-level `const` silently kills the whole file — this happened with `EASTERN_TIMEZONE` between `cards.js` and `pop-ups.js`. An e2e test asserts each redesign page loads with zero page errors.
+- **Components publish events rather than calling each other**: `viewtoggle:change`, `search:change`, `filters:change`. Nothing consumes them yet; that is Epic 4.
+- **`buttons.css` styles the bare `button` selector** in the legacy pink palette with `padding: 8px 32px`, at a specificity that beats the `.ui-*` primitives — it has caused real bugs in redesign components, which currently restate their own colours to defend against it. Tracked in #372.
+- **Anchor date-only strings at noon UTC.** `new Date('2026-07-25')` is UTC midnight, i.e. the previous evening in Eastern time, so all-day events render a day early. `prebuild-events.js`, `cards.js` and `modal.js` all do this.
+
 ### CI/CD gates (branch-specific, see `.github/workflows/`)
 
 - **`staging` branch** (`staging-integration-gate.yml`): Sanity Studio build, Stylelint, HTMLHint, Vitest unit tests, Lychee link check, Lighthouse CI, Playwright e2e smoke tests — plus `security-ci.yml` (ESLint + `npm audit` in `sanity/`, Gitleaks, optional Snyk) and dependency review.
@@ -86,3 +96,4 @@ Full detail in `docs/STANDARDS.md`; CI enforces a subset via Stylelint. Highligh
 - **CSS**: lowercase-hyphenated, BEM-ish (`.block__element--modifier`); custom properties must use one of the prefixes `--nyc-*`, `--space-*`, `--font-*`, `--shadow-*`, `--radius-*`, `--container-*`, `--section-*`, `--carousel-*` (enforced by `.stylelintrc.json`).
 - **JS**: camelCase functions/variables, PascalCase classes, UPPER_SNAKE_CASE constants (e.g. `POPUPS_QUERY`).
 - One CSS file per page/feature under `resources/css/`, linked explicitly in each HTML file's `<head>` (no automatic bundling — new pages must add their own `<link>` tags).
+- **Tests**: CSS is unit-tested by reading the file and regex-asserting selectors/tokens (`expectCssToMatch`); pure JS is unit-tested via the `module.exports` guard; behaviour is tested in Playwright against `?redesign=on` with a companion flag-off assertion. Colour assertions must `await` `element.getAnimations()` before sampling — `getComputedStyle` immediately after a hover or class change reads a mid-transition blend and passes vacuously.
