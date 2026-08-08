@@ -31,6 +31,7 @@
         <script src="resources/js/sanity-client.js" defer></script>
         <script src="resources/js/sanity-queries.js" defer></script>
         <script src="resources/js/search.js" defer></script>
+        <script src="resources/js/date-picker.js" defer></script>
         <script src="resources/js/filters.js" defer></script>
         <script src="resources/js/cards.js" defer></script>
         <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
@@ -114,13 +115,12 @@
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="vintage_thrift" data-label="Vintage &amp; Thrift">&#10024; Vintage &amp; Thrift</li>
                     </ul>
                 </div>
-                <div class="filter-bar__group">
-                    <!-- Inert until the date picker lands (#290); disabled rather than
-                         announcing a menu it does not have yet. -->
-                    <button type="button" class="ui-filter-chip filter-chip" data-filter="dates" data-label="Pick dates" disabled>
+                <div class="filter-bar__group filter-bar__group--dates">
+                    <button type="button" class="ui-filter-chip filter-chip" data-filter="dates" data-label="Pick dates" aria-haspopup="dialog" aria-expanded="false">
                         <span class="filter-chip__label">Pick dates</span>
                         <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
                     </button>
+                    <div class="filter-dropdown filter-dropdown--dates" hidden></div>
                 </div>
                 <button type="button" class="ui-btn--text filter-bar__clear" hidden>&#215; Clear all</button>
             </div>
