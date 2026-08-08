@@ -138,10 +138,19 @@ function initFilters(doc) {
                 option.setAttribute('aria-selected', String(option.dataset.value === selected));
             });
 
+            // A group with no options (the date picker) supplies its own
+            // label through dataset.selectedLabel rather than an option. It is
+            // only trusted while the filter is actually set, so Clear all
+            // cannot leave a stale range on the chip.
+            const ownLabel = options.length === 0 && selected ? chip.dataset.selectedLabel : null;
             const labelEl = chip.querySelector('.filter-chip__label');
             if (labelEl) {
-                labelEl.textContent = getChipLabel(chip.dataset.label, selectedOption && selectedOption.dataset.label);
+                labelEl.textContent = getChipLabel(
+                    chip.dataset.label,
+                    options.length === 0 ? ownLabel : selectedOption && selectedOption.dataset.label
+                );
             }
+            if (options.length === 0 && !selected) delete chip.dataset.selectedLabel;
             chip.classList.toggle(ACTIVE_CHIP_CLASS, Boolean(selected));
         });
 
@@ -234,6 +243,8 @@ function initFilters(doc) {
     });
 
     doc.addEventListener('click', event => {
+        // A target detached by its own handler is not an outside click.
+        if (!event.target.isConnected) return;
         if (!bar.contains(event.target)) closeAll(null);
     });
 
@@ -258,6 +269,23 @@ function initFilters(doc) {
     return {
         getState: () => ({ ...state }),
         setResultsCount,
+        /**
+         * Sets a filter from outside the bar — used by the date picker, whose
+         * chip has no option list of its own. Passing a null value clears it.
+         */
+        setFilter: (filter, value, label) => {
+            if (!Object.prototype.hasOwnProperty.call(state, filter)) return;
+            state = { ...state, [filter]: value || null };
+            const chip = bar.querySelector(`.filter-chip[data-filter="${filter}"]`);
+            if (chip) {
+                if (value) {
+                    chip.dataset.selectedLabel = label || '';
+                } else {
+                    delete chip.dataset.selectedLabel;
+                }
+            }
+            render();
+        },
     };
 }
 
@@ -266,7 +294,29 @@ function initFilters(doc) {
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         if (!window.REDESIGN_FLAG || !window.REDESIGN_FLAG.isEnabled()) return;
-        initFilters(document);
+        const controller = initFilters(document);
+        if (!controller) return;
+        window.NycFilters = controller;
+
+        // Mount the date picker into the dates chip's panel, when both the
+        // chip and the picker module are present on this page.
+        const datesPanel = document.querySelector('.filter-dropdown--dates');
+        const datesChip = document.querySelector('.filter-chip[data-filter="dates"]');
+        if (datesPanel && datesChip && window.NycDatePicker) {
+            const picker = window.NycDatePicker.initDatePicker(document, datesChip, datesPanel, {
+                onApply: (value, label) => {
+                    controller.setFilter('dates', value, label);
+                    datesPanel.hidden = true;
+                    datesChip.setAttribute('aria-expanded', 'false');
+                    datesChip.focus();
+                },
+                onClear: () => controller.setFilter('dates', null),
+            });
+            // Clear all resets the calendar as well as the chip.
+            document.addEventListener('filters:change', event => {
+                if (!event.detail.state.dates) picker.reset();
+            });
+        }
     });
 }
 

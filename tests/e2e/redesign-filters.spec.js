@@ -217,11 +217,14 @@ test('filter changes are published for page code to consume', async ({ page }) =
   expect(detail.state.borough).toBe('brooklyn')
 })
 
-test('the dates chip is inert until the date picker ships', async ({ page }) => {
+// The dates chip opens a calendar rather than a listbox; its behaviour is
+// covered in redesign-date-picker.spec.js.
+test('the dates chip advertises a dialog rather than a listbox', async ({ page }) => {
   await page.goto('/pop-ups.html?redesign=on')
 
   const dates = page.getByRole('button', { name: /pick dates/i })
-  await expect(dates).toBeDisabled()
+  await expect(dates).toBeEnabled()
+  await expect(dates).toHaveAttribute('aria-haspopup', 'dialog')
 })
 
 test('date ideas gets vibe and budget filters instead of type and dates', async ({ page }) => {
