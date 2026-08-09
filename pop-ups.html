@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="resources/css/filters.css">
     <link rel="stylesheet" href="resources/css/cards.css">
     <link rel="stylesheet" href="resources/css/popups.css">
+    <link rel="stylesheet" href="resources/css/popups-redesign.css">
     <link rel="stylesheet" href="resources/css/modals.css">
     <link rel="stylesheet" href="resources/css/footer.css">
     <!-- Removed broken style.css link -->
@@ -129,11 +130,17 @@
             <p class="results-count" aria-live="polite">0 events found</p>
             <hr class="ui-divider results-divider">
 
-            <!-- Pop-up Tiles Grid -->
-            <section class="popups-grid" id="popupsGrid">
-                <!-- STATIC_POPUPS_START -->
-                <!-- STATIC_POPUPS_END -->
-            </section>
+            <!-- Results region. The list panel is the legacy grid, restyled by
+                 popups-redesign.css when the flag is on; the map panel is empty
+                 until #299. search.js reflects the toggle onto <html data-view>,
+                 which is what swaps them. -->
+            <div class="results">
+                <section class="popups-grid results__panel results__panel--list" id="popupsGrid">
+                    <!-- STATIC_POPUPS_START -->
+                    <!-- STATIC_POPUPS_END -->
+                </section>
+                <div class="results__panel results__panel--map" id="popupsMap" role="region" aria-label="Map of pop-ups"></div>
+            </div>
             <script src="resources/js/pop-ups.js"></script>
         </main>
 

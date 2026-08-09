@@ -1,0 +1,81 @@
+/* -----------------------------------------------------------------------------
+  POP-UPS PAGE SHELL (redesign only)
+  The results region that sits below the filter bar: a single-column list of
+  event cards, and the map panel #299 fills in. Legacy tile and grid rules stay
+  in popups.css; nothing here applies with the flag off.
+  See REDESIGN.md sections 6.4 and 7.1.
+----------------------------------------------------------------------------- */
+
+/* Flag-off defaults. The list panel is deliberately absent from this pair: it
+   is the legacy .popups-grid, and the prebuilt static tiles have to stay
+   visible without JS. */
+.results__panel--map,
+.results-divider {
+  display: none;
+}
+
+/* The region carries the width and gutter for both panels, matching
+   .search-bar-container and .filter-bar so all three share an edge. */
+:root[data-redesign='on'] .results,
+body.redesign-enabled .results {
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--space-sm) var(--space-sm-md) var(--space-lg);
+}
+
+/* popups.css sets section#popupsGrid's padding at !important, and an id beats
+   any number of stacked classes, so the shell cannot simply out-specify it.
+   Deleting the legacy rule would change the flag-off page below 975px — its
+   !important quietly outranks the media queries there too — so the padding is
+   handed back to the region instead. */
+:root[data-redesign='on'] section#popupsGrid,
+body.redesign-enabled section#popupsGrid {
+  padding: 0 !important;
+}
+
+/* Cards stack in one column up to --container-max-width. See section 6.4. */
+:root[data-redesign='on'] .results__panel--list,
+body.redesign-enabled .results__panel--list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+/* Aligned to the card edges rather than the viewport. */
+:root[data-redesign='on'] .results-divider,
+body.redesign-enabled .results-divider {
+  display: block;
+  max-width: calc(var(--container-max-width) - (2 * var(--space-sm-md)));
+  margin-inline: auto;
+}
+
+/* View switching ----------------------------------------------------------- */
+
+/* search.js reflects the toggle onto <html data-view>, so the panels follow it
+   without either side knowing about the other. */
+:root[data-redesign='on'][data-view='map'] .results__panel--list,
+:root[data-view='map'] body.redesign-enabled .results__panel--list {
+  display: none;
+}
+
+:root[data-redesign='on'][data-view='map'] .results__panel--map,
+:root[data-view='map'] body.redesign-enabled .results__panel--map {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .results,
+  body.redesign-enabled .results {
+    padding-inline: var(--space-sm);
+  }
+
+  :root[data-redesign='on'] .results__panel--list,
+  body.redesign-enabled .results__panel--list {
+    gap: var(--space-xs);
+  }
+
+  :root[data-redesign='on'] .results-divider,
+  body.redesign-enabled .results-divider {
+    max-width: calc(100% - (2 * var(--space-sm)));
+  }
+}
