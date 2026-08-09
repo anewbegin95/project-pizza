@@ -92,18 +92,28 @@ function initSearchBar(doc) {
         reflectView(doc, currentView);
     }
 
+    function publishQuery() {
+        container.dispatchEvent(
+            new CustomEvent('search:change', {
+                bubbles: true,
+                detail: { query: normalizeSearchInput(input.value) },
+            })
+        );
+    }
+
     if (input) {
-        input.addEventListener('input', () => {
-            container.dispatchEvent(
-                new CustomEvent('search:change', {
-                    bubbles: true,
-                    detail: { query: normalizeSearchInput(input.value) },
-                })
-            );
+        input.addEventListener('input', publishQuery);
+
+        // "Clear all" means all of it. The filter bar announces the reset
+        // rather than calling in here, so neither module depends on the other.
+        doc.addEventListener('filters:clear', () => {
+            if (input.value === '') return;
+            input.value = '';
+            publishQuery();
         });
     }
 
-    return { getView: () => currentView };
+    return { getView: () => currentView, clearQuery: () => { if (input) { input.value = ''; publishQuery(); } } };
 }
 
 // === BOOTSTRAP ===

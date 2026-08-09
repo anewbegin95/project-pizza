@@ -35,6 +35,7 @@
         <script src="resources/js/search.js" defer></script>
         <script src="resources/js/date-picker.js" defer></script>
         <script src="resources/js/filters.js" defer></script>
+        <script src="resources/js/popups-filter.js" defer></script>
         <script src="resources/js/cards.js" defer></script>
         <script src="resources/js/modal.js" defer></script>
         <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
@@ -81,6 +82,7 @@
                         <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
                     </button>
                     <ul class="filter-dropdown" role="listbox" aria-label="Borough" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Boroughs">All Boroughs</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="manhattan" data-label="Manhattan">Manhattan</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="brooklyn" data-label="Brooklyn">Brooklyn</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="queens" data-label="Queens">Queens</li>
@@ -94,7 +96,11 @@
                         <span class="filter-chip__label">Neighborhood</span>
                         <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
                     </button>
+                    <!-- Options past "All" are replaced at runtime from the loaded
+                         pop-ups, so the list cannot drift from the content. These
+                         are the no-JS fallback. -->
                     <ul class="filter-dropdown" role="listbox" aria-label="Neighborhood" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Neighborhoods">All Neighborhoods</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Chelsea" data-label="Chelsea">Chelsea</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="East Village" data-label="East Village">East Village</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Lower East Side" data-label="Lower East Side">Lower East Side</li>
@@ -108,6 +114,7 @@
                         <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
                     </button>
                     <ul class="filter-dropdown" role="listbox" aria-label="Type" hidden>
+                        <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Types">All Types</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="food_drink" data-label="Food &amp; Drink">&#127829; Food &amp; Drink</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="market" data-label="Market">&#128717; Market</li>
                         <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="art_culture" data-label="Art &amp; Culture">&#127912; Art &amp; Culture</li>
