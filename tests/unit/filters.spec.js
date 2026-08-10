@@ -78,6 +78,22 @@ describe('filter state', () => {
     expect(original.borough).toBeNull()
   })
 
+  it("clears the filter when the All option's empty value is chosen", () => {
+    // "All Boroughs" carries data-value="", which has to read as unset rather
+    // than as a value of its own — otherwise Clear all stays visible and the
+    // predicate filters on an empty string.
+    let state = selectOption(createFilterState(FILTER_SETS.popups), 'borough', 'bronx')
+    state = selectOption(state, 'borough', '')
+    expect(state.borough).toBeNull()
+    expect(isAnyActive(state)).toBe(false)
+  })
+
+  it('leaves an already-clear filter clear when All is chosen', () => {
+    const state = selectOption(createFilterState(FILTER_SETS.popups), 'type', '')
+    expect(state.type).toBeNull()
+    expect(isAnyActive(state)).toBe(false)
+  })
+
   it('clears one filter and leaves the rest alone', () => {
     let state = selectOption(createFilterState(FILTER_SETS.popups), 'borough', 'bronx')
     state = selectOption(state, 'type', 'beauty')
@@ -225,5 +241,25 @@ describe('filter markup', () => {
       expect(html).toContain('<link rel="stylesheet" href="resources/css/filters.css">')
       expect(html).toContain('<script src="resources/js/filters.js" defer></script>')
     }
+  })
+
+  it('leads each pop-ups dropdown with an All option that clears the filter', () => {
+    // REDESIGN.md 6.3 lists "All Neighborhoods" / "All Types" as options.
+    // The empty value is what selectOption reads as unset.
+    for (const [filter, label] of [
+      ['borough', 'All Boroughs'],
+      ['neighborhood', 'All Neighborhoods'],
+      ['type', 'All Types'],
+    ]) {
+      const listStart = popupsHtml.indexOf(`data-filter="${filter}"`)
+      const list = popupsHtml.slice(listStart, popupsHtml.indexOf('</ul>', listStart))
+      const firstOption = list.slice(list.indexOf('role="option"'))
+      expect(firstOption, `${filter} dropdown`).toContain('data-value=""')
+      expect(firstOption, `${filter} dropdown`).toContain(label)
+    }
+  })
+
+  it('links the pop-ups filter state module', () => {
+    expect(popupsHtml).toContain('<script src="resources/js/popups-filter.js" defer></script>')
   })
 })

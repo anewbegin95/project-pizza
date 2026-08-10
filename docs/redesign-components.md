@@ -87,10 +87,32 @@ restoration and the scroll lock. Callers own the data.
 ```js
 getState()                       // { borough: null, type: 'market', … }
 setFilter(filter, value, label)  // external setter; null clears
+setOptions(filter, options)      // replace a dropdown's options from data
 setResultsCount(n)               // usually unnecessary — see below
 ```
 The results count already observes its container and reports what is rendered,
 so page code normally does not call `setResultsCount`.
+
+`setOptions` takes `[{ value, label }]`, keeps the leading "All …" row, and
+drops a selection the new data no longer offers. #295 uses it to build the
+Neighborhood list from the loaded pop-ups so the options cannot drift from the
+content. Every dropdown leads with an **"All …" option carrying an empty
+value**, which `selectOption` reads as clearing the filter.
+
+### `window.NycPopupsFilter` — `popups-filter.js` (pop-ups page only)
+```js
+createFilterController(doc, { onChange })  // → { getState(), apply(entries) }
+filterPopups(entries, state)
+matchesFilters(entry, state)
+matchesQuery(entry, query)      // name, venue_name, neighborhood
+parseDateRange(value)           // "2026-07-15" | "2026-07-15..2026-07-22"
+overlapsRange(entry, range)
+getDistinctNeighborhoods(entries)
+```
+Merges `search:change` and `filters:change` into one state object and decides
+*what* shows; the page still owns rendering. Date ranges match on **overlap**,
+so a multi-day run surfaces for any range touching it. Recurring events match
+only their base span — nothing on the site expands recurrence into occurrences.
 
 ### `window.NycDatePicker` — `date-picker.js`
 ```js
@@ -111,13 +133,20 @@ Components announce state rather than reaching into each other. Epic 4 subscribe
 | `viewtoggle:change` | `search.js` | `{ view: 'list' \| 'map' }` |
 | `search:change` | `search.js` | `{ query }` (trimmed, collapsed, lowercased) |
 | `filters:change` | `filters.js` | `{ state, pageType }` |
+| `filters:clear` | `filters.js` | — (Clear all was pressed) |
 
 The active view is also reflected as `data-view` on `<html>`, so CSS can respond
 without JS. The date range appears in `filters:change` as `state.dates`, either
 `"2026-07-15"` or `"2026-07-15..2026-07-22"`.
 
-**Nothing consumes these yet.** #295 wires search and filter state to results,
-#296 renders the list, #297 the modal flow, #299 the map.
+`filters:clear` fires *before* the accompanying `filters:change` and exists so
+Clear all can reset controls the filter bar does not own — `search.js` listens
+for it and empties the search box. Keeping it an event rather than a direct
+call is what stops the two modules depending on each other.
+
+**Consumed by:** `popups-filter.js` (#295) merges `search:change` and
+`filters:change` into the pop-ups result set. Still unconsumed:
+`viewtoggle:change`, which #299 needs for the map.
 
 ---
 
@@ -135,9 +164,12 @@ Recorded so they are not re-litigated:
   chip exists.
 - **`.filter-chip__chevron`**, not the spec's `.filter-chip .chevron` — Stylelint
   enforces a BEM class pattern.
-- **Cards still render two-across** because `.popups-grid` keeps its legacy
-  `minmax(480px, 1fr)`. §6.4 wants single-column stacking; that is #294's job,
-  and it also resolves the search bar not lining up with the cards.
+- **Dropdowns lead with an "All …" option** carrying an empty value (#295),
+  per §6.3. Epic 3 shipped without one, so clearing a single filter meant
+  re-selecting the active option — a gesture nobody discovers.
+- ~~**Cards still render two-across**~~ — resolved by #294. The results region
+  in `popups-redesign.css` stacks them to `--container-max-width` and aligns
+  them with the search and filter bars.
 
 ---
 
@@ -156,6 +188,15 @@ and `padding: 8px 32px`, at a specificity that beats the `.ui-*` primitives. It
 turned filter chips fuchsia on hover and blew date-picker cells out to 80px.
 Components currently restate their own colours and padding to defend against it.
 Tracked in **#372**, which should land before the flag is switched on.
+
+**`section#popupsGrid` in `popups.css` sets padding at `!important`**, and an
+id outranks any stack of classes, so a gated rule cannot out-specify it however
+many selectors you pile on. It also outranks the media queries in its own file,
+which means the legacy grid is 16px on all sides at *every* width — not the
+`0 16px` those blocks appear to specify. Deleting it therefore changes the
+flag-off page below 975px. `popups-redesign.css` neutralises it with one
+matching override instead. Cost a cycle in #294; the lesson generalises to any
+`#id` rule in the legacy stylesheets.
 
 **Date-only strings shift a day.** `new Date('2026-07-25')` is UTC midnight —
 the previous evening in Eastern time — so all-day events render a day early.

@@ -32,13 +32,15 @@ function createFilterState(filters) {
 
 /**
  * Selects a value for a filter. Choosing the value that is already selected
- * clears it, so a chip can be toggled off without reaching for Clear all.
- * Unknown filters are ignored. Returns a new object.
+ * clears it, so a chip can be toggled off without reaching for Clear all. The
+ * "All …" option carries an empty value and always clears. Unknown filters are
+ * ignored. Returns a new object.
  */
 function selectOption(state, filter, value) {
     if (!Object.prototype.hasOwnProperty.call(state, filter)) return { ...state };
     const next = { ...state };
-    next[filter] = next[filter] === value ? null : value;
+    const chosen = value === '' || value === undefined ? null : value;
+    next[filter] = next[filter] === chosen ? null : chosen;
     return next;
 }
 
@@ -135,7 +137,11 @@ function initFilters(doc) {
             const selectedOption = options.find(option => option.dataset.value === selected);
 
             options.forEach(option => {
-                option.setAttribute('aria-selected', String(option.dataset.value === selected));
+                // With nothing chosen the "All …" row is the selection, so the
+                // listbox always has exactly one selected option.
+                const isAll = option.dataset.value === '';
+                const isSelected = selected ? option.dataset.value === selected : isAll;
+                option.setAttribute('aria-selected', String(isSelected));
             });
 
             // A group with no options (the date picker) supplies its own
@@ -178,11 +184,13 @@ function initFilters(doc) {
 
         if (!dropdown) return;
 
-        const options = Array.from(dropdown.querySelectorAll('[role="option"]'));
+        // Read live: setOptions can replace the list after the data loads, and
+        // a captured array would leave the keyboard walking detached nodes.
+        const getOptions = () => Array.from(dropdown.querySelectorAll('[role="option"]'));
 
         // Options are focusable programmatically only; arrow keys move a
         // roving focus through them, per the listbox pattern.
-        options.forEach(option => {
+        getOptions().forEach(option => {
             option.tabIndex = -1;
         });
 
@@ -193,11 +201,12 @@ function initFilters(doc) {
             chip.focus();
         }
 
-        options.forEach(option => {
+        getOptions().forEach(option => {
             option.addEventListener('click', () => choose(option));
         });
 
         group.addEventListener('keydown', event => {
+            const options = getOptions();
             const index = options.indexOf(event.target);
             const isArrow = event.key === 'ArrowDown' || event.key === 'ArrowUp';
 
@@ -226,6 +235,9 @@ function initFilters(doc) {
         clearButton.addEventListener('click', () => {
             state = clearAll(state);
             closeAll(null);
+            // Announced separately from filters:change so the search box can
+            // reset itself without this module reaching into it.
+            bar.dispatchEvent(new CustomEvent('filters:clear', { bubbles: true }));
             render();
         });
     }
@@ -269,6 +281,52 @@ function initFilters(doc) {
     return {
         getState: () => ({ ...state }),
         setResultsCount,
+        /**
+         * Replaces a dropdown's options with ones derived from the loaded
+         * data, so the list cannot drift from the content. The leading
+         * "All …" row is kept, and a selection that survives the rebuild is
+         * kept too — a refetch should not silently drop the active filter.
+         */
+        setOptions: (filter, options) => {
+            const group = Array.from(bar.querySelectorAll('.filter-bar__group')).find(
+                candidate => {
+                    const chip = candidate.querySelector('.filter-chip');
+                    return chip && chip.dataset.filter === filter;
+                }
+            );
+            if (!group) return;
+            const dropdown = group.querySelector('.filter-dropdown');
+            if (!dropdown) return;
+
+            const allOption = dropdown.querySelector('[role="option"][data-value=""]');
+            dropdown.replaceChildren();
+            if (allOption) dropdown.appendChild(allOption);
+
+            for (const { value, label } of options) {
+                const option = doc.createElement('li');
+                option.className = 'filter-dropdown__option';
+                option.setAttribute('role', 'option');
+                option.setAttribute('aria-selected', 'false');
+                option.tabIndex = -1;
+                option.dataset.value = value;
+                option.dataset.label = label;
+                option.textContent = label;
+                option.addEventListener('click', () => {
+                    state = selectOption(state, filter, option.dataset.value);
+                    render();
+                    closeDropdown(group.querySelector('.filter-chip'), dropdown);
+                    group.querySelector('.filter-chip').focus();
+                });
+                dropdown.appendChild(option);
+            }
+
+            // Drop a selection the new data no longer offers.
+            const values = new Set(options.map(option => option.value));
+            if (state[filter] && !values.has(state[filter])) {
+                state = { ...state, [filter]: null };
+            }
+            render();
+        },
         /**
          * Sets a filter from outside the bar — used by the date picker, whose
          * chip has no option list of its own. Passing a null value clears it.
