@@ -33,6 +33,7 @@
   font-size: var(--font-md-sm);
   background-color: transparent;
   border: none;
+  border-radius: var(--radius-sm);
   color: var(--nyc-fuschia);
   font-weight: var(--font-weight-medium);
   cursor: pointer;

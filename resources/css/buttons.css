@@ -1,11 +1,18 @@
 /* =============================================================================
    BUTTONS & LINKS
    All button and link styles for consistent, accessible UI
+
+   The bare `button` element selector used to sit alongside .contact-btn/.btn
+   here. Because it matched every button on the page it handed the legacy pink
+   palette and 8px 32px padding to each new redesign component, and
+   `button:hover` at (0,1,1) outranked the .ui-* primitives at (0,1,0) — which
+   turned filter chips fuchsia (#289) and blew date-picker cells out to 80px
+   (#290). It is gone; buttons that relied on it now carry their own styles.
+   See REDESIGN.md section 6.9 and #372.
 ============================================================================= */
 
 /* Primary Buttons */
 .contact-btn,
-button,
 .btn {
   background-color: var(--nyc-pink);
   color: var(--nyc-fuschia);
@@ -21,7 +28,6 @@ button,
 }
 
 .contact-btn:hover,
-button:hover,
 .btn:hover {
   background-color: var(--nyc-fuschia);
   color: var(--nyc-white);
@@ -66,6 +72,52 @@ button:hover,
 }
 .home-menu .secondary-btn:hover .btn-subtitle {
   color: var(--nyc-fuschia);
+}
+
+/* -----------------------------------------------------------------------------
+  REDESIGN PALETTE (section 6.9)
+  "The pink button system is retired as a primary action style. Pink is now a
+  background/highlight colour only, not a button colour." Gated, so flag-off
+  pages keep the pink buttons above.
+----------------------------------------------------------------------------- */
+
+:root[data-redesign='on'] .btn,
+:root[data-redesign='on'] .contact-btn,
+body.redesign-enabled .btn,
+body.redesign-enabled .contact-btn {
+  background-color: var(--nyc-green);
+  color: var(--nyc-white);
+}
+
+:root[data-redesign='on'] .btn:hover,
+:root[data-redesign='on'] .contact-btn:hover,
+body.redesign-enabled .btn:hover,
+body.redesign-enabled .contact-btn:hover {
+  background-color: var(--nyc-green-hover);
+  color: var(--nyc-white);
+}
+
+:root[data-redesign='on'] .secondary-btn,
+body.redesign-enabled .secondary-btn {
+  border: 1px solid var(--nyc-green);
+  background-color: var(--nyc-white);
+  color: var(--nyc-green);
+}
+
+:root[data-redesign='on'] .secondary-btn:hover,
+:root[data-redesign='on'] .home-menu .secondary-btn:hover,
+body.redesign-enabled .secondary-btn:hover,
+body.redesign-enabled .home-menu .secondary-btn:hover {
+  background-color: var(--nyc-green-light);
+  color: var(--nyc-green);
+}
+
+/* The Substack button's subtitle is white on pink in the legacy palette. */
+:root[data-redesign='on'] .home-menu .secondary-btn .btn-subtitle,
+:root[data-redesign='on'] .home-menu .secondary-btn:hover .btn-subtitle,
+body.redesign-enabled .home-menu .secondary-btn .btn-subtitle,
+body.redesign-enabled .home-menu .secondary-btn:hover .btn-subtitle {
+  color: var(--nyc-green);
 }
 
 /* Shared redesign-ready button primitives */
@@ -114,11 +166,17 @@ button:hover,
   border-radius: var(--radius-pill);
 }
 
+/* Used standalone (.filter-bar__clear carries no .ui-btn), so it has to set the
+   type and cursor it used to pick up from the bare `button` rule. */
 .ui-btn--text {
   border: none;
   background-color: transparent;
   color: var(--nyc-fuschia);
   padding: 0;
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
 }
 
 .ui-btn--text:hover {
@@ -147,7 +205,6 @@ button:focus {
 /* Responsive: Adjust button size for smaller screens */
 @media (max-width: 860px) {
   .contact-btn,
-  button,
   .btn,
   .secondary-btn {
     /* Keep a consistent font size across all home-menu buttons */

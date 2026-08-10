@@ -31,9 +31,11 @@ describe('hero collage styles', () => {
 
   it('lays out a three-panel grid with the redesign gradient overlay', () => {
     expectCssToMatch(css, 'grid-template-columns: repeat(3, 1fr);')
+    // Top stop lifted 0.55 -> 0.6 in #372 so the white supertitle clears WCAG
+    // AA over a blown-out sky; see redesign-buttons.spec.js for the measurement.
     expectCssToMatch(
       css,
-      'linear-gradient(to bottom, rgba(0, 27, 46, 0.55), rgba(0, 27, 46, 0.8))'
+      'linear-gradient(to bottom, rgba(0, 27, 46, 0.6), rgba(0, 27, 46, 0.8))'
     )
   })
 

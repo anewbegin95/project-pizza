@@ -28,23 +28,18 @@ body.redesign-enabled .filter-bar__group {
 
 /* Chips -------------------------------------------------------------------- */
 
-/* buttons.css styles bare `button` and `button:hover` in the legacy palette.
-   Those beat .ui-filter-chip on specificity, so the chip's colours are
-   restated here inside the gated scope. */
+/* The colours and cursor here used to defend against buttons.css styling bare
+   `button`; that rule is retired (#372), so .ui-filter-chip now supplies them.
+   Only the touch target and the hover border remain. */
 :root[data-redesign='on'] .filter-chip,
 body.redesign-enabled .filter-chip {
   min-height: 44px;
-  border: 1px solid var(--nyc-medium-gray);
-  background-color: var(--nyc-surface-card);
-  color: var(--nyc-navy);
   cursor: pointer;
 }
 
 :root[data-redesign='on'] .filter-chip:hover,
 body.redesign-enabled .filter-chip:hover {
   border-color: var(--nyc-green);
-  background-color: var(--nyc-surface-card);
-  color: var(--nyc-navy);
 }
 
 :root[data-redesign='on'] .filter-chip--active,
@@ -205,6 +200,8 @@ body.redesign-enabled .date-picker__nav {
   border-radius: var(--radius-sm);
   background-color: var(--nyc-white);
   color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
   cursor: pointer;
 }
 
@@ -228,8 +225,6 @@ body.redesign-enabled .date-picker__weekday {
 body.redesign-enabled .date-picker__day {
   aspect-ratio: 1;
   min-height: 34px;
-  /* buttons.css pads bare `button` by 8px 32px, which would force each cell
-     to ~80px and overflow the calendar. */
   padding: 0;
   border: 0;
   border-radius: var(--radius-sm);
@@ -298,6 +293,7 @@ body.redesign-enabled .date-picker__footer {
 :root[data-redesign='on'] .date-picker__clear,
 body.redesign-enabled .date-picker__clear {
   min-height: 40px;
+  padding-block: var(--space-xs);
   padding-inline: var(--space-sm);
   border: 0;
   background-color: transparent;
@@ -310,6 +306,7 @@ body.redesign-enabled .date-picker__clear {
 :root[data-redesign='on'] .date-picker__done,
 body.redesign-enabled .date-picker__done {
   min-height: 40px;
+  padding-block: var(--space-xs);
   padding-inline: var(--space-sm-md);
   border: 1px solid var(--nyc-green);
   border-radius: var(--radius-md);

@@ -102,6 +102,10 @@
 .menu-toggle {
   background: none;
   border: none;
+  /* Was inherited from the bare `button` rule in buttons.css, which is what
+     gave the toggle its 44px touch target. Stated here now. See #372. */
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
   font-size: var(--font-md, 24px);
   font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
