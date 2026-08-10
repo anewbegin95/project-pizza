@@ -13,6 +13,9 @@ body.redesign-enabled .event-card {
   display: grid;
   grid-template-columns: 150px 35% 1fr;
   align-items: stretch;
+  /* The row is sized by its content now that the image is out of flow; this
+     stops an entry with no description shrinking the photo to a sliver. */
+  min-height: 200px;
   overflow: hidden;
   width: 100%;
   max-width: var(--container-max-width);
@@ -109,18 +112,26 @@ body.redesign-enabled .event-card__media {
   overflow: hidden;
 }
 
+/* Absolutely positioned so the photo contributes nothing to layout height.
+   `height: 100%` in an auto-height grid row has nothing to resolve against and
+   falls back to the image's intrinsic height, which made every card as tall as
+   whatever the editor uploaded — a 563x750 portrait produced a 538px card and a
+   1534px featured one. Taking it out of flow lets the row be sized by the date
+   and details columns, which is what 6.4's "fills full column height" means. */
 :root[data-redesign='on'] .event-card__image,
 body.redesign-enabled .event-card__image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 180px;
   object-fit: cover;
 }
 
 :root[data-redesign='on'] .event-card__tag,
 body.redesign-enabled .event-card__tag {
   position: absolute;
+  z-index: 1;
   top: var(--space-xs);
   left: var(--space-xs);
   padding: 4px 10px;
@@ -191,8 +202,12 @@ body.redesign-enabled .event-card--featured {
   grid-template-columns: 1fr;
 }
 
-:root[data-redesign='on'] .event-card--featured .event-card__image,
-body.redesign-enabled .event-card--featured .event-card__image {
+/* The media column is the only in-flow child of a featured card, so it needs a
+   height of its own rather than borrowing the image's. A wide ratio keeps the
+   hero bounded — 16/9 would be 648px at the full container width. */
+:root[data-redesign='on'] .event-card--featured .event-card__media,
+body.redesign-enabled .event-card--featured .event-card__media {
+  aspect-ratio: 21 / 9;
   min-height: 320px;
 }
 
@@ -252,6 +267,12 @@ body.redesign-enabled .event-card--featured .event-card__date {
   :root[data-redesign='on'] .event-card,
   body.redesign-enabled .event-card {
     grid-template-columns: 1fr;
+  }
+
+  /* Stacked, so the media row has no column height to stretch into. */
+  :root[data-redesign='on'] .event-card__media,
+  body.redesign-enabled .event-card__media {
+    aspect-ratio: 16 / 9;
   }
 
   /* Date collapses to a bar above the image. */
