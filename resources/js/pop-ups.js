@@ -646,12 +646,36 @@ function loadAndDisplayPopups() {
 
             const grid = document.getElementById('popupsGrid');
             if (!grid) return;
-            grid.innerHTML = '';
 
-            popups.forEach(popup => {
-                const tile = createPopupTile(popup);
-                if (tile) grid.appendChild(tile);
-            });
+            function renderPopups(list) {
+                grid.innerHTML = '';
+                list.forEach(popup => {
+                    const tile = createPopupTile(popup);
+                    if (tile) grid.appendChild(tile);
+                });
+            }
+
+            // With the redesign on, the search box and filter chips drive the
+            // rendered set. Flag-off pages render everything, as before.
+            const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+            if (redesignOn && window.NycPopupsFilter) {
+                const controller = window.NycPopupsFilter.createFilterController(document, {
+                    onChange: state => renderPopups(window.NycPopupsFilter.filterPopups(popups, state)),
+                });
+
+                // The neighborhood list comes from the content rather than a
+                // hardcoded set, so no event is unreachable by that filter.
+                if (window.NycFilters && window.NycFilters.setOptions) {
+                    window.NycFilters.setOptions(
+                        'neighborhood',
+                        window.NycPopupsFilter.getDistinctNeighborhoods(popups)
+                    );
+                }
+
+                renderPopups(controller.apply(popups));
+            } else {
+                renderPopups(popups);
+            }
 
             // Inject JSON-LD for CollectionPage + ItemList of pop-ups
             // Only do this on the pop-ups.html listing page

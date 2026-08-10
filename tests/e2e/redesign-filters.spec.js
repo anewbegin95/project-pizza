@@ -104,6 +104,10 @@ test('a keyboard user can open a filter and select an option', async ({ page }) 
   await page.keyboard.press('Enter')
   await expect(page.getByRole('listbox', { name: 'Borough' })).toBeVisible()
 
+  // The list opens on "All Boroughs", so a real borough is one step further.
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: 'All Boroughs' })).toBeFocused()
+
   await page.keyboard.press('ArrowDown')
   await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
 
@@ -120,7 +124,11 @@ test('arrow keys move through the options and wrap around', async ({ page }) => 
   await boroughChip(page).focus()
   await page.keyboard.press('Enter')
 
+  // Order is All Boroughs, Manhattan, Brooklyn, … Citywide.
   await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
+
   await page.keyboard.press('ArrowDown')
   await expect(page.getByRole('option', { name: 'Brooklyn' })).toBeFocused()
 
@@ -129,11 +137,13 @@ test('arrow keys move through the options and wrap around', async ({ page }) => 
 
   // Wrapping backwards from the first option lands on the last.
   await page.keyboard.press('ArrowUp')
+  await expect(page.getByRole('option', { name: 'All Boroughs' })).toBeFocused()
+  await page.keyboard.press('ArrowUp')
   await expect(page.getByRole('option', { name: 'Citywide' })).toBeFocused()
 
   // And forwards from the last wraps to the first.
   await page.keyboard.press('ArrowDown')
-  await expect(page.getByRole('option', { name: 'Manhattan' })).toBeFocused()
+  await expect(page.getByRole('option', { name: 'All Boroughs' })).toBeFocused()
 })
 
 test('Space selects the focused option', async ({ page }) => {
@@ -141,7 +151,8 @@ test('Space selects the focused option', async ({ page }) => {
 
   await typeChip(page).focus()
   await page.keyboard.press('Enter')
-  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown') // All Types
+  await page.keyboard.press('ArrowDown') // Food & Drink
   await page.keyboard.press(' ')
 
   await expect(page.getByRole('button', { name: /^Food & Drink/ })).toHaveClass(/filter-chip--active/)
@@ -152,7 +163,8 @@ test('the keyboard-focused option is visibly indicated', async ({ page }) => {
 
   await boroughChip(page).focus()
   await page.keyboard.press('Enter')
-  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown') // All Boroughs
+  await page.keyboard.press('ArrowDown') // Manhattan
 
   const indicator = await page.getByRole('option', { name: 'Manhattan' }).evaluate((el) => {
     const computed = getComputedStyle(el)
