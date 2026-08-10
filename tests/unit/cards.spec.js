@@ -179,4 +179,24 @@ describe('card styles', () => {
   it('gives the featured variant a full-width image treatment', () => {
     expectCssToMatch(css, '.event-card--featured')
   })
+
+  it('takes the image out of flow so it cannot set the card height', () => {
+    // height: 100% in an auto grid row resolves to the intrinsic height, which
+    // made the card as tall as whatever was uploaded. See #376.
+    expectCssToMatch(css, 'position: absolute;')
+    expectCssToMatch(css, 'inset: 0;')
+    expectCssToMatch(css, 'object-fit: cover;')
+    expect(css).not.toMatch(/\.event-card__image[^}]*min-height/)
+  })
+
+  it('gives the media box a ratio wherever the grid supplies no height', () => {
+    // Featured cards and the stacked phone layout are single-column, so the
+    // media row has nothing to stretch into.
+    expectCssToMatch(css, 'aspect-ratio: 21 / 9;')
+    expectCssToMatch(css, 'aspect-ratio: 16 / 9;')
+  })
+
+  it('keeps a floor under the card so a sparse entry keeps a usable image', () => {
+    expectCssToMatch(css, 'min-height: 200px;')
+  })
 })
