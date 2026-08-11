@@ -266,11 +266,20 @@
 
         overlay.appendChild(card);
 
+        let closed = false;
+
         function close() {
+            // Escape, the return bar and the overlay all land here, as does a
+            // caller closing it directly, so this is the one place that can
+            // tell a caller the modal is gone. Guarded because the callback
+            // may well close it again (see the history handling in #297).
+            if (closed) return;
+            closed = true;
             doc.removeEventListener('keydown', onKeydown, true);
             overlay.remove();
             doc.body.style.overflow = previousOverflow;
             if (opener && typeof opener.focus === 'function') opener.focus();
+            if (typeof settings.onClose === 'function') settings.onClose();
         }
 
         function onKeydown(event) {
