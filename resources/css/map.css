@@ -1,0 +1,173 @@
+/* -----------------------------------------------------------------------------
+  MAP VIEW (redesign only)
+  Fills the results region when the List/Map toggle is on Map. Leaflet's own
+  stylesheet is vendored alongside it; this file is the project's layer on top
+  — pin styling, the legend card, and the unplaced-events note.
+  See REDESIGN.md section 6.6.
+----------------------------------------------------------------------------- */
+
+.map-surface,
+.map-legend,
+.map-note {
+  display: none;
+}
+
+:root[data-redesign='on'] .map-surface,
+body.redesign-enabled .map-surface {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 300px);
+  min-height: 500px;
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-light-gray);
+}
+
+:root[data-redesign='on'] .map-note,
+body.redesign-enabled .map-note {
+  display: block;
+  padding-top: var(--space-xs);
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+}
+
+:root[data-redesign='on'] .map-note[hidden],
+body.redesign-enabled .map-note[hidden] {
+  display: none;
+}
+
+/* Pins --------------------------------------------------------------------- */
+
+/* Colours per section 6.6. `beauty` is in the schema but not in the spec's
+   list, so it falls through to --other along with anything added later. */
+:root[data-redesign='on'],
+body.redesign-enabled {
+  --nyc-pin-food-drink: #E8833A;
+  --nyc-pin-market: #2D6A4F;
+  --nyc-pin-art-culture: #7B4BA8;
+  --nyc-pin-fashion: #D81E5B;
+  --nyc-pin-wellness: #2A9D8F;
+  --nyc-pin-music: #1976D2;
+  --nyc-pin-vintage-thrift: #C9A227;
+  --nyc-pin-other: #5A6570;
+}
+
+:root[data-redesign='on'] .map-pin,
+body.redesign-enabled .map-pin {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--nyc-white);
+  border-radius: var(--radius-round, 50%);
+  background-color: var(--nyc-pin-other);
+  box-shadow: var(--shadow-md);
+  font-size: 15px;
+  line-height: 1;
+}
+
+:root[data-redesign='on'] .map-pin--food-drink,
+body.redesign-enabled .map-pin--food-drink { background-color: var(--nyc-pin-food-drink); }
+
+:root[data-redesign='on'] .map-pin--market,
+body.redesign-enabled .map-pin--market { background-color: var(--nyc-pin-market); }
+
+:root[data-redesign='on'] .map-pin--art-culture,
+body.redesign-enabled .map-pin--art-culture { background-color: var(--nyc-pin-art-culture); }
+
+:root[data-redesign='on'] .map-pin--fashion,
+body.redesign-enabled .map-pin--fashion { background-color: var(--nyc-pin-fashion); }
+
+:root[data-redesign='on'] .map-pin--wellness,
+body.redesign-enabled .map-pin--wellness { background-color: var(--nyc-pin-wellness); }
+
+:root[data-redesign='on'] .map-pin--music,
+body.redesign-enabled .map-pin--music { background-color: var(--nyc-pin-music); }
+
+:root[data-redesign='on'] .map-pin--vintage-thrift,
+body.redesign-enabled .map-pin--vintage-thrift { background-color: var(--nyc-pin-vintage-thrift); }
+
+/* Legend ------------------------------------------------------------------- */
+
+:root[data-redesign='on'] .map-legend,
+body.redesign-enabled .map-legend {
+  display: block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  box-shadow: var(--shadow-md);
+}
+
+:root[data-redesign='on'] .map-legend__title,
+body.redesign-enabled .map-legend__title {
+  margin: 0 0 var(--space-xxs);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .map-legend__list,
+body.redesign-enabled .map-legend__list {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: var(--space-xxs) var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:root[data-redesign='on'] .map-legend__item,
+body.redesign-enabled .map-legend__item {
+  display: flex;
+  gap: var(--space-xxs);
+  align-items: center;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs);
+}
+
+:root[data-redesign='on'] .map-legend__dot,
+body.redesign-enabled .map-legend__dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-round, 50%);
+  background-color: var(--nyc-pin-other);
+}
+
+:root[data-redesign='on'] .map-legend__dot--food-drink,
+body.redesign-enabled .map-legend__dot--food-drink { background-color: var(--nyc-pin-food-drink); }
+
+:root[data-redesign='on'] .map-legend__dot--market,
+body.redesign-enabled .map-legend__dot--market { background-color: var(--nyc-pin-market); }
+
+:root[data-redesign='on'] .map-legend__dot--art-culture,
+body.redesign-enabled .map-legend__dot--art-culture { background-color: var(--nyc-pin-art-culture); }
+
+:root[data-redesign='on'] .map-legend__dot--fashion,
+body.redesign-enabled .map-legend__dot--fashion { background-color: var(--nyc-pin-fashion); }
+
+:root[data-redesign='on'] .map-legend__dot--wellness,
+body.redesign-enabled .map-legend__dot--wellness { background-color: var(--nyc-pin-wellness); }
+
+:root[data-redesign='on'] .map-legend__dot--music,
+body.redesign-enabled .map-legend__dot--music { background-color: var(--nyc-pin-music); }
+
+:root[data-redesign='on'] .map-legend__dot--vintage-thrift,
+body.redesign-enabled .map-legend__dot--vintage-thrift { background-color: var(--nyc-pin-vintage-thrift); }
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .map-surface,
+  body.redesign-enabled .map-surface {
+    height: calc(100vh - 240px);
+    min-height: 360px;
+  }
+
+  :root[data-redesign='on'] .map-legend__list,
+  body.redesign-enabled .map-legend__list {
+    grid-template-columns: auto;
+  }
+}

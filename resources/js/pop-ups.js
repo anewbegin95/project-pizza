@@ -673,16 +673,44 @@ function loadAndDisplayPopups() {
 
             // Cards open the detail modal rather than navigating. Delegated,
             // so re-rendering on every filter change needs no re-binding.
+            let detail = null;
             if (useCards && window.NycPopupsDetail) {
-                window.NycPopupsDetail.initDetailModal(document, grid, {
+                detail = window.NycPopupsDetail.initDetailModal(document, grid, {
                     getEntries: () => popups,
                     type: 'popup',
                 });
             }
 
+            /** Map pins are not links, so they open the modal directly. */
+            function openDetail(entry) {
+                if (detail) detail.openEntry(entry);
+            }
+
+            // Map view. Leaflet cannot size itself inside a display:none panel,
+            // so the map is created the first time the toggle switches to it.
+            let mapView = null;
+            let shown = popups;
+            if (useCards && window.NycPopupsMap && window.L) {
+                const panel = document.querySelector('.results__panel--map');
+                if (panel) {
+                    mapView = window.NycPopupsMap.initMap(document, panel, {
+                        getEntries: () => shown,
+                        onSelect: entry => openDetail(entry),
+                    });
+                    document.addEventListener('viewtoggle:change', event => {
+                        if (event.detail && event.detail.view === 'map' && mapView) mapView.show();
+                    });
+                }
+            }
+
             if (redesignOn && window.NycPopupsFilter) {
                 const controller = window.NycPopupsFilter.createFilterController(document, {
-                    onChange: state => renderPopups(window.NycPopupsFilter.filterPopups(popups, state)),
+                    onChange: state => {
+                        shown = window.NycPopupsFilter.filterPopups(popups, state);
+                        renderPopups(shown);
+                        // Pins follow the same set as the list, in both views.
+                        if (mapView && mapView.isCreated()) mapView.render();
+                    },
                 });
 
                 // The neighborhood list comes from the content rather than a
@@ -694,7 +722,8 @@ function loadAndDisplayPopups() {
                     );
                 }
 
-                renderPopups(controller.apply(popups));
+                shown = controller.apply(popups);
+                renderPopups(shown);
             } else {
                 renderPopups(popups);
             }

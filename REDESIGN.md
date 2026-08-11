@@ -599,7 +599,7 @@ file is the single place to adjust.
 | `resources/css/search.css` | Search bar container, input field, view toggle buttons | ✅ Built (#288) |
 | `resources/css/cards.css` | Event card system, standard and featured variants | ✅ Built (#291) |
 | `resources/css/interior.css` | Shell for About/Contact/Privacy (derived — see §7.4) | ✅ Built (#293) |
-| `resources/css/map.css` | Leaflet map container, legend, pin styles | Pending (#299) |
+| `resources/css/map.css` | Leaflet map container, legend, pin styles | ✅ Built (#299) |
 
 Plus gated additions to existing files: `hero.css` (collage hero, #287) and `modals.css` (detail modal, #292).
 
@@ -618,7 +618,7 @@ The following notes are specifically for AI coding agents implementing changes f
 3. **The card redesign in `popups.css` and `date_ideas.css` is a full replacement**, not an incremental edit. The `.popup-tile` BEM structure will be replaced with a new three-column `.event-card` component.
 4. **Hero redesign requires both HTML and CSS changes.** The single `<section class="hero">` with a `background-image` needs to become a multi-panel grid. The HTML structure in each page's hero section must be updated.
 5. **Google Fonts `<link>` tags appear in every HTML file individually** (not loaded via a partial). The font swap from Montserrat to Playfair Display must be applied to all HTML files: `index.html`, `pop-ups.html`, `date-ideas.html`, `pop-up.html`, `date-idea.html`, `calendar.html`, `about.html`, `contact_us.html`, `privacy_policy.html`.
-6. **Leaflet.js** should be loaded via CDN `<script>` and `<link>` tags added to `pop-ups.html` only. The Leaflet CSS must be loaded before `map.css`.
+6. **Leaflet.js** is **vendored, not loaded from a CDN** — every page sets `script-src 'self'`, which blocks a CDN script outright, and `style-src` blocks its stylesheet. It lives in `resources/vendor/leaflet/` and is `<script>`/`<link>`ed on `pop-ups.html` only. The Leaflet CSS must still be loaded before `map.css`. Decided in #299; see that directory's README.
 7. **Sanity data already flows through `sanity-client.js` and `sanity-queries.js`.** Filter logic in `filters.js` should call the existing query functions and pass filter parameters, rather than re-fetching from scratch.
 8. **Test at 375px, 768px, and 1280px** after any change. The three-column card layout must degrade gracefully at all widths per Section 6.4.
 9. **Do not modify `partials/` HTML files** unless the task explicitly requires header or footer changes.

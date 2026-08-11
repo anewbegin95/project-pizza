@@ -81,8 +81,14 @@
             }
         }
 
+        function detailHref(entry) {
+            return `pop-up.html?id=${encodeURIComponent(entry.id || '')}`;
+        }
+
         function openFor(entry, href) {
             if (!global.NycModal) return;
+            // Re-opening while one is up would strand the first history entry.
+            if (open) closeOpen();
 
             // The pushed URL is the entry's own detail page, so a copied or
             // reloaded link still resolves to real content.
@@ -118,7 +124,14 @@
             closeOpen();
         });
 
-        return { close: closeOpen, isOpen: () => open !== null };
+        return {
+            close: closeOpen,
+            isOpen: () => open !== null,
+            /** Opens an entry directly — used by map pins, which are not links. */
+            openEntry: entry => {
+                if (entry) openFor(entry, detailHref(entry));
+            },
+        };
     }
 
     // === BOOTSTRAP ===
