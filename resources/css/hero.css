@@ -117,14 +117,22 @@ body.redesign-enabled .hero--collage .hero__panel--3 {
    unchanged. */
 :root[data-redesign='on'] .hero--collage::after,
 body.redesign-enabled .hero--collage::after {
-  background: linear-gradient(to bottom, rgba(0, 27, 46, 0.55), rgba(0, 27, 46, 0.8));
+  /* Top stop lifted from 0.55 to 0.60: white supertitle text over a blown-out
+     sky is 3.98:1 at 0.55, just under AA. 0.60 gives 4.68:1 against pure white,
+     the true worst case, and is mild enough to keep the collage panels legible
+     (pink would have needed ~0.75, which flattens them). See #372. */
+  background: linear-gradient(to bottom, rgba(0, 27, 46, 0.6), rgba(0, 27, 46, 0.8));
 }
 
 :root[data-redesign='on'] .hero--collage .hero__supertitle,
 body.redesign-enabled .hero--collage .hero__supertitle {
   display: block;
   margin-bottom: var(--space-xs);
-  color: var(--nyc-pink);
+  /* Was --nyc-pink, which cannot reach WCAG AA over bright photography at this
+     size — pink needs roughly a 0.75 overlay to clear 4.5:1, which flattens the
+     collage. White also matches section 6.9 retiring pink as a foreground
+     colour. See #372. */
+  color: var(--nyc-white);
   font-family: var(--nyc-font-body);
   font-size: 13px;
   font-style: normal;

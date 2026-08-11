@@ -183,11 +183,20 @@ Each of these cost a debugging cycle during Epic 3.
 modules are wrapped in an IIFE exposing a single `window.NycX`. An e2e test
 asserts every redesign page loads with zero page errors.
 
-**`buttons.css` styles the bare `button` selector** with the legacy pink palette
-and `padding: 8px 32px`, at a specificity that beats the `.ui-*` primitives. It
-turned filter chips fuchsia on hover and blew date-picker cells out to 80px.
-Components currently restate their own colours and padding to defend against it.
-Tracked in **#372**, which should land before the flag is switched on.
+**`buttons.css` used to style the bare `button` selector** — *resolved in #372*.
+It applied the legacy pink palette and `padding: 8px 32px` to every button on
+the page, and `button:hover` at (0,1,1) outranked the `.ui-*` primitives at
+(0,1,0), so hover states won by default. It turned filter chips fuchsia (#289)
+and blew date-picker cells out to 80px (#290). The selector is gone and the
+defensive restatements in `filters.css` with it.
+
+The lesson generalises: **an element selector in a legacy stylesheet reaches
+your component too.** Retiring one is not free — four legacy buttons
+(`.menu-toggle`, both calendar month arrows, `.return-button`) had *no styles of
+their own* and silently depended on it, as did three redesign components. The
+way to do it safely is to snapshot the computed styles of every affected element
+on every page in both flag states, make the change, and diff; see the audit
+described in #372's PR.
 
 **`section#popupsGrid` in `popups.css` sets padding at `!important`**, and an
 id outranks any stack of classes, so a gated rule cannot out-specify it however

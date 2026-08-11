@@ -191,6 +191,27 @@ Copy this checklist into any PR that modifies UI or CSS. All items must pass bef
 - [ ] No keyboard traps in modals or dropdowns
 ```
 
+### Hero text contrast (resolved, #372)
+
+Text over the collage is measured against the **worst case for these photos: a
+blown-out white sky under the overlay's topmost (lightest) stop**, not against
+an average pixel. Skyline shots routinely hit pure white at the top of frame,
+which is exactly where the supertitle sits.
+
+| Element | Colour | Ratio | Verdict |
+|---|---|---|---|
+| Supertitle, 13px | `--nyc-pink` | 2.4:1 | failed |
+| Supertitle, 13px | `--nyc-white`, 0.55 overlay | 4.0:1 | failed |
+| Supertitle, 13px | `--nyc-white`, 0.60 overlay | **4.7:1** | passes |
+
+The supertitle is white and the overlay's top stop is `0.6`. Pink could not be
+rescued by the overlay alone — it needs roughly `0.75`, which flattens the
+gradient and hides the collage panels, defeating REDESIGN.md §6.1. White also
+follows §6.9 retiring pink as a foreground colour.
+
+`tests/e2e/redesign-buttons.spec.js` recomputes this from the live CSS, so
+changing either the text colour or the overlay re-runs the check.
+
 ---
 
 ## Usage in PRs
