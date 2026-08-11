@@ -647,7 +647,23 @@ function loadAndDisplayPopups() {
             const grid = document.getElementById('popupsGrid');
             if (!grid) return;
 
+            // With the redesign on, the search box and filter chips drive the
+            // rendered set. Flag-off pages render everything, as before.
+            const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+            const useCards = redesignOn && window.NycPopupsList && window.NycCards;
+
             function renderPopups(list) {
+                if (useCards) {
+                    // Month-grouped event cards, with a no-results state that
+                    // offers the way out. See REDESIGN.md section 6.4.
+                    window.NycPopupsList.renderResults(grid, list, {
+                        onClear: () => {
+                            const clear = document.querySelector('.filter-bar__clear');
+                            if (clear) clear.click();
+                        },
+                    });
+                    return;
+                }
                 grid.innerHTML = '';
                 list.forEach(popup => {
                     const tile = createPopupTile(popup);
@@ -655,9 +671,6 @@ function loadAndDisplayPopups() {
                 });
             }
 
-            // With the redesign on, the search box and filter chips drive the
-            // rendered set. Flag-off pages render everything, as before.
-            const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
             if (redesignOn && window.NycPopupsFilter) {
                 const controller = window.NycPopupsFilter.createFilterController(document, {
                     onChange: state => renderPopups(window.NycPopupsFilter.filterPopups(popups, state)),
