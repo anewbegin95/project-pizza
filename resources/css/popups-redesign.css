@@ -41,6 +41,60 @@ body.redesign-enabled .results__panel--list {
   gap: var(--space-sm);
 }
 
+/* Month groups (section 6.4) --------------------------------------------- */
+
+.event-group__heading,
+.results-empty {
+  display: none;
+}
+
+:root[data-redesign='on'] .event-group,
+body.redesign-enabled .event-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  margin: 0;
+  background: none;
+}
+
+/* Groups sit inside the list panel's own gap, so only later ones need space
+   above their heading. */
+:root[data-redesign='on'] .event-group + .event-group,
+body.redesign-enabled .event-group + .event-group {
+  margin-top: var(--space-md);
+}
+
+:root[data-redesign='on'] .event-group__heading,
+body.redesign-enabled .event-group__heading {
+  display: block;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--nyc-section-divider);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: 40px;
+  font-weight: var(--font-weight-regular);
+}
+
+/* No results (derived — REDESIGN.md does not specify one) ------------------ */
+
+:root[data-redesign='on'] .results-empty,
+body.redesign-enabled .results-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-lg) var(--space-sm);
+  text-align: center;
+}
+
+:root[data-redesign='on'] .results-empty__message,
+body.redesign-enabled .results-empty__message {
+  margin: 0;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
+}
+
 /* Aligned to the card edges rather than the viewport. */
 :root[data-redesign='on'] .results-divider,
 body.redesign-enabled .results-divider {
@@ -67,6 +121,11 @@ body.redesign-enabled .results-divider {
   :root[data-redesign='on'] .results,
   body.redesign-enabled .results {
     padding-inline: var(--space-sm);
+  }
+
+  :root[data-redesign='on'] .event-group__heading,
+  body.redesign-enabled .event-group__heading {
+    font-size: 28px;
   }
 
   :root[data-redesign='on'] .results__panel--list,

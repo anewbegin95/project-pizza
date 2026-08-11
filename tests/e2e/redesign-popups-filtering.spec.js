@@ -74,14 +74,19 @@ test.beforeEach(async ({ page }) => {
   )
 })
 
-/** Names currently rendered in the results grid, in order. */
+/** Names currently rendered in the results grid, in order.
+ *  #296 replaced the legacy tiles with grouped event cards. */
 async function renderedNames(page) {
-  return page.locator('#popupsGrid .popup-tile__details h3').allTextContents()
+  return page.locator('#popupsGrid .event-card__title').allTextContents()
 }
+
+/** Results are nested inside month groups, so count cards rather than children. */
+const resultCards = (page) => page.locator('#popupsGrid .event-card')
 
 async function gotoPopups(page, { flag = 'on' } = {}) {
   await page.goto(`/pop-ups.html?redesign=${flag}`)
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(DOCUMENTS.length)
+  const items = flag === 'on' ? resultCards(page) : page.locator('#popupsGrid .popup-tile')
+  await expect(items).toHaveCount(DOCUMENTS.length)
 }
 
 /** Opens a chip's dropdown and picks the option with the given label. */
@@ -94,7 +99,7 @@ test('search narrows the results to matching events', async ({ page }) => {
   await gotoPopups(page)
 
   await page.locator('.search-bar__input').fill('chelsea')
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(1)
+  await expect(resultCards(page)).toHaveCount(1)
   expect(await renderedNames(page)).toEqual(['Chelsea Night Market'])
 
   // Venue and neighborhood are searchable too, not just the name.
@@ -144,7 +149,7 @@ test('a chip reflects its selection and clears from the All option', async ({ pa
   await chooseFilter(page, 'borough', 'All Boroughs')
   await expect(chip.locator('.filter-chip__label')).toHaveText('Borough')
   await expect(chip).not.toHaveClass(/filter-chip--active/)
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(4)
+  await expect(resultCards(page)).toHaveCount(4)
 })
 
 test('the neighborhood options come from the loaded data', async ({ page }) => {
@@ -171,7 +176,7 @@ test('the date range filters on overlap and clears again', async ({ page }) => {
   expect(await renderedNames(page)).toEqual(['Chelsea Night Market'])
 
   await page.evaluate(() => window.NycFilters.setFilter('dates', null))
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(4)
+  await expect(resultCards(page)).toHaveCount(4)
 })
 
 test('Clear all resets the chips and the search box together', async ({ page }) => {
@@ -179,7 +184,7 @@ test('Clear all resets the chips and the search box together', async ({ page }) 
 
   await page.locator('.search-bar__input').fill('chelsea')
   await chooseFilter(page, 'borough', 'Manhattan')
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(1)
+  await expect(resultCards(page)).toHaveCount(1)
 
   const clear = page.locator('.filter-bar__clear')
   await expect(clear).toBeVisible()
@@ -187,7 +192,7 @@ test('Clear all resets the chips and the search box together', async ({ page }) 
 
   await expect(page.locator('.search-bar__input')).toHaveValue('')
   await expect(page.locator('.filter-chip[data-filter="borough"] .filter-chip__label')).toHaveText('Borough')
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(4)
+  await expect(resultCards(page)).toHaveCount(4)
   await expect(clear).toBeHidden()
 })
 
@@ -199,7 +204,7 @@ test('filtering works the same on a phone', async ({ page }) => {
   expect(await renderedNames(page)).toEqual(['Astoria Beer Garden Sessions'])
 
   await page.locator('.filter-bar__clear').click()
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(4)
+  await expect(resultCards(page)).toHaveCount(4)
 })
 
 test('the flag-off page renders everything and ignores the controls', async ({ page }) => {
@@ -213,7 +218,9 @@ test('the flag-off page renders everything and ignores the controls', async ({ p
   await page.evaluate(() => {
     document.dispatchEvent(new CustomEvent('search:change', { detail: { query: 'chelsea' } }))
   })
-  await expect(page.locator('#popupsGrid > *')).toHaveCount(4)
+  // Legacy tiles, not cards, and still all four of them.
+  await expect(page.locator('#popupsGrid .popup-tile')).toHaveCount(4)
+  await expect(resultCards(page)).toHaveCount(0)
 })
 
 test('the page loads with no errors once filtering is wired', async ({ page }) => {

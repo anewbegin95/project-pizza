@@ -20,6 +20,13 @@ const RESULTS_CONTAINERS = {
     'date-ideas': '#dateIdeasGrid',
 };
 
+/**
+ * What counts as one result. Counting the container's children would be wrong
+ * once results are grouped by month (#296) — each child is then a group, not an
+ * event — and would count the no-results panel as a result.
+ */
+const RESULT_ITEM_SELECTOR = '.event-card, .popup-tile';
+
 // === PURE STATE HELPERS ===
 
 /** Builds an empty state object keyed by the page's filters. */
@@ -269,10 +276,12 @@ function initFilters(doc) {
     // reporting a stale zero.
     const resultsContainer = doc.querySelector(RESULTS_CONTAINERS[pageType] || '');
     if (resultsContainer && resultsCount) {
-        const syncCount = () => setResultsCount(resultsContainer.childElementCount);
+        const syncCount = () =>
+            setResultsCount(resultsContainer.querySelectorAll(RESULT_ITEM_SELECTOR).length);
         syncCount();
         if (typeof MutationObserver !== 'undefined') {
-            new MutationObserver(syncCount).observe(resultsContainer, { childList: true });
+            // subtree, because grouped results nest their cards inside sections.
+            new MutationObserver(syncCount).observe(resultsContainer, { childList: true, subtree: true });
         }
     }
 
