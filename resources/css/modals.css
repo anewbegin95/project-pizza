@@ -109,6 +109,9 @@ body.redesign-enabled .modal--detail[hidden] {
 body.redesign-enabled .modal-detail__card {
   display: grid;
   grid-template-columns: 45% 55%;
+  /* minmax(0, 1fr) rather than a bare 1fr: the content row has to be allowed
+     to shrink, or the body cannot scroll inside it. */
+  grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     'bar bar'
     'body media';
@@ -153,8 +156,13 @@ body.redesign-enabled .modal-detail__body {
   flex-direction: column;
   gap: var(--space-sm);
   overflow-y: auto;
+  /* Grid items default to min-height:auto, which stops them shrinking below
+     their content — so overflow-y never engaged and a long description was
+     silently clipped by the card's max-height instead of scrolling. */
+  min-height: 0;
   padding: var(--space-sm-md);
 }
+
 
 :root[data-redesign='on'] .modal-detail__tags,
 body.redesign-enabled .modal-detail__tags {
@@ -228,12 +236,21 @@ body.redesign-enabled .modal-detail__share:hover {
 
 :root[data-redesign='on'] .modal-detail__media,
 body.redesign-enabled .modal-detail__media {
+  position: relative;
   grid-area: media;
   overflow: hidden;
 }
 
+/* Absolutely positioned so the photo contributes nothing to layout height.
+   `height: 100%` in a grid area with no definite height falls back to the
+   image's intrinsic height, which made the modal as tall as whatever was
+   uploaded — 699px for a 563x750 portrait against 509px for a landscape. The
+   row is sized by the body column instead, which is what section 6.5's
+   "full-height photo, object-fit: cover" describes. Same fix as #376. */
 :root[data-redesign='on'] .modal-detail__image,
 body.redesign-enabled .modal-detail__image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
