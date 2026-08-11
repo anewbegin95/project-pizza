@@ -21,6 +21,7 @@ environments**. Nothing in this document is user-visible today; append
 | Event cards | `cards.css` | `cards.js` | `window.NycCards` | §6.4 |
 | Detail modal | `modals.css` (`.modal--detail*`) | `modal.js` | `window.NycModal` | §6.5 |
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
+| Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
 
 Each page `<link>`s and `<script>`s only what it uses; there is no bundler.
 
@@ -145,8 +146,9 @@ for it and empties the search box. Keeping it an event rather than a direct
 call is what stops the two modules depending on each other.
 
 **Consumed by:** `popups-filter.js` (#295) merges `search:change` and
-`filters:change` into the pop-ups result set. Still unconsumed:
-`viewtoggle:change`, which #299 needs for the map.
+`filters:change` into the pop-ups result set; `popups-map.js` (#299) listens for
+`viewtoggle:change` to create the map the first time it is shown. All three are
+now wired on Pop-Ups; Date Ideas re-uses the same events in Epic 6.
 
 ---
 
