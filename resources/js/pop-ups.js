@@ -671,6 +671,15 @@ function loadAndDisplayPopups() {
                 });
             }
 
+            // Cards open the detail modal rather than navigating. Delegated,
+            // so re-rendering on every filter change needs no re-binding.
+            if (useCards && window.NycPopupsDetail) {
+                window.NycPopupsDetail.initDetailModal(document, grid, {
+                    getEntries: () => popups,
+                    type: 'popup',
+                });
+            }
+
             if (redesignOn && window.NycPopupsFilter) {
                 const controller = window.NycPopupsFilter.createFilterController(document, {
                     onChange: state => renderPopups(window.NycPopupsFilter.filterPopups(popups, state)),
