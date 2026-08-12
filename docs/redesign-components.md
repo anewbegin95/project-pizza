@@ -19,13 +19,14 @@ environments**. Nothing in this document is user-visible today; append
 | Area | CSS | JS | Global | Spec |
 |---|---|---|---|---|
 | Collage hero | `hero.css` (`.hero--collage`) | — | — | §6.1 |
-| Search bar + List/Map toggle | `search.css` | `search.js` | — | §6.2 |
+| Search bar + view toggle | `search.css` | `search.js` | — | §6.2 |
 | Filter bar, chips, dropdowns | `filters.css` | `filters.js` | `window.NycFilters` | §6.2/6.3 |
 | Date range picker | `filters.css` (`.date-picker*`) | `date-picker.js` | `window.NycDatePicker` | §6.3 |
 | Event cards | `cards.css` | `cards.js` | `window.NycCards` | §6.4 |
 | Detail modal | `modals.css` (`.modal--detail*`) | `modal.js` | `window.NycModal` | §6.5 |
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
 | Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
+| Calendar view (Pop-Ups) | `popups-redesign.css` (panel only) | — | — | *derived, see §5* |
 
 Each page `<link>`s and `<script>`s only what it uses; there is no bundler.
 
@@ -135,7 +136,7 @@ Components announce state rather than reaching into each other. Epic 4 subscribe
 
 | Event | Fired by | `detail` |
 |---|---|---|
-| `viewtoggle:change` | `search.js` | `{ view: 'list' \| 'map' }` |
+| `viewtoggle:change` | `search.js` | `{ view: 'list' \| 'map' \| 'calendar' }` |
 | `search:change` | `search.js` | `{ query }` (trimmed, collapsed, lowercased) |
 | `filters:change` | `filters.js` | `{ state, pageType }` |
 | `filters:clear` | `filters.js` | — (Clear all was pressed) |
@@ -143,6 +144,12 @@ Components announce state rather than reaching into each other. Epic 4 subscribe
 The active view is also reflected as `data-view` on `<html>`, so CSS can respond
 without JS. The date range appears in `filters:change` as `state.dates`, either
 `"2026-07-15"` or `"2026-07-15..2026-07-22"`.
+
+**`search.js` holds no list of view names** (#298). It reads the views a page
+offers from its `.view-toggle__btn[data-view]` elements and opens on whichever
+carries `view-toggle__btn--active`, so a page can only be switched to a view it
+has a button for. Adding a view is a markup change plus a CSS rule; the module
+does not change. Pop-Ups offers three, Date Ideas has no toggle at all.
 
 `filters:clear` fires *before* the accompanying `filters:change` and exists so
 Clear all can reset controls the filter bar does not own — `search.js` listens
@@ -163,8 +170,29 @@ Recorded so they are not re-litigated:
 - **Interior pages** (`interior.css`, #293) — §7 specs Pop-Ups, Date Ideas and
   Home only. The About/Contact/Privacy shell is **derived from the design
   system**, not from a mock. Adjust `interior.css` if one lands.
-- **View toggle is List/Map**, not List/Map/Calendar. §6.2 specifies two
-  buttons; the Calendar view belongs to Epic 5.
+- ~~**View toggle is List/Map**, not List/Map/Calendar~~ — resolved by #298.
+  §6.2 specifies two buttons and Epic 3 shipped two; Calendar became the third
+  in Epic 5. §6 has **no mock for a monthly calendar** — its only calendar is
+  the date-range picker in §6.3 — so the view's UI is derived, like
+  `interior.css`.
+- **The Calendar view shows the Pop-Ups result set**, not the legacy calendar's
+  (#298). `display_in_popups_page` is expiry-filtered in GROQ and
+  `display_in_calendar` is not, which is how `calendar.html` browses past
+  months. Sharing one set is what keeps List, Map and Calendar consistent
+  (#301); the cost is that month navigation cannot go back past the current
+  month, and `display_in_calendar` loses its meaning when #302 retires the
+  legacy page.
+- **The results count is view-independent** (#298). It reports how many events
+  match the filters, not how many are on screen, so it does not change when the
+  view does. `filters.js` counts `.event-card` inside `#popupsGrid`, which
+  makes the list panel's presence in the DOM while hidden load-bearing — an
+  e2e test asserts the count survives a trip through every view.
+- **Recurring events are not expanded into occurrences**, in any view. The
+  schema carries the recurrence fields and `mapSanityPopup` maps them, but
+  nothing on the site turns them into dates; a calendar is the first surface
+  where that would be visible. No published pop-up currently sets
+  `recurring`, so this is tracked as its own issue rather than as part of
+  Epic 5.
 - **Date ideas have no date filter.** §7.2 gives them Vibe/Budget/Neighborhood;
   they are evergreen. The picker is page-agnostic and mounts wherever a dates
   chip exists.

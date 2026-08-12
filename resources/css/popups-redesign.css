@@ -10,6 +10,7 @@
    is the legacy .popups-grid, and the prebuilt static tiles have to stay
    visible without JS. */
 .results__panel--map,
+.results__panel--calendar,
 .results-divider {
   display: none;
 }
@@ -106,14 +107,27 @@ body.redesign-enabled .results-divider {
 /* View switching ----------------------------------------------------------- */
 
 /* search.js reflects the toggle onto <html data-view>, so the panels follow it
-   without either side knowing about the other. */
-:root[data-redesign='on'][data-view='map'] .results__panel--list,
-:root[data-view='map'] body.redesign-enabled .results__panel--list {
+   without either side knowing about the other.
+
+   The list panel is hidden by "any view that isn't list" rather than by naming
+   the others, for two reasons. It has no flag-off `display: none` default —
+   the prebuilt static tiles are the no-JS experience, so it must show before
+   search.js has stamped anything, which `[data-view]` guarantees. And a view
+   added later (Calendar arrived in #298) cannot leave two panels stacked on
+   top of each other by being forgotten here. */
+:root[data-redesign='on'][data-view]:not([data-view='list']) .results__panel--list,
+:root[data-view]:not([data-view='list']) body.redesign-enabled .results__panel--list {
   display: none;
 }
 
 :root[data-redesign='on'][data-view='map'] .results__panel--map,
 :root[data-view='map'] body.redesign-enabled .results__panel--map {
+  display: block;
+}
+
+/* Empty until #300 builds the month grid inside it. */
+:root[data-redesign='on'][data-view='calendar'] .results__panel--calendar,
+:root[data-view='calendar'] body.redesign-enabled .results__panel--calendar {
   display: block;
 }
 
