@@ -186,12 +186,17 @@ Recorded so they are not re-litigated:
   differ. This keeps `display_in_calendar` meaningful after #302 retires the
   legacy page, and makes month navigation work in both directions (bounded by
   the earliest and latest matching event).
-- **The results count is view-independent as of #298**, but only because the
-  calendar panel is still empty. It reports how many events match the filters,
-  not how many are on screen. `filters.js` counts `.event-card` inside
-  `#popupsGrid`, which makes the list panel's presence in the DOM while hidden
-  load-bearing. Once the Calendar view carries its own, wider result set in
-  #300, one number cannot describe both — settle it there.
+- **The results count follows the active view.** In List and Map it is what it
+  has always been — how many events match the filters — and `filters.js`
+  derives it by counting `.event-card` inside `#popupsGrid`, which makes the
+  list panel's presence in the DOM while hidden load-bearing. In Calendar it
+  describes the month on screen instead ("14 events in August 2026") and
+  changes as you navigate, because that view carries past pop-ups and one
+  number cannot honestly describe both sets. It is still view-independent as
+  of #298 only because the calendar panel is empty; #300 implements this.
+  Note the trap: `filters.js` observes `#popupsGrid` for mutations, so the
+  calendar has to own the line while it is active or a list re-render will
+  silently overwrite it.
 - **Recurring events are not expanded into occurrences**, in any view. The
   schema carries the recurrence fields and `mapSanityPopup` maps them, but
   nothing on the site turns them into dates; a calendar is the first surface
