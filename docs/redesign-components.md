@@ -1,8 +1,12 @@
 # Redesign Shared Components
 
-> **Status:** Epic 3 complete — every component below is built, tested and merged to `staging`.
-> **Not yet wired:** no page fetches data into these components yet. That is Epic 4 (#294–#299).
+> **Status:** Epics 3 and 4 complete on `staging`. Every component below is
+> built and tested, and **Pop-Ups wires all of them to live data** (#294–#299) —
+> read `pop-ups.html` and its `popups-*.js` modules as the worked example.
+> **Not yet wired:** Date Ideas (Epic 6) and Home (Epic 7).
 > **Spec:** `REDESIGN.md` §6. **Responsive targets:** `docs/RESPONSIVE-QA.md`.
+> **Note:** `REDESIGN.md` predates the site's CSP; where they conflict, the CSP
+> wins and the deviation is recorded in §5.
 
 Everything here is gated behind the redesign feature flag, which is **OFF in all
 environments**. Nothing in this document is user-visible today; append
@@ -166,6 +170,13 @@ Recorded so they are not re-litigated:
   chip exists.
 - **`.filter-chip__chevron`**, not the spec's `.filter-chip .chevron` — Stylelint
   enforces a BEM class pattern.
+- **Leaflet is vendored, not loaded from a CDN** (#299) — §6.6 says CDN, but
+  `script-src 'self'` blocks that. See `resources/vendor/leaflet/README.md`.
+- **`beauty` has no pin colour.** §6.6 colours seven categories; the schema has
+  eight. `beauty`, and anything added later, falls through to a neutral
+  `--nyc-pin-other` rather than disappearing from the map.
+- **The no-results state is derived** (#296) — §6.3 specifies only the results
+  count. It carries a message and a *Clear all filters* action.
 - **Dropdowns lead with an "All …" option** carrying an empty value (#295),
   per §6.3. Epic 3 shipped without one, so clearing a single filter meant
   re-selecting the active option — a gesture nobody discovers.
