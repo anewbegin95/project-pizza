@@ -37,13 +37,33 @@ describe('pop-ups results region styles', () => {
 
   it('swaps panels from the data-view attribute the toggle stamps on <html>', () => {
     expectCssToMatch(css, "[data-view='map']")
+    expectCssToMatch(css, "[data-view='calendar']")
+  })
+
+  it('keeps the list panel visible before the toggle has stamped a view', () => {
+    // The prebuilt static tiles are the no-JS experience, so the list panel
+    // cannot depend on data-view being present to show itself. Only a view
+    // other than list may hide it.
+    const hidesListUnconditionally = css
+      .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+      .split('}')
+      .some((block) => {
+        const [selectorPart, declarations = ''] = block.split('{')
+        if (!selectorPart || !declarations) return false
+        if (!/display:\s*none/.test(declarations)) return false
+        return selectorPart
+          .split(',')
+          .some((one) => one.includes('.results__panel--list') && !one.includes('data-view='))
+      })
+
+    expect(hidesListUnconditionally, 'the list panel must not be hidden without a data-view').toBe(false)
   })
 })
 
 describe('redesign-only shell elements are hidden with the flag off', () => {
   const css = read('resources/css/popups-redesign.css').replaceAll(/\/\*[\s\S]*?\*\//g, '')
 
-  it.each(['.results__panel--map', '.results-divider'])('%s carries an unscoped display: none default', (selector) => {
+  it.each(['.results__panel--map', '.results__panel--calendar', '.results-divider'])('%s carries an unscoped display: none default', (selector) => {
     const hidesUnscoped = css.split('}').some((block) => {
       const [selectorPart, declarations = ''] = block.split('{')
       if (!selectorPart || !declarations) return false
@@ -65,10 +85,11 @@ describe('pop-ups.html shell markup', () => {
     expect(html).toContain('resources/css/popups-redesign.css')
   })
 
-  it('wraps the grid in a results region holding a list panel and a map panel', () => {
+  it('wraps the grid in a results region holding list, map and calendar panels', () => {
     expect(html).toMatch(/<div class="results"[^>]*>/)
     expect(html).toMatch(/class="[^"]*results__panel--list[^"]*"[^>]*id="popupsGrid"/)
     expect(html).toMatch(/class="[^"]*results__panel--map[^"]*"/)
+    expect(html).toMatch(/class="[^"]*results__panel--calendar[^"]*"/)
   })
 
   it('keeps the grid element the page scripts and prebuild target', () => {

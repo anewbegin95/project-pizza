@@ -77,6 +77,7 @@
                 <div class="view-toggle" role="group" aria-label="View mode">
                     <button type="button" class="view-toggle__btn view-toggle__btn--active" data-view="list" aria-pressed="true">List</button>
                     <button type="button" class="view-toggle__btn" data-view="map" aria-pressed="false">Map</button>
+                    <button type="button" class="view-toggle__btn" data-view="calendar" aria-pressed="false">Calendar</button>
                 </div>
             </div>
 
@@ -144,15 +145,18 @@
             <hr class="ui-divider results-divider">
 
             <!-- Results region. The list panel is the legacy grid, restyled by
-                 popups-redesign.css when the flag is on; the map panel is empty
-                 until #299. search.js reflects the toggle onto <html data-view>,
-                 which is what swaps them. -->
+                 popups-redesign.css when the flag is on; the calendar panel is
+                 empty until #300, as the map panel was until #299. search.js
+                 reflects the toggle onto <html data-view>, which is what swaps
+                 them. The list panel stays in the DOM while hidden — the
+                 results count is taken from the cards inside it. -->
             <div class="results">
                 <section class="popups-grid results__panel results__panel--list" id="popupsGrid">
                     <!-- STATIC_POPUPS_START -->
                     <!-- STATIC_POPUPS_END -->
                 </section>
                 <div class="results__panel results__panel--map" id="popupsMap" role="region" aria-label="Map of pop-ups"></div>
+                <div class="results__panel results__panel--calendar" id="popupsCalendar" role="region" aria-label="Calendar of pop-ups"></div>
             </div>
             <script src="resources/js/pop-ups.js"></script>
         </main>

@@ -7,6 +7,35 @@ test('search bar and view toggle appear when the redesign flag is on', async ({ 
   await expect(page.getByRole('group', { name: /view mode/i })).toBeVisible()
   await expect(page.getByRole('button', { name: 'List' })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByRole('button', { name: 'Map' })).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('button', { name: 'Calendar' })).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('clicking Calendar moves the active state and emits a view change', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  const received = page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        document.addEventListener('viewtoggle:change', (event) => resolve(event.detail.view), { once: true })
+      })
+  )
+
+  await page.getByRole('button', { name: 'Calendar' }).click()
+
+  await expect(page.getByRole('button', { name: 'Calendar' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'List' })).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('button', { name: 'Map' })).toHaveAttribute('aria-pressed', 'false')
+  expect(await received).toBe('calendar')
+})
+
+test('every view is reachable from every other view', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  for (const view of ['map', 'calendar', 'list', 'calendar', 'map', 'list']) {
+    const label = view[0].toUpperCase() + view.slice(1)
+    await page.getByRole('button', { name: label }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-view', view)
+  }
 })
 
 test('clicking Map moves the active state and emits a view change', async ({ page }) => {
@@ -62,6 +91,7 @@ test('search controls stay hidden when the redesign flag is off', async ({ page 
 
   await expect(page.locator('.search-bar-container')).toBeHidden()
   await expect(page.getByRole('button', { name: 'Map' })).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Calendar' })).toBeHidden()
 })
 
 test('search bar stays within the shared container width and stays centered', async ({ page }) => {
@@ -121,10 +151,37 @@ test('toggle buttons share the full row width on mobile', async ({ page }) => {
     }
   })
 
+  expect(buttonWidths).toHaveLength(3)
   expect(toggleWidth).toBeGreaterThan(rowWidth * 0.95)
+  // Three buttons now share the row, so each takes roughly a third of it
+  // rather than a half. They still split it evenly.
   for (const width of buttonWidths) {
-    expect(width).toBeGreaterThan(rowWidth * 0.4)
+    expect(width).toBeGreaterThan(rowWidth * 0.25)
   }
+  expect(Math.max(...buttonWidths) - Math.min(...buttonWidths)).toBeLessThanOrEqual(1)
+})
+
+test('toggle buttons keep their touch target with three across on a small phone', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 })
+  await page.goto('/pop-ups.html?redesign=on')
+
+  const buttons = await page.locator('.view-toggle__btn').evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect()
+      return { width: rect.width, height: rect.height }
+    })
+  )
+
+  expect(buttons).toHaveLength(3)
+  for (const button of buttons) {
+    expect(button.height).toBeGreaterThanOrEqual(44)
+    expect(button.width).toBeGreaterThanOrEqual(44)
+  }
+
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  )
+  expect(overflow).toBe(0)
 })
 
 test('selecting a view reflects it as page state for view code to consume', async ({ page }) => {

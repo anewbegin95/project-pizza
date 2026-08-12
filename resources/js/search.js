@@ -1,27 +1,50 @@
-// Shared search bar and List/Map view toggle for the redesigned discovery
-// pages. Behaviour is gated on the redesign flag; data filtering lives
-// elsewhere (see REDESIGN.md section 6.2).
+// Shared search bar and view toggle for the redesigned discovery pages.
+// Behaviour is gated on the redesign flag; data filtering lives elsewhere
+// (see REDESIGN.md section 6.2).
+//
+// The toggle takes its views from the markup rather than from a list here.
+// This module is shared by every redesigned page, so a registry of view names
+// would claim a view on pages that have no button for it — Pop-Ups gained a
+// third view in #298, and Date Ideas has no toggle at all.
 
 // === CONSTANTS ===
-
-/** View modes offered by the toggle, in display order. */
-const VIEWS = ['list', 'map'];
 
 const ACTIVE_BUTTON_CLASS = 'view-toggle__btn--active';
 
 // === PURE HELPERS ===
 
-function isValidView(view) {
-    return VIEWS.includes(view);
+/** The views a page offers, in markup order. */
+function getToggleViews(buttons) {
+    const views = [];
+    for (const button of buttons || []) {
+        const view = button && button.dataset ? button.dataset.view : null;
+        if (view && !views.includes(view)) views.push(view);
+    }
+    return views;
 }
 
 /**
- * Resolves the toggle's next state. Requesting the active view, or an unknown
- * view, leaves the current view untouched.
+ * The view the page opens on: whichever button the markup marks active,
+ * falling back to the first. null when the page has no toggle.
+ */
+function getInitialView(buttons) {
+    const list = Array.from(buttons || []).filter(button => button && button.dataset && button.dataset.view);
+    if (list.length === 0) return null;
+    const active = list.find(button => button.classList && button.classList.contains(ACTIVE_BUTTON_CLASS));
+    return (active || list[0]).dataset.view;
+}
+
+function isValidView(view, views) {
+    return Array.isArray(views) && views.includes(view);
+}
+
+/**
+ * Resolves the toggle's next state. Requesting the active view, or one the
+ * page does not offer, leaves the current view untouched.
  * @returns {{view: string, changed: boolean}}
  */
-function getNextToggleState(currentView, requestedView) {
-    if (!isValidView(requestedView) || requestedView === currentView) {
+function getNextToggleState(currentView, requestedView, views) {
+    if (!isValidView(requestedView, views) || requestedView === currentView) {
         return { view: currentView, changed: false };
     }
     return { view: requestedView, changed: true };
@@ -69,11 +92,12 @@ function initSearchBar(doc) {
 
     const buttons = Array.from(container.querySelectorAll('.view-toggle__btn'));
     const input = container.querySelector('.search-bar__input');
-    let currentView = VIEWS[0];
+    const views = getToggleViews(buttons);
+    let currentView = getInitialView(buttons);
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            const next = getNextToggleState(currentView, button.dataset.view);
+            const next = getNextToggleState(currentView, button.dataset.view, views);
             if (!next.changed) return;
             currentView = next.view;
             applyToggleState(buttons, currentView);
@@ -127,7 +151,8 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        VIEWS,
+        getToggleViews,
+        getInitialView,
         isValidView,
         getNextToggleState,
         applyToggleState,

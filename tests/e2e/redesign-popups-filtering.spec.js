@@ -231,3 +231,65 @@ test('the page loads with no errors once filtering is wired', async ({ page }) =
 
   expect(errors).toEqual([])
 })
+
+// #298 — switching views must not disturb the filter/search state or the set
+// it selects. The Calendar panel is empty until #300, so the assertions are on
+// the controls, the count and the list panel behind them.
+test('search and filter state survives a trip through every view', async ({ page }) => {
+  await gotoPopups(page)
+
+  await page.locator('.search-bar__input').fill('market')
+  await chooseFilter(page, 'borough', 'Manhattan')
+  await expect(resultCards(page)).toHaveCount(1)
+  await expect(page.locator('.results-count')).toHaveText('1 event found')
+
+  const state = () =>
+    page.evaluate(() => ({
+      query: document.querySelector('.search-bar__input').value,
+      borough: document.querySelector('.filter-chip[data-filter="borough"] .filter-chip__label').textContent,
+      count: document.querySelector('.results-count').textContent,
+      names: [...document.querySelectorAll('#popupsGrid .event-card__title')].map((el) => el.textContent),
+    }))
+
+  const before = await state()
+  expect(before.query).toBe('market')
+  expect(before.borough).toContain('Manhattan')
+  expect(before.names).toEqual(['Chelsea Night Market'])
+
+  for (const label of ['Calendar', 'Map', 'Calendar', 'List']) {
+    await page.getByRole('button', { name: label }).click()
+    expect(await state(), `state after switching to ${label}`).toEqual(before)
+  }
+})
+
+test('the results count reports the filtered set regardless of the active view', async ({ page }) => {
+  await gotoPopups(page)
+  await expect(page.locator('.results-count')).toHaveText('4 events found')
+
+  // The count is view-independent by decision: it answers "how many events
+  // match your filters", not "how many are on screen right now".
+  await page.getByRole('button', { name: 'Calendar' }).click()
+  await expect(page.locator('.results-count')).toHaveText('4 events found')
+
+  await page.locator('.search-bar__input').fill('chelsea')
+  await expect(page.locator('.results-count')).toHaveText('1 event found')
+
+  await page.getByRole('button', { name: 'List' }).click()
+  await expect(page.locator('.results-count')).toHaveText('1 event found')
+  await expect(resultCards(page)).toHaveCount(1)
+})
+
+test('clear all resets the controls from inside the calendar view', async ({ page }) => {
+  await gotoPopups(page)
+
+  await page.locator('.search-bar__input').fill('chelsea')
+  await chooseFilter(page, 'borough', 'Manhattan')
+  await expect(page.locator('.results-count')).toHaveText('1 event found')
+
+  await page.getByRole('button', { name: 'Calendar' }).click()
+  await page.locator('.filter-bar__clear').click()
+
+  await expect(page.locator('.results-count')).toHaveText('4 events found')
+  await expect(page.locator('.search-bar__input')).toHaveValue('')
+  await expect(page.locator('html')).toHaveAttribute('data-view', 'calendar')
+})

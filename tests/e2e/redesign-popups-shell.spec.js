@@ -130,25 +130,54 @@ test('the results region never overflows the container width', async ({ page }) 
   expect(cardWidth).toBeLessThanOrEqual(containerMax)
 })
 
+/** Which panel each view shows. Exactly one is ever visible. */
+const panels = (page) =>
+  page.evaluate(() => ({
+    view: document.documentElement.getAttribute('data-view'),
+    list: getComputedStyle(document.querySelector('.results__panel--list')).display,
+    map: getComputedStyle(document.querySelector('.results__panel--map')).display,
+    calendar: getComputedStyle(document.querySelector('.results__panel--calendar')).display,
+  }))
+
 test('the map panel stays hidden until the toggle asks for it', async ({ page }) => {
   await page.goto('/pop-ups.html?redesign=on')
 
-  // The map panel is an empty container until #299 fills it, so assert on the
-  // display the shell controls rather than on rendered size.
-  const panels = () =>
-    page.evaluate(() => ({
-      view: document.documentElement.getAttribute('data-view'),
-      list: getComputedStyle(document.querySelector('.results__panel--list')).display,
-      map: getComputedStyle(document.querySelector('.results__panel--map')).display,
-    }))
-
-  expect(await panels()).toEqual({ view: 'list', list: 'grid', map: 'none' })
+  // The map and calendar panels are containers the shell only shows or hides —
+  // the calendar's contents arrive in #300 — so assert on display rather than
+  // on rendered size.
+  expect(await panels(page)).toEqual({ view: 'list', list: 'grid', map: 'none', calendar: 'none' })
 
   await page.getByRole('button', { name: 'Map' }).click()
-  expect(await panels()).toEqual({ view: 'map', list: 'none', map: 'block' })
+  expect(await panels(page)).toEqual({ view: 'map', list: 'none', map: 'block', calendar: 'none' })
 
   await page.getByRole('button', { name: 'List' }).click()
-  expect(await panels()).toEqual({ view: 'list', list: 'grid', map: 'none' })
+  expect(await panels(page)).toEqual({ view: 'list', list: 'grid', map: 'none', calendar: 'none' })
+})
+
+test('the calendar panel stays hidden until the toggle asks for it', async ({ page }) => {
+  await page.goto('/pop-ups.html?redesign=on')
+
+  await page.getByRole('button', { name: 'Calendar' }).click()
+  expect(await panels(page)).toEqual({ view: 'calendar', list: 'none', map: 'none', calendar: 'block' })
+
+  // Straight from Calendar to Map, without passing through List.
+  await page.getByRole('button', { name: 'Map' }).click()
+  expect(await panels(page)).toEqual({ view: 'map', list: 'none', map: 'block', calendar: 'none' })
+
+  await page.getByRole('button', { name: 'Calendar' }).click()
+  expect(await panels(page)).toEqual({ view: 'calendar', list: 'none', map: 'none', calendar: 'block' })
+})
+
+test('the list panel shows before any view has been chosen', async ({ page }) => {
+  // The prebuilt static tiles are the no-JS experience: the list panel cannot
+  // wait for search.js to stamp data-view before it is visible.
+  await page.goto('/pop-ups.html?redesign=on')
+  await page.evaluate(() => document.documentElement.removeAttribute('data-view'))
+
+  const display = await page.evaluate(
+    () => getComputedStyle(document.querySelector('.results__panel--list')).display
+  )
+  expect(display).not.toBe('none')
 })
 
 test('the results divider is part of the redesign only', async ({ page }) => {
@@ -158,6 +187,7 @@ test('the results divider is part of the redesign only', async ({ page }) => {
   await page.goto('/pop-ups.html?redesign=off')
   await expect(page.locator('.results-divider')).toBeHidden()
   await expect(page.locator('.results__panel--map')).toBeHidden()
+  await expect(page.locator('.results__panel--calendar')).toBeHidden()
   await expect(page.locator('.search-bar-container')).toBeHidden()
   await expect(page.locator('.filter-bar')).toBeHidden()
 })
