@@ -266,8 +266,10 @@ test('the results count reports the filtered set regardless of the active view',
   await gotoPopups(page)
   await expect(page.locator('.results-count')).toHaveText('4 events found')
 
-  // The count is view-independent by decision: it answers "how many events
-  // match your filters", not "how many are on screen right now".
+  // The count answers "how many events match your filters", not "how many are
+  // on screen right now". True while the calendar panel is empty; #300 gives
+  // the Calendar view its own result set (it keeps past pop-ups), and this
+  // will need revisiting there.
   await page.getByRole('button', { name: 'Calendar' }).click()
   await expect(page.locator('.results-count')).toHaveText('4 events found')
 

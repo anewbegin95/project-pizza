@@ -175,18 +175,23 @@ Recorded so they are not re-litigated:
   in Epic 5. §6 has **no mock for a monthly calendar** — its only calendar is
   the date-range picker in §6.3 — so the view's UI is derived, like
   `interior.css`.
-- **The Calendar view shows the Pop-Ups result set**, not the legacy calendar's
-  (#298). `display_in_popups_page` is expiry-filtered in GROQ and
-  `display_in_calendar` is not, which is how `calendar.html` browses past
-  months. Sharing one set is what keeps List, Map and Calendar consistent
-  (#301); the cost is that month navigation cannot go back past the current
-  month, and `display_in_calendar` loses its meaning when #302 retires the
-  legacy page.
-- **The results count is view-independent** (#298). It reports how many events
-  match the filters, not how many are on screen, so it does not change when the
-  view does. `filters.js` counts `.event-card` inside `#popupsGrid`, which
-  makes the list panel's presence in the DOM while hidden load-bearing — an
-  e2e test asserts the count survives a trip through every view.
+- **The Calendar view keeps past pop-ups**, so it carries a different result
+  set from List and Map. `display_in_popups_page` is expiry-filtered in GROQ,
+  which is why List and Map only ever show what is still to come;
+  `display_in_calendar` is returned raw, which is how `calendar.html` browses
+  past months. The Calendar view takes the legacy rule —
+  `master_display && display_in_calendar`, no expiry filter — from the same
+  single fetch, so no extra request is needed. Search and the filter chips
+  apply to it identically; only the time horizon and that one editorial toggle
+  differ. This keeps `display_in_calendar` meaningful after #302 retires the
+  legacy page, and makes month navigation work in both directions (bounded by
+  the earliest and latest matching event).
+- **The results count is view-independent as of #298**, but only because the
+  calendar panel is still empty. It reports how many events match the filters,
+  not how many are on screen. `filters.js` counts `.event-card` inside
+  `#popupsGrid`, which makes the list panel's presence in the DOM while hidden
+  load-bearing. Once the Calendar view carries its own, wider result set in
+  #300, one number cannot describe both — settle it there.
 - **Recurring events are not expanded into occurrences**, in any view. The
   schema carries the recurrence fields and `mapSanityPopup` maps them, but
   nothing on the site turns them into dates; a calendar is the first surface
