@@ -703,6 +703,53 @@ function loadAndDisplayPopups() {
                 }
             }
 
+            // Calendar view. Unlike List and Map it keeps past pop-ups: those
+            // two are limited to display_in_popups_page, which GROQ already
+            // expiry-filters, while the calendar takes the legacy calendar's
+            // rule so navigating back shows what ran then. See
+            // docs/redesign-components.md section 5.
+            const calendarPool = results.map(mapSanityPopup).filter(e =>
+                String(e.master_display).toUpperCase() === 'TRUE' &&
+                String(e.calendar).toUpperCase() === 'TRUE'
+            );
+            let calendarShown = calendarPool;
+            let calendarView = null;
+            let calendarMonth = null;
+
+            /** The count line while the calendar owns it. */
+            function getCalendarCountText() {
+                if (!calendarMonth) return '';
+                const noun = calendarMonth.count === 1 ? 'event' : 'events';
+                return `${calendarMonth.count} ${noun} in ${calendarMonth.label}`;
+            }
+
+            if (useCards && window.NycPopupsCalendar) {
+                const panel = document.querySelector('.results__panel--calendar');
+                if (panel) {
+                    calendarView = window.NycPopupsCalendar.initCalendar(document, panel, {
+                        getEntries: () => calendarShown,
+                        onSelect: entry => openDetail(entry),
+                        onMonthChange: month => {
+                            calendarMonth = month;
+                            if (window.NycFilters && window.NycFilters.refreshCount) {
+                                window.NycFilters.refreshCount();
+                            }
+                        },
+                    });
+
+                    // The calendar reports the month it is showing, not the
+                    // filtered list behind it, so it takes the count line while
+                    // it is the active view and hands it back on the way out.
+                    document.addEventListener('viewtoggle:change', event => {
+                        const isCalendar = event.detail && event.detail.view === 'calendar';
+                        if (isCalendar && calendarView) calendarView.show();
+                        if (window.NycFilters && window.NycFilters.setCountOwner) {
+                            window.NycFilters.setCountOwner(isCalendar ? getCalendarCountText : null);
+                        }
+                    });
+                }
+            }
+
             if (redesignOn && window.NycPopupsFilter) {
                 const controller = window.NycPopupsFilter.createFilterController(document, {
                     onChange: state => {
@@ -710,6 +757,10 @@ function loadAndDisplayPopups() {
                         renderPopups(shown);
                         // Pins follow the same set as the list, in both views.
                         if (mapView && mapView.isCreated()) mapView.render();
+                        // The calendar filters the same way over its own,
+                        // wider pool.
+                        calendarShown = window.NycPopupsFilter.filterPopups(calendarPool, state);
+                        if (calendarView) calendarView.render();
                     },
                 });
 

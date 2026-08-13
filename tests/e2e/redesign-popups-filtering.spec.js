@@ -233,8 +233,9 @@ test('the page loads with no errors once filtering is wired', async ({ page }) =
 })
 
 // #298 — switching views must not disturb the filter/search state or the set
-// it selects. The Calendar panel is empty until #300, so the assertions are on
-// the controls, the count and the list panel behind them.
+// it selects. The count is deliberately excluded from the round trip: as of
+// #300 the Calendar view reports the month on screen rather than the filter
+// match, so it is the one thing that legitimately differs by view.
 test('search and filter state survives a trip through every view', async ({ page }) => {
   await gotoPopups(page)
 
@@ -247,7 +248,6 @@ test('search and filter state survives a trip through every view', async ({ page
     page.evaluate(() => ({
       query: document.querySelector('.search-bar__input').value,
       borough: document.querySelector('.filter-chip[data-filter="borough"] .filter-chip__label').textContent,
-      count: document.querySelector('.results-count').textContent,
       names: [...document.querySelectorAll('#popupsGrid .event-card__title')].map((el) => el.textContent),
     }))
 
@@ -260,17 +260,20 @@ test('search and filter state survives a trip through every view', async ({ page
     await page.getByRole('button', { name: label }).click()
     expect(await state(), `state after switching to ${label}`).toEqual(before)
   }
+
+  // Back in List, the count is the filter's answer again.
+  await expect(page.locator('.results-count')).toHaveText('1 event found')
 })
 
-test('the results count reports the filtered set regardless of the active view', async ({ page }) => {
+test('the results count answers for the list in both List and Map', async ({ page }) => {
   await gotoPopups(page)
   await expect(page.locator('.results-count')).toHaveText('4 events found')
 
-  // The count answers "how many events match your filters", not "how many are
-  // on screen right now". True while the calendar panel is empty; #300 gives
-  // the Calendar view its own result set (it keeps past pop-ups), and this
-  // will need revisiting there.
-  await page.getByRole('button', { name: 'Calendar' }).click()
+  // In these two views the count is the filter's answer, not what is on
+  // screen — the map shows only the events it can place, and still reports
+  // four. What Calendar reports is different by design and is covered in
+  // redesign-popups-calendar.spec.js.
+  await page.getByRole('button', { name: 'Map' }).click()
   await expect(page.locator('.results-count')).toHaveText('4 events found')
 
   await page.locator('.search-bar__input').fill('chelsea')
@@ -291,7 +294,15 @@ test('clear all resets the controls from inside the calendar view', async ({ pag
   await page.getByRole('button', { name: 'Calendar' }).click()
   await page.locator('.filter-bar__clear').click()
 
-  await expect(page.locator('.results-count')).toHaveText('4 events found')
+  // The count is the calendar's while it is the active view, so assert the
+  // controls reset and that the line is in the calendar's own form rather
+  // than reverting to the list's.
   await expect(page.locator('.search-bar__input')).toHaveValue('')
+  await expect(page.locator('.filter-chip[data-filter="borough"] .filter-chip__label')).toHaveText('Borough')
+  await expect(page.locator('.results-count')).toHaveText(/events? in \w+ \d{4}$/)
   await expect(page.locator('html')).toHaveAttribute('data-view', 'calendar')
+
+  // And it goes back to the list's form on the way out.
+  await page.getByRole('button', { name: 'List' }).click()
+  await expect(page.locator('.results-count')).toHaveText('4 events found')
 })

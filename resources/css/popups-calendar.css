@@ -1,0 +1,483 @@
+/* -----------------------------------------------------------------------------
+  POP-UPS CALENDAR VIEW (redesign only)
+  The month grid inside .results__panel--calendar. That panel is already hidden
+  by popups-redesign.css unless <html data-view='calendar'>, so nothing here is
+  reachable with the flag off — but every rule is still gated, per the contract
+  in docs/redesign-components.md section 2.
+
+  REDESIGN.md has no mock for a monthly calendar (its only calendar is the date
+  range picker in 6.3), so this is derived: the picker's language for the grid,
+  the event card's day-name treatment for the weekday row, the list view's
+  display face for the month title, and the map's pin palette for categories.
+----------------------------------------------------------------------------- */
+
+/* Month header ------------------------------------------------------------ */
+
+:root[data-redesign='on'] .calendar__header,
+body.redesign-enabled .calendar__header {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+/* Same face and size as the list view's month groups, so switching between
+   List and Calendar reads as one page. */
+:root[data-redesign='on'] .calendar__title,
+body.redesign-enabled .calendar__title {
+  flex: 1;
+  margin: 0;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: var(--font-xxl);
+  font-weight: var(--font-weight-regular);
+}
+
+:root[data-redesign='on'] .calendar__nav,
+body.redesign-enabled .calendar__nav {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+:root[data-redesign='on'] .calendar__prev,
+:root[data-redesign='on'] .calendar__next,
+body.redesign-enabled .calendar__prev,
+body.redesign-enabled .calendar__next {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-round);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  font-size: var(--font-md-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .calendar__today,
+body.redesign-enabled .calendar__today {
+  min-height: 44px;
+  padding: 10px var(--space-sm);
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .calendar__prev:hover:not(:disabled),
+:root[data-redesign='on'] .calendar__next:hover:not(:disabled),
+:root[data-redesign='on'] .calendar__today:hover,
+body.redesign-enabled .calendar__prev:hover:not(:disabled),
+body.redesign-enabled .calendar__next:hover:not(:disabled),
+body.redesign-enabled .calendar__today:hover {
+  border-color: var(--nyc-green);
+  color: var(--nyc-green);
+}
+
+/* Navigation stops at the first and last event rather than paging into empty
+   months, so the disabled state is a real state here. */
+:root[data-redesign='on'] .calendar__prev:disabled,
+:root[data-redesign='on'] .calendar__next:disabled,
+body.redesign-enabled .calendar__prev:disabled,
+body.redesign-enabled .calendar__next:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+:root[data-redesign='on'] .calendar__prev:focus-visible,
+:root[data-redesign='on'] .calendar__next:focus-visible,
+:root[data-redesign='on'] .calendar__today:focus-visible,
+body.redesign-enabled .calendar__prev:focus-visible,
+body.redesign-enabled .calendar__next:focus-visible,
+body.redesign-enabled .calendar__today:focus-visible {
+  outline: 2px solid var(--nyc-green);
+  outline-offset: 2px;
+}
+
+/* Grid -------------------------------------------------------------------- */
+
+:root[data-redesign='on'] .calendar-grid,
+body.redesign-enabled .calendar-grid {
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-white);
+  overflow: hidden;
+}
+
+:root[data-redesign='on'] .calendar-weekdays,
+:root[data-redesign='on'] .calendar-week,
+body.redesign-enabled .calendar-weekdays,
+body.redesign-enabled .calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--nyc-section-divider);
+}
+
+:root[data-redesign='on'] .calendar-week,
+body.redesign-enabled .calendar-week {
+  position: relative;
+}
+
+:root[data-redesign='on'] .calendar-week:last-child,
+body.redesign-enabled .calendar-week:last-child {
+  border-bottom: 0;
+}
+
+/* The event card's day-name treatment (section 6.4). */
+:root[data-redesign='on'] .calendar-weekday,
+body.redesign-enabled .calendar-weekday {
+  padding: var(--space-xs) 10px;
+  color: var(--nyc-green);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-redesign='on'] .calendar-cell,
+body.redesign-enabled .calendar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  min-height: 132px;
+  padding: var(--space-xs);
+  border-right: 1px solid var(--nyc-section-divider);
+}
+
+:root[data-redesign='on'] .calendar-cell:last-child,
+body.redesign-enabled .calendar-cell:last-child {
+  border-right: 0;
+}
+
+:root[data-redesign='on'] .calendar-cell--outside,
+body.redesign-enabled .calendar-cell--outside {
+  background-color: var(--nyc-cream);
+}
+
+:root[data-redesign='on'] .calendar-cell--outside .calendar-cell__day,
+body.redesign-enabled .calendar-cell--outside .calendar-cell__day {
+  color: var(--nyc-medium-gray);
+}
+
+:root[data-redesign='on'] .calendar-cell--has-events,
+body.redesign-enabled .calendar-cell--has-events {
+  cursor: pointer;
+}
+
+/* Past pop-ups stay in the calendar (unlike List and Map) but recede. */
+:root[data-redesign='on'] .calendar-cell--past .calendar-chip,
+body.redesign-enabled .calendar-cell--past .calendar-chip {
+  opacity: 0.55;
+}
+
+:root[data-redesign='on'] .calendar-cell__day,
+body.redesign-enabled .calendar-cell__day {
+  display: grid;
+  place-items: center;
+  align-self: flex-start;
+  min-width: 26px;
+  height: 26px;
+  color: var(--nyc-navy);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Today, marked as the date picker marks it. */
+:root[data-redesign='on'] .calendar-cell--today .calendar-cell__day,
+body.redesign-enabled .calendar-cell--today .calendar-cell__day {
+  border-radius: var(--radius-round);
+  background-color: var(--nyc-pink);
+}
+
+/* Chips and bars ---------------------------------------------------------- */
+
+:root[data-redesign='on'] .calendar-chip,
+body.redesign-enabled .calendar-chip {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .calendar-chip:hover,
+body.redesign-enabled .calendar-chip:hover {
+  background-color: var(--nyc-green-light);
+}
+
+/* Its own element, because text-overflow: ellipsis does not apply to an
+   anonymous flex item — a bare text node inside the button hard-clips
+   mid-word instead of trailing off. */
+:root[data-redesign='on'] .calendar-chip__label,
+body.redesign-enabled .calendar-chip__label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:root[data-redesign='on'] .calendar-chip__dot,
+body.redesign-enabled .calendar-chip__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-round);
+  background-color: var(--nyc-pin-other);
+}
+
+/* Multi-day runs, laid across the week's columns. */
+:root[data-redesign='on'] .calendar-bars,
+body.redesign-enabled .calendar-bars {
+  position: absolute;
+  inset: 34px 0 auto;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  padding-inline: var(--space-xs);
+  pointer-events: none;
+}
+
+:root[data-redesign='on'] .calendar-bar,
+body.redesign-enabled .calendar-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  min-height: 22px;
+  padding: 3px 8px;
+  border: 0;
+  border-left: 3px solid var(--nyc-pin-other);
+  border-radius: var(--radius-sm);
+  background-color: var(--nyc-light-gray);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .calendar-bar:hover,
+body.redesign-enabled .calendar-bar:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-redesign='on'] .calendar-more,
+body.redesign-enabled .calendar-more {
+  align-self: flex-start;
+  padding: 2px 6px;
+  border: 0;
+  background: none;
+  color: var(--nyc-green);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Category colours, shared with the map so a category reads the same in both.
+   Anything section 6.6 does not colour falls through to the neutral pin. */
+:root[data-redesign='on'] .calendar-chip--food-drink .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--food-drink .calendar-chip__dot {
+  background-color: var(--nyc-pin-food-drink);
+}
+
+:root[data-redesign='on'] .calendar-chip--market .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--market .calendar-chip__dot {
+  background-color: var(--nyc-pin-market);
+}
+
+:root[data-redesign='on'] .calendar-chip--art-culture .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--art-culture .calendar-chip__dot {
+  background-color: var(--nyc-pin-art-culture);
+}
+
+:root[data-redesign='on'] .calendar-chip--fashion .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--fashion .calendar-chip__dot {
+  background-color: var(--nyc-pin-fashion);
+}
+
+:root[data-redesign='on'] .calendar-chip--wellness .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--wellness .calendar-chip__dot {
+  background-color: var(--nyc-pin-wellness);
+}
+
+:root[data-redesign='on'] .calendar-chip--music .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--music .calendar-chip__dot {
+  background-color: var(--nyc-pin-music);
+}
+
+:root[data-redesign='on'] .calendar-chip--vintage-thrift .calendar-chip__dot,
+body.redesign-enabled .calendar-chip--vintage-thrift .calendar-chip__dot {
+  background-color: var(--nyc-pin-vintage-thrift);
+}
+
+:root[data-redesign='on'] .calendar-bar--food-drink,
+body.redesign-enabled .calendar-bar--food-drink {
+  border-left-color: var(--nyc-pin-food-drink);
+}
+
+:root[data-redesign='on'] .calendar-bar--market,
+body.redesign-enabled .calendar-bar--market {
+  border-left-color: var(--nyc-pin-market);
+}
+
+:root[data-redesign='on'] .calendar-bar--art-culture,
+body.redesign-enabled .calendar-bar--art-culture {
+  border-left-color: var(--nyc-pin-art-culture);
+}
+
+:root[data-redesign='on'] .calendar-bar--fashion,
+body.redesign-enabled .calendar-bar--fashion {
+  border-left-color: var(--nyc-pin-fashion);
+}
+
+:root[data-redesign='on'] .calendar-bar--wellness,
+body.redesign-enabled .calendar-bar--wellness {
+  border-left-color: var(--nyc-pin-wellness);
+}
+
+:root[data-redesign='on'] .calendar-bar--music,
+body.redesign-enabled .calendar-bar--music {
+  border-left-color: var(--nyc-pin-music);
+}
+
+:root[data-redesign='on'] .calendar-bar--vintage-thrift,
+body.redesign-enabled .calendar-bar--vintage-thrift {
+  border-left-color: var(--nyc-pin-vintage-thrift);
+}
+
+/* Mobile ------------------------------------------------------------------ */
+/* Events stay in their cells rather than moving to a panel below the grid —
+   per-day density does not justify a separate menu. A cell is about 46px wide
+   at 375px, so the chip's colour moves from a dot to a left border to buy back
+   the width and the title takes what is left. */
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .calendar__header,
+  body.redesign-enabled .calendar__header {
+    flex-wrap: wrap;
+  }
+
+  :root[data-redesign='on'] .calendar__title,
+  body.redesign-enabled .calendar__title {
+    flex-basis: 100%;
+    font-size: var(--font-lg);
+  }
+
+  :root[data-redesign='on'] .calendar__nav,
+  body.redesign-enabled .calendar__nav {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  :root[data-redesign='on'] .calendar-weekday,
+  body.redesign-enabled .calendar-weekday {
+    padding: var(--space-xxs) 2px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  :root[data-redesign='on'] .calendar-cell,
+  body.redesign-enabled .calendar-cell {
+    gap: 2px;
+    min-height: 88px;
+    padding: 3px;
+  }
+
+  :root[data-redesign='on'] .calendar-cell__day,
+  body.redesign-enabled .calendar-cell__day {
+    align-self: center;
+    min-width: 22px;
+    height: 22px;
+    font-size: var(--font-xs-sm);
+  }
+
+  :root[data-redesign='on'] .calendar-chip,
+  body.redesign-enabled .calendar-chip {
+    gap: 0;
+    padding: 2px 2px 2px 3px;
+    border-left: 3px solid var(--nyc-pin-other);
+    background-color: var(--nyc-light-gray);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  :root[data-redesign='on'] .calendar-chip .calendar-chip__dot,
+  body.redesign-enabled .calendar-chip .calendar-chip__dot {
+    display: none;
+  }
+
+  :root[data-redesign='on'] .calendar-chip--food-drink,
+  body.redesign-enabled .calendar-chip--food-drink {
+    border-left-color: var(--nyc-pin-food-drink);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--market,
+  body.redesign-enabled .calendar-chip--market {
+    border-left-color: var(--nyc-pin-market);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--art-culture,
+  body.redesign-enabled .calendar-chip--art-culture {
+    border-left-color: var(--nyc-pin-art-culture);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--fashion,
+  body.redesign-enabled .calendar-chip--fashion {
+    border-left-color: var(--nyc-pin-fashion);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--wellness,
+  body.redesign-enabled .calendar-chip--wellness {
+    border-left-color: var(--nyc-pin-wellness);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--music,
+  body.redesign-enabled .calendar-chip--music {
+    border-left-color: var(--nyc-pin-music);
+  }
+
+  :root[data-redesign='on'] .calendar-chip--vintage-thrift,
+  body.redesign-enabled .calendar-chip--vintage-thrift {
+    border-left-color: var(--nyc-pin-vintage-thrift);
+  }
+
+  :root[data-redesign='on'] .calendar-more,
+  body.redesign-enabled .calendar-more {
+    align-self: center;
+    padding: 0;
+    font-size: 10px;
+  }
+
+  :root[data-redesign='on'] .calendar-bars,
+  body.redesign-enabled .calendar-bars {
+    inset: 28px 0 auto;
+    gap: 2px;
+    padding-inline: 3px;
+  }
+
+  :root[data-redesign='on'] .calendar-bar,
+  body.redesign-enabled .calendar-bar {
+    min-height: 18px;
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+}
