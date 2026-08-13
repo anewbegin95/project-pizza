@@ -271,13 +271,29 @@ function initFilters(doc) {
         if (resultsCount) resultsCount.textContent = getResultsCountText(count, noun);
     }
 
+    // A view whose result set is not the list's can take the line over — the
+    // Pop-Ups calendar does, because it keeps past pop-ups and reports the
+    // month on screen. Without this the observer below would overwrite it on
+    // the next list re-render.
+    let countOwner = null;
+
     // The count reflects whatever the page has rendered; results arrive
     // asynchronously from Sanity, so watch the container rather than
     // reporting a stale zero.
     const resultsContainer = doc.querySelector(RESULTS_CONTAINERS[pageType] || '');
-    if (resultsContainer && resultsCount) {
-        const syncCount = () =>
+
+    function syncCount() {
+        if (!resultsCount) return;
+        if (countOwner) {
+            resultsCount.textContent = countOwner();
+            return;
+        }
+        if (resultsContainer) {
             setResultsCount(resultsContainer.querySelectorAll(RESULT_ITEM_SELECTOR).length);
+        }
+    }
+
+    if (resultsContainer && resultsCount) {
         syncCount();
         if (typeof MutationObserver !== 'undefined') {
             // subtree, because grouped results nest their cards inside sections.
@@ -290,6 +306,17 @@ function initFilters(doc) {
     return {
         getState: () => ({ ...state }),
         setResultsCount,
+        /**
+         * Hands the results count to a view that reports something other than
+         * the rendered list — pass a function returning the text, or null to
+         * give it back. Re-syncs immediately either way.
+         */
+        setCountOwner: owner => {
+            countOwner = typeof owner === 'function' ? owner : null;
+            syncCount();
+        },
+        /** Re-reads the count from whoever currently owns it. */
+        refreshCount: syncCount,
         /**
          * Replaces a dropdown's options with ones derived from the loaded
          * data, so the list cannot drift from the content. The leading

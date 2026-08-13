@@ -1,8 +1,9 @@
 # Redesign Shared Components
 
-> **Status:** Epics 3 and 4 complete on `staging`. Every component below is
-> built and tested, and **Pop-Ups wires all of them to live data** (#294–#299) —
-> read `pop-ups.html` and its `popups-*.js` modules as the worked example.
+> **Status:** Epics 3 and 4 complete on `staging`; Epic 5 (the Calendar view)
+> in progress. Every component below is built and tested, and **Pop-Ups wires
+> all of them to live data** (#294–#300) — read `pop-ups.html` and its
+> `popups-*.js` modules as the worked example.
 > **Not yet wired:** Date Ideas (Epic 6) and Home (Epic 7).
 > **Spec:** `REDESIGN.md` §6. **Responsive targets:** `docs/RESPONSIVE-QA.md`.
 > **Note:** `REDESIGN.md` predates the site's CSP; where they conflict, the CSP
@@ -26,7 +27,7 @@ environments**. Nothing in this document is user-visible today; append
 | Detail modal | `modals.css` (`.modal--detail*`) | `modal.js` | `window.NycModal` | §6.5 |
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
 | Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
-| Calendar view (Pop-Ups) | `popups-redesign.css` (panel only) | — | — | *derived, see §5* |
+| Calendar view (Pop-Ups) | `popups-calendar.css` | `popups-calendar.js` | `window.NycPopupsCalendar` | *derived, see §5* |
 
 Each page `<link>`s and `<script>`s only what it uses; there is no bundler.
 
@@ -81,13 +82,17 @@ isFreePrice(price)
 
 ### `window.NycModal` — `modal.js`
 ```js
-openDetailModal(data, { type, returnLabel })  // → { close(), element }
+openModal({ className, cardClassName, returnLabel, onClose, build })  // → { close(), element, card }
+openDetailModal(data, { type, returnLabel })  // → { close(), element, card }
 buildGoogleCalendarUrl(data)  // '' when the entry has no date
 getShareData(data, { type, origin })
 formatDetailDateTime(start, end)
 ```
-The modal owns focus trapping, Escape / return-bar / overlay dismissal, focus
-restoration and the scroll lock. Callers own the data.
+`openModal` is **the shell**: overlay, return bar, focus trapping, Escape /
+return-bar / overlay dismissal, focus restoration and the scroll lock. `build`
+fills the card and may return `{ labelledBy }` to set `aria-labelledby`.
+`openDetailModal` is a caller of it, as is the calendar's day modal (#300) —
+extracted so the two cannot drift apart. Callers own the data.
 
 ### `window.NycFilters` — `filters.js` (set on bootstrap)
 ```js
@@ -95,9 +100,17 @@ getState()                       // { borough: null, type: 'market', … }
 setFilter(filter, value, label)  // external setter; null clears
 setOptions(filter, options)      // replace a dropdown's options from data
 setResultsCount(n)               // usually unnecessary — see below
+setCountOwner(fn | null)         // a view takes the count line over
+refreshCount()                   // re-read it from whoever owns it
 ```
 The results count already observes its container and reports what is rendered,
 so page code normally does not call `setResultsCount`.
+
+`setCountOwner` exists for a view whose result set is **not** the list's — the
+Pop-Ups calendar, which keeps past pop-ups and reports the month on screen.
+The `MutationObserver` watches `#popupsGrid`, and the list re-renders behind
+the calendar on every filter change, so without an owner the line silently
+reverts to the list's count. Pass `null` to hand it back.
 
 `setOptions` takes `[{ value, label }]`, keeps the leading "All …" row, and
 drops a selection the new data no longer offers. #295 uses it to build the
@@ -119,6 +132,26 @@ Merges `search:change` and `filters:change` into one state object and decides
 *what* shows; the page still owns rendering. Date ranges match on **overlap**,
 so a multi-day run surfaces for any range touching it. Recurring events match
 only their base span — nothing on the site expands recurrence into occurrences.
+
+### `window.NycPopupsCalendar` — `popups-calendar.js` (pop-ups page only)
+```js
+initCalendar(doc, container, { getEntries, onSelect, onMonthChange, maxVisible })
+getEventDays(entry)             // every 'YYYY-MM-DD' it covers, in New York time
+groupByDay(entries)             // Map of day → entries
+getMonthRange(entries)          // { first: '2026-02', last: '2026-09' } | null
+canGoPrev(monthKey, range) / canGoNext(monthKey, range)
+countInMonth(entries, monthKey) // a run counts once, in every month it reaches
+getCellEvents(entries, max)     // { visible, overflow }
+getWeekSegments(entries, weekCells)  // runs cut to one week row
+assignBarRows(segments)         // → { segments (each with .row), rows }
+getMaxVisible(isNarrow)         // 4, or 2 on a phone
+openDayModal(doc, iso, entries, { onSelect })
+```
+The grid comes from `NycDatePicker.getMonthGrid` and the month label from
+`NycPopupsList.formatMonthHeading` — there is one implementation of each.
+Category colours reuse the map's `--nyc-pin-*` palette and `getPinModifier`,
+so a category reads the same in Map and Calendar. `onMonthChange` reports
+`{ monthKey, label, count }`, which the page turns into the count line.
 
 ### `window.NycDatePicker` — `date-picker.js`
 ```js
@@ -158,8 +191,10 @@ call is what stops the two modules depending on each other.
 
 **Consumed by:** `popups-filter.js` (#295) merges `search:change` and
 `filters:change` into the pop-ups result set; `popups-map.js` (#299) listens for
-`viewtoggle:change` to create the map the first time it is shown. All three are
-now wired on Pop-Ups; Date Ideas re-uses the same events in Epic 6.
+`viewtoggle:change` to create the map the first time it is shown; the calendar
+(#300) listens for the same event to render itself and to take the results
+count over while it is the active view. All are wired on Pop-Ups; Date Ideas
+re-uses the same events in Epic 6.
 
 ---
 
@@ -172,9 +207,21 @@ Recorded so they are not re-litigated:
   system**, not from a mock. Adjust `interior.css` if one lands.
 - ~~**View toggle is List/Map**, not List/Map/Calendar~~ — resolved by #298.
   §6.2 specifies two buttons and Epic 3 shipped two; Calendar became the third
-  in Epic 5. §6 has **no mock for a monthly calendar** — its only calendar is
-  the date-range picker in §6.3 — so the view's UI is derived, like
-  `interior.css`.
+  in Epic 5.
+- **The monthly calendar's UI is derived** (#300). §6 has no mock for one — its
+  only calendar is the date-range picker in §6.3 — so it is assembled from
+  parts that are specified: the picker's language for the grid (pink circle on
+  today, muted days outside the month, hairline dividers), the event card's
+  day-name treatment for the weekday row (§6.4), the list view's display face
+  for the month title, and the map's pin palette for categories (§6.6).
+  Adjust `popups-calendar.css` if a mock lands.
+- **Mobile keeps events in their cells**, rather than moving them to a day
+  panel below the grid (#300). Per-day density does not justify a separate
+  menu: of the days that have anything at all, 57 have one event and 36 have
+  two, with a tail to ten. Cells show two chips then `+N more`, as
+  `calendar.js` does at `getMaxVisible()`; the colour moves from a dot to a
+  left border to buy back width, and the whole cell opens the day modal so a
+  truncated title stays reachable.
 - **The Calendar view keeps past pop-ups**, so it carries a different result
   set from List and Map. `display_in_popups_page` is expiry-filtered in GROQ,
   which is why List and Map only ever show what is still to come;
@@ -257,6 +304,23 @@ which means the legacy grid is 16px on all sides at *every* width — not the
 flag-off page below 975px. `popups-redesign.css` neutralises it with one
 matching override instead. Cost a cycle in #294; the lesson generalises to any
 `#id` rule in the legacy stylesheets.
+
+**`text-overflow: ellipsis` does not apply to an anonymous flex item.** A bare
+text node inside a `display: flex` button is not an inline formatting context,
+so an overflowing title is **hard-clipped mid-word** — "Chelsea Night Mar" —
+rather than trailing off. It needs its own element (`.calendar-chip__label`)
+carrying `min-width: 0; overflow: hidden; text-overflow: ellipsis`. The legacy
+calendar has the same defect today, visible on any narrow cell. Found building
+#300's mockup, so it cost a cycle before the code existed.
+
+**A test that cannot fail is worse than no test.** #300's mobile chip cap
+(`MAX_VISIBLE.mobile`) was asserted in a unit test and never actually applied —
+every viewport showed four. The e2e written to catch it *passed while the bug
+was live*, because the fixture day held exactly two events and fitted under
+either cap; it only started failing once a third was added. Same family as the
+transition-timing trap below: an assertion that cannot tell the two states
+apart passes vacuously. Check a new test fails for the right reason before
+trusting it.
 
 **Date-only strings shift a day.** `new Date('2026-07-25')` is UTC midnight —
 the previous evening in Eastern time — so all-day events render a day early.
