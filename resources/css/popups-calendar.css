@@ -141,12 +141,16 @@ body.redesign-enabled .calendar-weekday {
 
 :root[data-redesign='on'] .calendar-cell,
 body.redesign-enabled .calendar-cell {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-width: 0;
   min-height: 132px;
-  padding: var(--space-xs);
+  /* The bars are laid over this row, so leave room for however many rows of
+     them the week needs — otherwise a chip is drawn underneath one. The week
+     publishes the count as --nyc-calendar-bar-rows. */
+  padding: calc(34px + (var(--nyc-calendar-bar-rows, 0) * 25px)) var(--space-xs) var(--space-xs);
   border-right: 1px solid var(--nyc-section-divider);
 }
 
@@ -178,9 +182,11 @@ body.redesign-enabled .calendar-cell--past .calendar-chip {
 
 :root[data-redesign='on'] .calendar-cell__day,
 body.redesign-enabled .calendar-cell__day {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
   display: grid;
   place-items: center;
-  align-self: flex-start;
   min-width: 26px;
   height: 26px;
   color: var(--nyc-navy);
@@ -200,11 +206,11 @@ body.redesign-enabled .calendar-cell--today .calendar-cell__day {
 :root[data-redesign='on'] .calendar-chip,
 body.redesign-enabled .calendar-chip {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
   width: 100%;
   min-width: 0;
-  padding: 3px 6px;
+  padding: 3px 4px;
   border: 0;
   border-radius: var(--radius-sm);
   background-color: transparent;
@@ -247,6 +253,7 @@ body.redesign-enabled .calendar-bars {
   inset: 34px 0 auto;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: 22px;
   gap: 3px;
   padding-inline: var(--space-xs);
   pointer-events: none;
@@ -399,15 +406,17 @@ body.redesign-enabled .calendar-bar--vintage-thrift {
   body.redesign-enabled .calendar-cell {
     gap: 2px;
     min-height: 88px;
-    padding: 3px;
+    padding: calc(28px + (var(--nyc-calendar-bar-rows, 0) * 20px)) 3px 3px;
   }
 
   :root[data-redesign='on'] .calendar-cell__day,
   body.redesign-enabled .calendar-cell__day {
-    align-self: center;
+    top: 3px;
+    left: 50%;
     min-width: 22px;
     height: 22px;
     font-size: var(--font-xs-sm);
+    transform: translateX(-50%);
   }
 
   :root[data-redesign='on'] .calendar-chip,
@@ -470,6 +479,7 @@ body.redesign-enabled .calendar-bar--vintage-thrift {
   :root[data-redesign='on'] .calendar-bars,
   body.redesign-enabled .calendar-bars {
     inset: 28px 0 auto;
+    grid-auto-rows: 18px;
     gap: 2px;
     padding-inline: 3px;
   }
@@ -480,4 +490,145 @@ body.redesign-enabled .calendar-bar--vintage-thrift {
     padding: 2px 4px;
     font-size: 10px;
   }
+}
+
+/* Day modal --------------------------------------------------------------- */
+/* Where "+N more" and a tapped cell go: the whole day as a list. Reuses the
+   shell from modal.js, so only the contents are styled here. */
+
+.modal--day {
+  display: none;
+}
+
+:root[data-redesign='on'] .modal--day,
+body.redesign-enabled .modal--day {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm);
+  background-color: var(--nyc-overlay);
+  inset: 0;
+}
+
+:root[data-redesign='on'] .modal-day__card,
+body.redesign-enabled .modal-day__card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  border-radius: var(--radius-lg);
+  background-color: var(--nyc-white);
+  overflow: hidden;
+}
+
+:root[data-redesign='on'] .modal-day__title,
+body.redesign-enabled .modal-day__title {
+  margin: 0;
+  padding: var(--space-sm) var(--space-sm-md) var(--space-xs);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: var(--font-md);
+  font-weight: var(--font-weight-regular);
+}
+
+/* min-height: 0 or the overflow never engages and the list is clipped with
+   no scrollbar — the flex/grid trap from docs section 6. */
+:root[data-redesign='on'] .modal-day__list,
+body.redesign-enabled .modal-day__list {
+  min-height: 0;
+  margin: 0;
+  padding: 0 var(--space-sm-md) var(--space-sm-md);
+  list-style: none;
+  overflow-y: auto;
+}
+
+:root[data-redesign='on'] .modal-day__entry,
+body.redesign-enabled .modal-day__entry {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: var(--space-xs);
+  padding: var(--space-xs);
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-md);
+  background-color: var(--nyc-white);
+  font-family: var(--nyc-font-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+:root[data-redesign='on'] .modal-day__entry:hover,
+body.redesign-enabled .modal-day__entry:hover {
+  border-color: var(--nyc-green);
+  background-color: var(--nyc-green-light);
+}
+
+:root[data-redesign='on'] .modal-day__text,
+body.redesign-enabled .modal-day__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+:root[data-redesign='on'] .modal-day__name,
+body.redesign-enabled .modal-day__name {
+  color: var(--nyc-navy);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-redesign='on'] .modal-day__meta,
+body.redesign-enabled .modal-day__meta {
+  color: var(--nyc-medium-gray);
+  font-size: var(--font-xs-sm);
+}
+
+:root[data-redesign='on'] .modal-day__dot,
+body.redesign-enabled .modal-day__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-round);
+  background-color: var(--nyc-pin-other);
+}
+
+:root[data-redesign='on'] .modal-day__dot--food-drink,
+body.redesign-enabled .modal-day__dot--food-drink {
+  background-color: var(--nyc-pin-food-drink);
+}
+
+:root[data-redesign='on'] .modal-day__dot--market,
+body.redesign-enabled .modal-day__dot--market {
+  background-color: var(--nyc-pin-market);
+}
+
+:root[data-redesign='on'] .modal-day__dot--art-culture,
+body.redesign-enabled .modal-day__dot--art-culture {
+  background-color: var(--nyc-pin-art-culture);
+}
+
+:root[data-redesign='on'] .modal-day__dot--fashion,
+body.redesign-enabled .modal-day__dot--fashion {
+  background-color: var(--nyc-pin-fashion);
+}
+
+:root[data-redesign='on'] .modal-day__dot--wellness,
+body.redesign-enabled .modal-day__dot--wellness {
+  background-color: var(--nyc-pin-wellness);
+}
+
+:root[data-redesign='on'] .modal-day__dot--music,
+body.redesign-enabled .modal-day__dot--music {
+  background-color: var(--nyc-pin-music);
+}
+
+:root[data-redesign='on'] .modal-day__dot--vintage-thrift,
+body.redesign-enabled .modal-day__dot--vintage-thrift {
+  background-color: var(--nyc-pin-vintage-thrift);
 }

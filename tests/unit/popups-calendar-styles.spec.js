@@ -18,19 +18,39 @@ function expectCssToMatch(css, pattern) {
 describe('calendar view styles', () => {
   const css = read('resources/css/popups-calendar.css')
 
-  it('gates every rule behind the redesign flag', () => {
-    const selectors = css
+  it('gates every rule behind the redesign flag, bar the flag-off defaults', () => {
+    const blocks = css
       .replaceAll(/\/\*[\s\S]*?\*\//g, '')
       .split('}')
-      .map((block) => block.split('{')[0])
-      .filter((selector) => selector && selector.trim() && !selector.trim().startsWith('@'))
+      .map((block) => block.split('{'))
+      .filter(([selector, declarations]) => selector && selector.trim() && declarations && !selector.trim().startsWith('@'))
 
-    for (const selector of selectors) {
+    for (const [selector, declarations] of blocks) {
+      const gated = /data-redesign='on'|redesign-enabled/.test(selector)
+      // The contract allows exactly one kind of ungated rule: the
+      // `display: none` default that keeps a component off the legacy page.
+      const isHidingDefault = /^\s*display:\s*none;?\s*$/.test(declarations)
       expect(
-        /data-redesign='on'|redesign-enabled/.test(selector),
+        gated || isHidingDefault,
         `ungated selector leaks into the legacy page: ${selector.trim()}`
       ).toBe(true)
     }
+  })
+
+  it('keeps the day modal off the page entirely with the flag off', () => {
+    const stripped = css.replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    const hasDefault = stripped.split('}').some((block) => {
+      const [selector, declarations = ''] = block.split('{')
+      if (!selector || !declarations) return false
+      return (
+        selector
+          .split(',')
+          .map((one) => one.trim())
+          .includes('.modal--day') && /display:\s*none/.test(declarations)
+      )
+    })
+
+    expect(hasDefault, '.modal--day needs a flag-off default of display: none').toBe(true)
   })
 
   it('borrows the date picker language: pink on today, muted days outside the month', () => {

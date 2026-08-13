@@ -1,4 +1,5 @@
 const {
+  assignBarRows,
   getEventDays,
   groupByDay,
   getMonthRange,
@@ -206,5 +207,48 @@ describe('multi-day bars within a week row', () => {
     const entry = popup({ start_datetime: '2026-08-17T15:00:00Z', end_datetime: '2026-08-21T23:00:00Z' })
 
     expect(getWeekSegments([entry], week)).toEqual([])
+  })
+})
+
+describe('stacking bars within a week row', () => {
+  const segment = (startColumn, span, id) => ({
+    entry: popup({ id }),
+    startColumn,
+    span,
+    continuesBefore: false,
+    continuesAfter: false,
+  })
+
+  it('puts runs that share no columns on the same row', () => {
+    const { segments, rows } = assignBarRows([segment(0, 2, 'a'), segment(3, 2, 'b')])
+
+    expect(segments.map((s) => s.row)).toEqual([0, 0])
+    expect(rows).toBe(1)
+  })
+
+  it('stacks runs that overlap so neither is drawn over the other', () => {
+    const { segments, rows } = assignBarRows([segment(0, 4, 'a'), segment(2, 3, 'b')])
+
+    expect(segments.map((s) => s.row)).toEqual([0, 1])
+    expect(rows).toBe(2)
+  })
+
+  it('reuses the lowest free row rather than always adding one', () => {
+    // c overlaps a but not b, so it drops back to row 1 beside b.
+    const { segments, rows } = assignBarRows([segment(0, 7, 'a'), segment(0, 2, 'b'), segment(3, 2, 'c')])
+
+    expect(segments.map((s) => s.row)).toEqual([0, 1, 1])
+    expect(rows).toBe(2)
+  })
+
+  it('treats runs that merely touch as non-overlapping', () => {
+    // a covers columns 0-1, b starts at 2.
+    const { segments } = assignBarRows([segment(0, 2, 'a'), segment(2, 2, 'b')])
+
+    expect(segments.map((s) => s.row)).toEqual([0, 0])
+  })
+
+  it('has no rows for a week with no runs', () => {
+    expect(assignBarRows([])).toEqual({ segments: [], rows: 0 })
   })
 })

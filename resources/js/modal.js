@@ -223,22 +223,29 @@
     }
 
     /**
-     * Opens the detail modal for an event. The caller owns what data goes in;
-     * this owns the shell, focus handling and dismissal.
-     * @param {Object} data - mapped pop-up or date idea
-     * @param {{type?: 'popup'|'date-idea', returnLabel?: string, document?: Document}} [options]
+     * The modal shell: overlay, card, return bar, focus trap, Escape and
+     * overlay dismissal, scroll lock and focus restoration. Callers fill the
+     * card and get back a handle.
+     *
+     * Extracted from openDetailModal in #300 so the Pop-Ups calendar's day
+     * modal reuses this rather than growing a second copy of the focus
+     * handling — which is the part that is easy to get subtly wrong.
+     *
+     * @param {{document?: Document, className: string, cardClassName: string,
+     *          returnLabel?: string, onClose?: Function,
+     *          build: (card: Element, handle: {close: Function}) => ({labelledBy?: string}|void)}} options
+     * @returns {{close: Function, element: Element, card: Element}}
      */
-    function openDetailModal(data, options) {
+    function openModal(options) {
         const settings = options || {};
         const doc = settings.document || (global && global.document);
-        if (!doc) throw new Error('openDetailModal requires a document');
+        if (!doc) throw new Error('openModal requires a document');
 
-        const type = settings.type === 'date-idea' ? 'date-idea' : 'popup';
         const opener = doc.activeElement;
         const previousOverflow = doc.body.style.overflow;
 
-        const overlay = el(doc, 'div', 'modal--detail');
-        const card = el(doc, 'div', 'modal-detail__card');
+        const overlay = el(doc, 'div', settings.className || 'modal--detail');
+        const card = el(doc, 'div', settings.cardClassName || 'modal-detail__card');
         card.setAttribute('role', 'dialog');
         card.setAttribute('aria-modal', 'true');
 
@@ -250,19 +257,6 @@
         );
         returnBar.type = 'button';
         card.appendChild(returnBar);
-
-        const calendarUrl = buildGoogleCalendarUrl(data);
-        const {body, titleId, share} = buildBody(doc, data, type, calendarUrl);
-        card.setAttribute('aria-labelledby', titleId);
-        card.appendChild(body);
-
-        const media = el(doc, 'div', 'modal-detail__media');
-        const image = el(doc, 'img', 'modal-detail__image');
-        image.src = data.img || 'resources/images/images/default-popup-image.webp';
-        // Decorative: the title carries the meaning.
-        image.alt = '';
-        media.appendChild(image);
-        card.appendChild(media);
 
         overlay.appendChild(card);
 
@@ -306,20 +300,13 @@
             }
         }
 
+        const handle = {close, element: overlay, card};
+        const built = typeof settings.build === 'function' ? settings.build(card, handle) : null;
+        if (built && built.labelledBy) card.setAttribute('aria-labelledby', built.labelledBy);
+
         returnBar.addEventListener('click', close);
         overlay.addEventListener('click', event => {
             if (event.target === overlay) close();
-        });
-        share.addEventListener('click', () => {
-            const shareData = getShareData(data, {
-                type,
-                origin: global && global.location ? global.location.origin : '',
-            });
-            if (global && global.navigator && typeof global.navigator.share === 'function') {
-                global.navigator.share(shareData).catch(() => {});
-            } else if (global && global.navigator && global.navigator.clipboard) {
-                global.navigator.clipboard.writeText(shareData.url).catch(() => {});
-            }
         });
 
         doc.addEventListener('keydown', onKeydown, true);
@@ -327,7 +314,56 @@
         doc.body.style.overflow = 'hidden';
         returnBar.focus();
 
-        return {close, element: overlay};
+        return handle;
+    }
+
+    /**
+     * Opens the detail modal for an event. The caller owns what data goes in;
+     * the shell above owns focus handling and dismissal.
+     * @param {Object} data - mapped pop-up or date idea
+     * @param {{type?: 'popup'|'date-idea', returnLabel?: string, document?: Document}} [options]
+     */
+    function openDetailModal(data, options) {
+        const settings = options || {};
+        const doc = settings.document || (global && global.document);
+        if (!doc) throw new Error('openDetailModal requires a document');
+
+        const type = settings.type === 'date-idea' ? 'date-idea' : 'popup';
+
+        return openModal({
+            document: doc,
+            className: 'modal--detail',
+            cardClassName: 'modal-detail__card',
+            returnLabel: settings.returnLabel,
+            onClose: settings.onClose,
+            build: card => {
+                const calendarUrl = buildGoogleCalendarUrl(data);
+                const {body, titleId, share} = buildBody(doc, data, type, calendarUrl);
+                card.appendChild(body);
+
+                const media = el(doc, 'div', 'modal-detail__media');
+                const image = el(doc, 'img', 'modal-detail__image');
+                image.src = data.img || 'resources/images/images/default-popup-image.webp';
+                // Decorative: the title carries the meaning.
+                image.alt = '';
+                media.appendChild(image);
+                card.appendChild(media);
+
+                share.addEventListener('click', () => {
+                    const shareData = getShareData(data, {
+                        type,
+                        origin: global && global.location ? global.location.origin : '',
+                    });
+                    if (global && global.navigator && typeof global.navigator.share === 'function') {
+                        global.navigator.share(shareData).catch(() => {});
+                    } else if (global && global.navigator && global.navigator.clipboard) {
+                        global.navigator.clipboard.writeText(shareData.url).catch(() => {});
+                    }
+                });
+
+                return {labelledBy: titleId};
+            },
+        });
     }
 
     const api = {
@@ -335,6 +371,7 @@
         buildGoogleCalendarUrl,
         getShareData,
         formatDetailDateTime,
+        openModal,
         openDetailModal,
     };
 

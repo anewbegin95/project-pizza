@@ -24,6 +24,9 @@
 
     const DAY_MS = 24 * 60 * 60 * 1000;
 
+    /** Matches the breakpoint popups-calendar.css compacts the cells at. */
+    const NARROW_QUERY = '(max-width: 600px)';
+
     // === PURE HELPERS ===
 
     /**
@@ -127,6 +130,11 @@
         return count;
     }
 
+    /** Chips a cell shows before overflowing, by viewport. */
+    function getMaxVisible(isNarrow) {
+        return isNarrow ? MAX_VISIBLE.mobile : MAX_VISIBLE.desktop;
+    }
+
     /** Splits a day's entries into the ones a cell shows and the rest. */
     function getCellEvents(entries, max) {
         const list = Array.isArray(entries) ? entries : [];
@@ -173,6 +181,36 @@
         }
 
         return segments;
+    }
+
+    /**
+     * Gives each bar in a week a row, so two runs crossing the same day are
+     * drawn one above the other rather than on top of each other. Greedy: a
+     * segment takes the lowest row whose occupants leave its columns free.
+     * The row count is what the cells below reserve space for.
+     * @returns {{segments: object[], rows: number}}
+     */
+    function assignBarRows(segments) {
+        const list = Array.isArray(segments) ? segments : [];
+        const rows = [];
+        const placed = [];
+
+        for (const segment of list) {
+            const from = segment.startColumn;
+            const to = segment.startColumn + segment.span - 1;
+
+            let row = rows.findIndex(
+                occupants => occupants.every(taken => taken.to < from || taken.from > to)
+            );
+            if (row === -1) {
+                row = rows.length;
+                rows.push([]);
+            }
+            rows[row].push({from, to});
+            placed.push({...segment, row});
+        }
+
+        return {segments: placed, rows: rows.length};
     }
 
     // === DOM ===
@@ -226,12 +264,79 @@
         const bar = el(doc, 'button', `calendar-bar calendar-bar--${getCategoryModifier(entry.category)}`);
         bar.type = 'button';
         bar.style.gridColumn = `${segment.startColumn + 1} / span ${segment.span}`;
+        bar.style.gridRow = String((segment.row || 0) + 1);
         bar.dataset.span = String(segment.span);
         bar.dataset.entryId = entry.id || '';
         if (segment.continuesBefore) bar.classList.add('calendar-bar--continues-before');
         if (segment.continuesAfter) bar.classList.add('calendar-bar--continues-after');
         bar.appendChild(el(doc, 'span', 'calendar-chip__label', entry.name || 'Untitled'));
         return bar;
+    }
+
+    /** 'Wednesday, 12 August 2026' for a day modal's heading. */
+    function formatDayHeading(iso) {
+        return fromDayKey(iso).toLocaleDateString('en-US', {
+            timeZone: 'UTC',
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+        });
+    }
+
+    /**
+     * Everything on one day, as a list. This is where "+N more" goes, and
+     * where a tapped cell goes on a phone, where a chip is too narrow to read
+     * a full title. Reuses NycModal.openModal for the shell so the focus trap
+     * and dismissal are not reimplemented here.
+     */
+    function openDayModal(doc, iso, entries, {onSelect} = {}) {
+        const modal = global && global.NycModal;
+        if (!modal || typeof modal.openModal !== 'function') return null;
+
+        return modal.openModal({
+            document: doc,
+            className: 'modal--day',
+            cardClassName: 'modal-day__card',
+            returnLabel: 'Back to calendar',
+            build: (card, handle) => {
+                const titleId = `modal-day-title-${iso}`;
+                const title = el(doc, 'h2', 'modal-day__title', formatDayHeading(iso));
+                title.id = titleId;
+                card.appendChild(title);
+
+                const list = el(doc, 'ul', 'modal-day__list');
+                for (const entry of entries) {
+                    const item = el(doc, 'li', 'modal-day__item');
+                    const button = el(doc, 'button', 'modal-day__entry');
+                    button.type = 'button';
+                    button.appendChild(
+                        el(doc, 'span', `modal-day__dot modal-day__dot--${getCategoryModifier(entry.category)}`)
+                    );
+
+                    const text = el(doc, 'span', 'modal-day__text');
+                    text.appendChild(el(doc, 'span', 'modal-day__name', entry.name || 'Untitled'));
+                    const meta = [entry.venue_name, entry.neighborhood, entry.price]
+                        .filter(Boolean)
+                        .join(' · ');
+                    if (meta) text.appendChild(el(doc, 'span', 'modal-day__meta', meta));
+                    button.appendChild(text);
+
+                    button.addEventListener('click', () => {
+                        // Close first: the detail modal takes the focus trap
+                        // next, and two live traps fight over Tab.
+                        handle.close();
+                        if (typeof onSelect === 'function') onSelect(entry);
+                    });
+
+                    item.appendChild(button);
+                    list.appendChild(item);
+                }
+                card.appendChild(list);
+
+                return {labelledBy: titleId};
+            },
+        });
     }
 
     /**
@@ -262,7 +367,11 @@
             const range = getMonthRange(entries);
             const byDay = groupByDay(entries);
             const todayKey = getTodayKey();
-            const cap = maxVisible || MAX_VISIBLE.desktop;
+            // A 46px cell cannot hold four chips, so a phone shows fewer.
+            const narrow = Boolean(
+                global && global.matchMedia && global.matchMedia(NARROW_QUERY).matches
+            );
+            const cap = maxVisible || getMaxVisible(narrow);
 
             container.textContent = '';
             const root = el(doc, 'div', 'calendar');
@@ -322,10 +431,9 @@
 
                     // Runs are drawn as bars across the row; the cell lists the
                     // single-day entries only, so the two do not double up.
-                    const single = (byDay.get(cell.iso) || []).filter(
-                        (entry) => getEventDays(entry).length < 2
-                    );
-                    if (single.length > 0) dayNode.classList.add('calendar-cell--has-events');
+                    const onDay = byDay.get(cell.iso) || [];
+                    const single = onDay.filter((entry) => getEventDays(entry).length < 2);
+                    if (onDay.length > 0) dayNode.classList.add('calendar-cell--has-events');
                     const {visible, overflow} = getCellEvents(single, cap);
                     for (const entry of visible) dayNode.appendChild(buildChip(doc, entry));
                     if (overflow > 0) {
@@ -336,10 +444,13 @@
                     week.appendChild(dayNode);
                 }
 
-                const segments = getWeekSegments(currentEntries(), weekCells);
-                if (segments.length > 0) {
+                // Bars are laid over the row, so the cells underneath have to
+                // reserve room for them or a chip lands on top of a bar.
+                const packed = assignBarRows(getWeekSegments(currentEntries(), weekCells));
+                week.style.setProperty('--nyc-calendar-bar-rows', String(packed.rows));
+                if (packed.segments.length > 0) {
                     const bars = el(doc, 'div', 'calendar-bars');
-                    for (const segment of segments) bars.appendChild(buildBar(doc, segment));
+                    for (const segment of packed.segments) bars.appendChild(buildBar(doc, segment));
                     week.appendChild(bars);
                 }
 
@@ -354,10 +465,30 @@
         // Delegated, so re-rendering on every filter change needs no re-binding.
         container.addEventListener('click', (event) => {
             const trigger = event.target.closest('.calendar-chip, .calendar-bar');
-            if (!trigger || typeof onSelect !== 'function') return;
-            const entry = currentEntries().find((item) => String(item.id) === trigger.dataset.entryId);
-            if (entry) onSelect(entry);
+            if (trigger) {
+                const entry = currentEntries().find((item) => String(item.id) === trigger.dataset.entryId);
+                if (entry && typeof onSelect === 'function') onSelect(entry);
+                return;
+            }
+
+            // Anywhere else on a day with events — including "+N more" —
+            // lists the whole day, which is the only way to read a title the
+            // cell had to truncate.
+            const cell = event.target.closest('.calendar-cell');
+            if (!cell || !cell.dataset.date) return;
+            const onDay = groupByDay(currentEntries()).get(cell.dataset.date) || [];
+            if (onDay.length === 0) return;
+            openDayModal(doc, cell.dataset.date, onDay, {onSelect});
         });
+
+        // Rotating the phone changes how many chips fit, so the cells are
+        // rebuilt rather than left at the previous breakpoint's cap.
+        if (global && global.matchMedia) {
+            const query = global.matchMedia(NARROW_QUERY);
+            if (typeof query.addEventListener === 'function') {
+                query.addEventListener('change', () => render());
+            }
+        }
 
         return {
             render,
@@ -369,6 +500,10 @@
     const api = {
         MAX_VISIBLE,
         WEEKDAYS,
+        assignBarRows,
+        getMaxVisible,
+        formatDayHeading,
+        openDayModal,
         initCalendar,
         addMonths,
         getEventDays,

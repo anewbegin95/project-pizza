@@ -23,6 +23,22 @@ const DOCUMENTS = [
     price: 'Free', short_description: 'Archive denim and 70s glassware.',
     display_overall: true, display_in_popups_page: true, display_in_calendar: true,
   },
+  {
+    _id: 'denim', slug: 'denim', name: 'Downtown Denim Drop',
+    start_datetime: '2026-08-12T13:00:00Z', end_datetime: '2026-08-12T17:00:00Z',
+    category: 'fashion', borough: 'manhattan', neighborhood: 'Tribeca', venue_name: 'Franklin St',
+    price: '$25', short_description: 'Archive denim, one afternoon.',
+    display_overall: true, display_in_popups_page: true, display_in_calendar: true,
+  },
+  // Sits on the 5th, inside Flavia's 3-6 Aug run, so the cell carries a bar
+  // and a chip at once.
+  {
+    _id: 'perry', slug: 'perry', name: 'Perry St Tasting',
+    start_datetime: '2026-08-05T18:00:00Z', end_datetime: '2026-08-05T22:00:00Z',
+    category: 'wellness', borough: 'manhattan', neighborhood: 'West Village', venue_name: 'Perry St',
+    price: '$20', short_description: 'A short evening tasting.',
+    display_overall: true, display_in_popups_page: true, display_in_calendar: true,
+  },
   // Already over by "today" (11 Aug 2026): the Pop-Ups set drops it, the
   // calendar keeps it. This is the past-events behaviour from #298's docs.
   {
@@ -63,8 +79,10 @@ test('the calendar opens on the current month', async ({ page }) => {
 test('events land on the right days', async ({ page }) => {
   await openCalendar(page)
 
-  await expect(chipsOn(page, '2026-08-12')).toHaveCount(2)
-  await expect(chipsOn(page, '2026-08-12')).toContainText(['Chelsea Night Market', 'Bushwick Vintage Fair'])
+  await expect(chipsOn(page, '2026-08-12')).toHaveCount(3)
+  // A day's chips keep the order they arrive in, which the POPUPS query
+  // already sorts by start time.
+  await expect(chipsOn(page, '2026-08-12')).toContainText(['Chelsea Night Market', 'Bushwick Vintage Fair', 'Downtown Denim Drop'])
   await expect(chipsOn(page, '2026-08-13')).toHaveCount(0)
 })
 
@@ -125,11 +143,11 @@ test('Today returns to the current month', async ({ page }) => {
 test('the count describes the month on screen, not the list behind it', async ({ page }) => {
   await page.goto('/pop-ups.html?redesign=on')
   await page.locator('#popupsGrid .event-card').first().waitFor()
-  // List and Map report the filtered upcoming set: three of the four documents.
-  await expect(page.locator('.results-count')).toHaveText('3 events found')
+  // List and Map report the filtered upcoming set: five of the six documents.
+  await expect(page.locator('.results-count')).toHaveText('5 events found')
 
   await page.getByRole('button', { name: 'Calendar' }).click()
-  await expect(page.locator('.results-count')).toHaveText('3 events in August 2026')
+  await expect(page.locator('.results-count')).toHaveText('5 events in August 2026')
 
   await page.locator('.calendar__prev').click()
   await page.locator('.calendar__prev').click()
@@ -137,12 +155,12 @@ test('the count describes the month on screen, not the list behind it', async ({
 
   // Back to List and the count returns to the filter's answer.
   await page.getByRole('button', { name: 'List' }).click()
-  await expect(page.locator('.results-count')).toHaveText('3 events found')
+  await expect(page.locator('.results-count')).toHaveText('5 events found')
 })
 
 test('filtering while the calendar is open updates it, and the count survives the list re-render', async ({ page }) => {
   await openCalendar(page)
-  await expect(page.locator('.results-count')).toHaveText('3 events in August 2026')
+  await expect(page.locator('.results-count')).toHaveText('5 events in August 2026')
 
   // filters.js observes #popupsGrid and rewrites .results-count on every
   // mutation. The list re-renders underneath the calendar here, so without the
@@ -156,8 +174,8 @@ test('filtering while the calendar is open updates it, and the count survives th
   // in both directions. (Clear all is not used here: it only appears once a
   // chip is active, and a search query alone does not set one.)
   await page.locator('.search-bar__input').fill('')
-  await expect(chipsOn(page, '2026-08-12')).toHaveCount(2)
-  await expect(page.locator('.results-count')).toHaveText('3 events in August 2026')
+  await expect(chipsOn(page, '2026-08-12')).toHaveCount(3)
+  await expect(page.locator('.results-count')).toHaveText('5 events in August 2026')
 })
 
 test('a chip filter narrows the calendar and Clear all restores it', async ({ page }) => {
@@ -170,7 +188,7 @@ test('a chip filter narrows the calendar and Clear all restores it', async ({ pa
   await expect(page.locator('.results-count')).toHaveText('1 event in August 2026')
 
   await page.locator('.filter-bar__clear').click()
-  await expect(page.locator('.results-count')).toHaveText('3 events in August 2026')
+  await expect(page.locator('.results-count')).toHaveText('5 events in August 2026')
   await expect(page.locator('html')).toHaveAttribute('data-view', 'calendar')
 })
 
@@ -198,6 +216,39 @@ test('a day with more events than fit offers the rest', async ({ page }) => {
   await expect(page.locator('.modal--day')).toContainText('Chelsea Night Market')
 })
 
+test('a bar and a chip on the same day do not sit on top of each other', async ({ page }) => {
+  await openCalendar(page)
+
+  const boxes = await page.evaluate(() => {
+    const cell = document.querySelector('.calendar-cell[data-date="2026-08-05"]')
+    const chip = cell.querySelector('.calendar-chip')
+    const bar = document.querySelector('.calendar-bar')
+    const box = (node) => {
+      const rect = node.getBoundingClientRect()
+      return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right }
+    }
+    return { chip: box(chip), bar: box(bar), day: box(cell.querySelector('.calendar-cell__day')) }
+  })
+
+  // They share columns, so the chip has to start below the bar band.
+  expect(boxes.chip.top).toBeGreaterThanOrEqual(boxes.bar.bottom)
+  // And the day number stays above the bar.
+  expect(boxes.day.bottom).toBeLessThanOrEqual(boxes.bar.top + 1)
+})
+
+test('two runs crossing the same day stack instead of overlapping', async ({ page }) => {
+  await openCalendar(page)
+
+  const rows = await page.evaluate(() => {
+    const bars = [...document.querySelectorAll('.calendar-week .calendar-bar')]
+    return bars.map((bar) => ({ row: bar.style.gridRow, top: bar.getBoundingClientRect().top }))
+  })
+
+  // Only one run in August here, so this guards the mechanism rather than a
+  // collision: every bar carries an explicit row.
+  for (const bar of rows) expect(bar.row).toBeTruthy()
+})
+
 test('the calendar view loads with no page errors', async ({ page }) => {
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))
@@ -215,13 +266,21 @@ test('nothing of the calendar exists with the flag off', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Calendar' })).toBeHidden()
 })
 
+test('a phone shows fewer chips per cell before overflowing', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await openCalendar(page)
+
+  // Four fit on desktop, two on a phone — the legacy calendar's getMaxVisible.
+  await expect(chipsOn(page, '2026-08-12')).toHaveCount(2)
+  await expect(page.locator('.calendar-cell[data-date="2026-08-12"] .calendar-more')).toHaveText('+1 more')
+})
+
 test('the calendar works on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await openCalendar(page)
 
   await expect(page.locator('.calendar-weekday')).toHaveCount(7)
   await expect(chipsOn(page, '2026-08-12')).toHaveCount(2)
-
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth
   )
