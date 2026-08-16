@@ -1,5 +1,6 @@
 const {
   assignBarRows,
+  clampMonth,
   getEventDays,
   groupByDay,
   getMonthRange,
@@ -250,5 +251,30 @@ describe('stacking bars within a week row', () => {
 
   it('has no rows for a week with no runs', () => {
     expect(assignBarRows([])).toEqual({ segments: [], rows: 0 })
+  })
+})
+
+describe('keeping the viewed month inside the filtered range', () => {
+  const range = { first: '2026-09', last: '2026-11' }
+
+  it('leaves a month that is already in range alone', () => {
+    expect(clampMonth('2026-10', range)).toBe('2026-10')
+    expect(clampMonth('2026-09', range)).toBe('2026-09')
+    expect(clampMonth('2026-11', range)).toBe('2026-11')
+  })
+
+  it('pulls a month before the range forward to the first one', () => {
+    // Filtering to September while looking at August must not strand the
+    // calendar on an empty month the range no longer covers.
+    expect(clampMonth('2026-08', range)).toBe('2026-09')
+    expect(clampMonth('2025-01', range)).toBe('2026-09')
+  })
+
+  it('pulls a month after the range back to the last one', () => {
+    expect(clampMonth('2026-12', range)).toBe('2026-11')
+  })
+
+  it('leaves the month untouched when nothing matches, so the grid stays put', () => {
+    expect(clampMonth('2026-08', null)).toBe('2026-08')
   })
 })
