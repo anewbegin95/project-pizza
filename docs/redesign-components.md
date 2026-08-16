@@ -244,6 +244,22 @@ Recorded so they are not re-litigated:
   Note the trap: `filters.js` observes `#popupsGrid` for mutations, so the
   calendar has to own the line while it is active or a list re-render will
   silently overwrite it.
+- **The calendar follows the filters; the filters do not follow the calendar**
+  (#301). Filtering to a month the calendar is not on pulls it there
+  (`clampMonth`), because the filtered set redefines the navigable range and
+  the old month can fall outside it entirely — leaving an empty grid with
+  results the arrows cannot reach. The reverse is deliberately not wired:
+  paging to another month is looking around, not filtering, and writing it
+  back would silently rewrite a filter the reader set (and fight the clamp).
+  With nothing matching there is no range, so the month stays put.
+- **Data-driven filter options come from every pool the page can show**
+  (#301). The Neighborhood list is built from the List pool *and* the calendar
+  pool, since the calendar keeps past pop-ups — otherwise a neighborhood only
+  a past event uses is visible in the calendar but missing from the dropdown.
+- **Filter state is not in the URL.** #301's body mentions serialization and a
+  global state store; neither exists — state lives in `search.js` and
+  `filters.js` and is published as events. Shareable filtered URLs are tracked
+  separately.
 - **Recurring events are not expanded into occurrences**, in any view. The
   schema carries the recurrence fields and `mapSanityPopup` maps them, but
   nothing on the site turns them into dates; a calendar is the first surface

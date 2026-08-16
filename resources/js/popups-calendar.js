@@ -119,6 +119,20 @@
     }
 
     /**
+     * Holds the viewed month inside the range the filtered set covers. Filtering
+     * to a month the calendar is not on would otherwise strand it on an empty
+     * grid while results sit elsewhere — and outside the range, prev/next
+     * cannot even reach them. With nothing matching there is no range to clamp
+     * into, so the month stays where the reader left it.
+     */
+    function clampMonth(monthKey, range) {
+        if (!range) return monthKey;
+        if (monthKey < range.first) return range.first;
+        if (monthKey > range.last) return range.last;
+        return monthKey;
+    }
+
+    /**
      * How many events touch a month. A multi-day run counts once however many
      * of its days fall inside, and counts in every month it reaches.
      */
@@ -365,6 +379,8 @@
         function render() {
             const entries = currentEntries();
             const range = getMonthRange(entries);
+            // The filtered set may no longer cover the month on screen.
+            monthKey = clampMonth(monthKey, range);
             const byDay = groupByDay(entries);
             const todayKey = getTodayKey();
             // A 46px cell cannot hold four chips, so a phone shows fewer.
@@ -501,6 +517,7 @@
         MAX_VISIBLE,
         WEEKDAYS,
         assignBarRows,
+        clampMonth,
         getMaxVisible,
         formatDayHeading,
         openDayModal,

@@ -11,7 +11,7 @@ const DOCUMENTS = [
     category: 'food_drink',
     borough: 'manhattan',
     neighborhood: 'SoHo',
-    venue_name: '22 Wooster',
+    venue_name: '22 Wooster', latitude: 40.7233, longitude: -74.003,
     price: 'Free',
     short_description: 'Complimentary coffee and tea in a loft space.',
     display_overall: true,
@@ -26,7 +26,7 @@ const DOCUMENTS = [
     category: 'market',
     borough: 'manhattan',
     neighborhood: 'Chelsea',
-    venue_name: 'Chelsea Piers',
+    venue_name: 'Chelsea Piers', latitude: 40.7466, longitude: -74.0084,
     price: '$15',
     short_description: 'Forty vendors and live music after dark.',
     display_overall: true,
@@ -41,7 +41,7 @@ const DOCUMENTS = [
     category: 'vintage_thrift',
     borough: 'brooklyn',
     neighborhood: 'Bushwick',
-    venue_name: 'The Sultan Room',
+    venue_name: 'The Sultan Room', latitude: 40.7053, longitude: -73.9233,
     price: 'Free',
     short_description: 'Archive denim, band tees and 70s glassware.',
     display_overall: true,
@@ -56,7 +56,7 @@ const DOCUMENTS = [
     category: 'music',
     borough: 'queens',
     neighborhood: 'Astoria',
-    venue_name: 'Bohemian Hall',
+    venue_name: 'Bohemian Hall', latitude: 40.7644, longitude: -73.9235,
     price: '$10',
     short_description: 'Live sets under the trees.',
     display_overall: true,
@@ -305,4 +305,34 @@ test('clear all resets the controls from inside the calendar view', async ({ pag
   // And it goes back to the list's form on the way out.
   await page.getByRole('button', { name: 'List' }).click()
   await expect(page.locator('.results-count')).toHaveText('4 events found')
+})
+
+// #301 — one filter, three views, no disagreement between them.
+test('a single filter narrows List, Map and Calendar together', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-08-11T15:00:00Z'))
+  await gotoPopups(page)
+
+  await chooseFilter(page, 'borough', 'Brooklyn')
+
+  // List: the one Brooklyn event.
+  await expect(resultCards(page)).toHaveCount(1)
+  expect(await renderedNames(page)).toEqual(['Bushwick Vintage Fair'])
+
+  // Map: one pin for it.
+  await page.getByRole('button', { name: 'Map' }).click()
+  await expect(page.locator('.map-pin')).toHaveCount(1)
+
+  // Calendar: the same event, and the month follows it rather than sitting
+  // on an empty August.
+  await page.getByRole('button', { name: 'Calendar' }).click()
+  await expect(page.locator('.calendar__title')).toHaveText('September 2026')
+  await expect(page.locator('.calendar-chip')).toHaveCount(1)
+  await expect(page.locator('.calendar-chip')).toContainText(['Bushwick Vintage Fair'])
+
+  // And clearing restores all three.
+  await page.locator('.filter-bar__clear').click()
+  await expect(page.locator('.results-count')).toHaveText(/events? in \w+ \d{4}$/)
+
+  await page.getByRole('button', { name: 'List' }).click()
+  await expect(resultCards(page)).toHaveCount(4)
 })

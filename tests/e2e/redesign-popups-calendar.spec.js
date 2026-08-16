@@ -249,6 +249,66 @@ test('two runs crossing the same day stack instead of overlapping', async ({ pag
   for (const bar of rows) expect(bar.row).toBeTruthy()
 })
 
+test('a date range moves the calendar to where the results are', async ({ page }) => {
+  await openCalendar(page)
+  await expect(page.locator('.calendar__title')).toHaveText('August 2026')
+
+  // Filter to June, while the calendar is showing August. Leaving it on August
+  // shows an empty grid and "0 events in August 2026" while results exist —
+  // the desync #301 is about.
+  await page.evaluate(() => {
+    document.querySelector('.filter-bar').dispatchEvent(
+      new CustomEvent('filters:change', {
+        bubbles: true,
+        detail: {
+          state: { borough: null, neighborhood: null, type: null, dates: '2026-06-01..2026-06-30' },
+          pageType: 'popups',
+        },
+      })
+    )
+  })
+
+  await expect(page.locator('.calendar__title')).toHaveText('June 2026')
+  await expect(page.locator('.results-count')).toHaveText('1 event in June 2026')
+  await expect(chipsOn(page, '2026-06-07')).toHaveCount(1)
+})
+
+test('the month stays put when a filter matches nothing', async ({ page }) => {
+  await openCalendar(page)
+
+  await page.locator('.search-bar__input').fill('nothing matches this')
+
+  // No range to clamp into, so the calendar holds its place and says so
+  // rather than jumping somewhere arbitrary.
+  await expect(page.locator('.calendar__title')).toHaveText('August 2026')
+  await expect(page.locator('.results-count')).toHaveText('0 events in August 2026')
+})
+
+test('a neighborhood only a past pop-up uses is still filterable', async ({ page }) => {
+  await openCalendar(page)
+
+  // NoHo appears on OLAPLEX Lab, which ended in June. It is absent from the
+  // List and Map pool but present in the calendar's, so building the options
+  // from the list alone leaves a visible event unreachable by filter.
+  const options = await page
+    .locator('.filter-bar__group [role="option"][data-label]')
+    .filter({ hasText: /.+/ })
+    .evaluateAll((nodes) => nodes.map((n) => n.dataset.label))
+
+  expect(options).toContain('NoHo')
+})
+
+test('filtering to that neighborhood shows it in the calendar', async ({ page }) => {
+  await openCalendar(page)
+
+  await page.locator('.filter-chip[data-filter="neighborhood"]').click()
+  await page.locator('.filter-bar__group [role="option"][data-label="NoHo"]').click()
+
+  // The only NoHo pop-up is in June, so the clamp takes the calendar there.
+  await expect(page.locator('.calendar__title')).toHaveText('June 2026')
+  await expect(chipsOn(page, '2026-06-07')).toContainText(['OLAPLEX Lab'])
+})
+
 test('the calendar view loads with no page errors', async ({ page }) => {
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))

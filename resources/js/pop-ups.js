@@ -766,10 +766,13 @@ function loadAndDisplayPopups() {
 
                 // The neighborhood list comes from the content rather than a
                 // hardcoded set, so no event is unreachable by that filter.
+                // Both pools feed it: the calendar keeps past pop-ups, and a
+                // neighborhood only those use would otherwise be visible in
+                // the calendar but missing from the dropdown.
                 if (window.NycFilters && window.NycFilters.setOptions) {
                     window.NycFilters.setOptions(
                         'neighborhood',
-                        window.NycPopupsFilter.getDistinctNeighborhoods(popups)
+                        window.NycPopupsFilter.getDistinctNeighborhoods(popups.concat(calendarPool))
                     );
                 }
 
