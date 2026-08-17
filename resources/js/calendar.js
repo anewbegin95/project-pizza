@@ -152,6 +152,9 @@ function renderCalendar(month, year) {
         const placeholder = document.getElementById('footer-placeholder');
         if (placeholder) {
           placeholder.innerHTML = footerContent;
+          // This overwrites the header/footer links partials-loader.js
+          // already retargeted, so redo them (#302).
+          if (window.applyRedesignLinks) window.applyRedesignLinks(document);
         }
       })
       .catch((error) => {
