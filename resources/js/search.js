@@ -13,6 +13,25 @@ const ACTIVE_BUTTON_CLASS = 'view-toggle__btn--active';
 
 // === PURE HELPERS ===
 
+/**
+ * The view a URL asks for, e.g. `?view=calendar`, or null. Validated against
+ * the views the page actually offers, so a link carrying a view this page has
+ * no button for is ignored rather than stranding it. Added in #302 so the
+ * legacy calendar has somewhere to hand over to.
+ */
+function getRequestedView(search, views) {
+    if (!Array.isArray(views) || views.length === 0) return null;
+    let requested = null;
+    try {
+        requested = new URLSearchParams(String(search == null ? '' : search)).get('view');
+    } catch (error) {
+        return null;
+    }
+    if (!requested) return null;
+    const normalized = requested.trim().toLowerCase();
+    return isValidView(normalized, views) ? normalized : null;
+}
+
 /** The views a page offers, in markup order. */
 function getToggleViews(buttons) {
     const views = [];
@@ -93,7 +112,10 @@ function initSearchBar(doc) {
     const buttons = Array.from(container.querySelectorAll('.view-toggle__btn'));
     const input = container.querySelector('.search-bar__input');
     const views = getToggleViews(buttons);
-    let currentView = getInitialView(buttons);
+    // Precedence: an explicit ?view= beats the button the markup marks active,
+    // which beats the first button. A shared link should open where it says.
+    const search = doc.defaultView && doc.defaultView.location ? doc.defaultView.location.search : '';
+    let currentView = getRequestedView(search, views) || getInitialView(buttons);
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
@@ -151,6 +173,7 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        getRequestedView,
         getToggleViews,
         getInitialView,
         isValidView,

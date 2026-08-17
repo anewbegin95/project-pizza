@@ -4,15 +4,20 @@ const { test, expect } = require('@playwright/test')
 // was retired. These legacy buttons carried no styles of their own and leaned
 // on it, so they are the regression risk — and they appear on redesign pages
 // too, which is why both flag states are checked.
+// `flags` says which states each button can be checked in. calendar.html hands
+// over to the Pop-Ups calendar view when the redesign is on (#302), so it has
+// no flag-on rendering left to inspect — its arrows are legacy-only now.
 const LEGACY_BUTTONS = [
   {
     page: '/',
     selector: '.menu-toggle',
+    flags: ['off', 'on'],
     expected: { paddingTop: '8px', paddingLeft: '32px', borderRadius: '5px', width: 78, height: 44 },
   },
   {
     page: '/calendar.html',
     selector: '.calendar-header__prev-month',
+    flags: ['off'],
     expected: {
       backgroundColor: 'rgb(255, 182, 193)',
       color: 'rgb(216, 30, 91)',
@@ -26,6 +31,7 @@ const LEGACY_BUTTONS = [
   {
     page: '/calendar.html',
     selector: '.calendar-header__next-month',
+    flags: ['off'],
     expected: { backgroundColor: 'rgb(255, 182, 193)', color: 'rgb(216, 30, 91)', paddingLeft: '32px' },
   },
 ]
@@ -42,8 +48,8 @@ async function computed(page, selector, props) {
   }, props)
 }
 
-for (const flag of ['off', 'on']) {
-  for (const { page: path, selector, expected } of LEGACY_BUTTONS) {
+for (const { page: path, selector, expected, flags } of LEGACY_BUTTONS) {
+  for (const flag of flags) {
     test(`${selector} keeps its appearance with the flag ${flag}`, async ({ page }) => {
       await page.setViewportSize({ width: 700, height: 900 }) // menu-toggle only shows on narrow
       await page.goto(`${path}?redesign=${flag}`)

@@ -2,6 +2,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const {
+  getRequestedView,
   getToggleViews,
   getInitialView,
   isValidView,
@@ -71,6 +72,37 @@ describe('the views a page offers', () => {
 
   it('has no initial view when there is no toggle', () => {
     expect(getInitialView([])).toBe(null)
+  })
+})
+
+describe('the view asked for in the URL', () => {
+  const views = ['list', 'map', 'calendar']
+
+  it('reads a valid view from the query string', () => {
+    expect(getRequestedView('?view=calendar', views)).toBe('calendar')
+    expect(getRequestedView('?view=map', views)).toBe('map')
+  })
+
+  it('ignores a view the page does not offer', () => {
+    // ?view=calendar on a page with only List and Map must not strand it on a
+    // view it has no button for.
+    expect(getRequestedView('?view=calendar', ['list', 'map'])).toBe(null)
+    expect(getRequestedView('?view=gallery', views)).toBe(null)
+  })
+
+  it('ignores an absent or empty parameter', () => {
+    expect(getRequestedView('', views)).toBe(null)
+    expect(getRequestedView('?redesign=on', views)).toBe(null)
+    expect(getRequestedView('?view=', views)).toBe(null)
+  })
+
+  it('is case-insensitive, since the parameter comes from links people share', () => {
+    expect(getRequestedView('?view=Calendar', views)).toBe('calendar')
+  })
+
+  it('survives a query string it cannot parse', () => {
+    expect(getRequestedView(undefined, views)).toBe(null)
+    expect(getRequestedView('?view=calendar', undefined)).toBe(null)
   })
 })
 

@@ -256,6 +256,28 @@ Recorded so they are not re-litigated:
   (#301). The Neighborhood list is built from the List pool *and* the calendar
   pool, since the calendar keeps past pop-ups — otherwise a neighborhood only
   a past event uses is visible in the calendar but missing from the dropdown.
+- **Calendar is a view of Pop-Ups in the redesign's IA** (#302). `calendar.html`
+  hands over to `pop-ups.html?view=calendar` when the flag is on, and renders
+  exactly as it always has when off — it is the only calendar those readers
+  have. The nav keeps a Calendar entry rather than dropping one people use;
+  §6.7 says the header is largely retained, and it says nothing about IA.
+- **Shared partials carry both hrefs.** `partials/header.html` and
+  `partials/footer.html` are injected at runtime for both experiences, so the
+  markup keeps the legacy `href` and adds `data-redesign-href` alongside it;
+  `partials-loader.js` swaps them only when the flag is on. Flag-off readers
+  get literally what the file says. **Three places inject the footer** —
+  `partials-loader.js`, `pop-ups.js` and `calendar.js` — and the later two
+  overwrite the retargeted links, so they call `window.applyRedesignLinks`
+  again afterwards. Worth collapsing to one injector eventually.
+- **A retargeted link carries `?redesign=on`** when the flag came from the URL
+  (`REDESIGN_FLAG.source === 'url-override'`). The flag defaults OFF in every
+  environment, so a link that dropped the parameter would walk the reader
+  straight back out of the redesign. The same applies to the `calendar.html`
+  handover.
+- **`?view=` beats the markup's active button** (#302), which beats the first
+  button. Validated against the views the page offers, so `?view=calendar` on
+  a page without that button is ignored rather than stranding it. This is the
+  one piece of URL state that exists; the rest is #390.
 - **Filter state is not in the URL.** #301's body mentions serialization and a
   global state store; neither exists — state lives in `search.js` and
   `filters.js` and is published as events. Shareable filtered URLs are tracked
