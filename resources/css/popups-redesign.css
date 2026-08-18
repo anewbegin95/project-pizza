@@ -1,27 +1,20 @@
 /* -----------------------------------------------------------------------------
   POP-UPS PAGE SHELL (redesign only)
-  The results region that sits below the filter bar: a single-column list of
-  event cards, and the map panel #299 fills in. Legacy tile and grid rules stay
-  in popups.css; nothing here applies with the flag off.
+  What the Pop-Ups page adds on top of the shared results region: the legacy
+  grid's padding override, month group headings, and switching between the
+  List, Map and Calendar panels.
+
+  The region itself, the single-column card stack, the divider and the
+  no-results state are page-agnostic and live in results.css, which this page
+  links alongside this file. Legacy tile and grid rules stay in popups.css;
+  nothing here applies with the flag off.
   See REDESIGN.md sections 6.4 and 7.1.
 ----------------------------------------------------------------------------- */
 
-/* Flag-off defaults. The list panel is deliberately absent from this pair: it
-   is the legacy .popups-grid, and the prebuilt static tiles have to stay
-   visible without JS. */
+/* Flag-off defaults for the panels this page adds. */
 .results__panel--map,
-.results__panel--calendar,
-.results-divider {
+.results__panel--calendar {
   display: none;
-}
-
-/* The region carries the width and gutter for both panels, matching
-   .search-bar-container and .filter-bar so all three share an edge. */
-:root[data-redesign='on'] .results,
-body.redesign-enabled .results {
-  max-width: var(--container-max-width);
-  margin-inline: auto;
-  padding: var(--space-sm) var(--space-sm-md) var(--space-lg);
 }
 
 /* popups.css sets section#popupsGrid's padding at !important, and an id beats
@@ -34,18 +27,9 @@ body.redesign-enabled section#popupsGrid {
   padding: 0 !important;
 }
 
-/* Cards stack in one column up to --container-max-width. See section 6.4. */
-:root[data-redesign='on'] .results__panel--list,
-body.redesign-enabled .results__panel--list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-sm);
-}
-
 /* Month groups (section 6.4) --------------------------------------------- */
 
-.event-group__heading,
-.results-empty {
+.event-group__heading {
   display: none;
 }
 
@@ -76,34 +60,6 @@ body.redesign-enabled .event-group__heading {
   font-weight: var(--font-weight-regular);
 }
 
-/* No results (derived — REDESIGN.md does not specify one) ------------------ */
-
-:root[data-redesign='on'] .results-empty,
-body.redesign-enabled .results-empty {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  align-items: center;
-  padding: var(--space-lg) var(--space-sm);
-  text-align: center;
-}
-
-:root[data-redesign='on'] .results-empty__message,
-body.redesign-enabled .results-empty__message {
-  margin: 0;
-  color: var(--nyc-charcoal);
-  font-family: var(--nyc-font-body);
-  font-size: var(--font-sm);
-}
-
-/* Aligned to the card edges rather than the viewport. */
-:root[data-redesign='on'] .results-divider,
-body.redesign-enabled .results-divider {
-  display: block;
-  max-width: calc(var(--container-max-width) - (2 * var(--space-sm-md)));
-  margin-inline: auto;
-}
-
 /* View switching ----------------------------------------------------------- */
 
 /* search.js reflects the toggle onto <html data-view>, so the panels follow it
@@ -125,30 +81,14 @@ body.redesign-enabled .results-divider {
   display: block;
 }
 
-/* Empty until #300 builds the month grid inside it. */
 :root[data-redesign='on'][data-view='calendar'] .results__panel--calendar,
 :root[data-view='calendar'] body.redesign-enabled .results__panel--calendar {
   display: block;
 }
 
 @media (max-width: 600px) {
-  :root[data-redesign='on'] .results,
-  body.redesign-enabled .results {
-    padding-inline: var(--space-sm);
-  }
-
   :root[data-redesign='on'] .event-group__heading,
   body.redesign-enabled .event-group__heading {
     font-size: 28px;
-  }
-
-  :root[data-redesign='on'] .results__panel--list,
-  body.redesign-enabled .results__panel--list {
-    gap: var(--space-xs);
-  }
-
-  :root[data-redesign='on'] .results-divider,
-  body.redesign-enabled .results-divider {
-    max-width: calc(100% - (2 * var(--space-sm)));
   }
 }

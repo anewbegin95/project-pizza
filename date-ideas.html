@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="resources/css/cards.css">
     <link rel="stylesheet" href="resources/css/popups.css">
   <link rel="stylesheet" href="resources/css/date_ideas.css">
+    <link rel="stylesheet" href="resources/css/results.css">
+    <link rel="stylesheet" href="resources/css/dateideas-redesign.css">
     <link rel="stylesheet" href="resources/css/popup_details.css">
     <link rel="stylesheet" href="resources/css/modals.css">
     <link rel="stylesheet" href="resources/css/footer.css">
@@ -110,11 +112,18 @@
       <p class="results-count" aria-live="polite">0 date ideas found</p>
       <hr class="ui-divider results-divider">
 
-      <!-- Date Ideas Tiles Grid -->
-      <section class="date-ideas-grid" id="dateIdeasGrid">
-        <!-- STATIC_DATE_IDEAS_START -->
-        <!-- STATIC_DATE_IDEAS_END -->
-      </section>
+      <!-- Results region. The grid is the legacy .date-ideas-grid, restyled by
+           results.css when the flag is on. There is only one panel: date ideas
+           are evergreen, so section 7.2 gives the page no List/Map toggle, and
+           search.js never stamps data-view here. The grid stays in the DOM
+           under its own id — prebuild-events.js injects the static tiles
+           between the markers, and filters.js counts the results inside it. -->
+      <div class="results">
+        <section class="date-ideas-grid results__panel--list" id="dateIdeasGrid">
+          <!-- STATIC_DATE_IDEAS_START -->
+          <!-- STATIC_DATE_IDEAS_END -->
+        </section>
+      </div>
     </main>
     <!-- The footer content will be dynamically loaded here -->
     <div id="footer-placeholder"></div>
