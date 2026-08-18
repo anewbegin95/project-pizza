@@ -4,8 +4,9 @@
 > progress. Every component below is built and tested, and **Pop-Ups wires
 > all of them to live data** (#294–#302) — read `pop-ups.html` and its
 > `popups-*.js` modules as the worked example.
-> **Partly wired:** Date Ideas — the shell landed in #304; filters, cards and
-> the detail flow are #305–#307. **Not yet wired:** Home (Epic 7).
+> **Partly wired:** Date Ideas — shell (#304), filters (#305), cards and the
+> detail flow (#306); featured/editorial treatment is #307.
+> **Not yet wired:** Home (Epic 7).
 > **Spec:** `REDESIGN.md` §6. **Responsive targets:** `docs/RESPONSIVE-QA.md`.
 > **Note:** `REDESIGN.md` predates the site's CSP; where they conflict, the CSP
 > wins and the deviation is recorded in §5.
@@ -29,6 +30,8 @@ environments**. Nothing in this document is user-visible today; append
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
 | Results region (shared) | `results.css` | — | — | §6.3/6.4 |
 | Filtering core (shared) | — | `results-filter.js` | `window.NycResultsFilter` | §6.2/6.3 |
+| Result rendering core (shared) | — | `results-list.js` | `window.NycResultsList` | §6.4 |
+| Card-to-modal glue (shared) | — | `results-modal.js` | `window.NycResultsDetail` | §6.5 |
 | Pop-Ups page shell | `popups-redesign.css` | — | — | §7.1 |
 | Date Ideas page shell | `dateideas-redesign.css` | — | — | §7.2 |
 | Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
@@ -76,7 +79,8 @@ if (typeof document !== 'undefined') {
 ```js
 buildEventCard(data, { type = 'popup' | 'date-idea' })  // → <a class="event-card">
 getCategoryTag(category)   // "🍕 Food & Drink"
-getVibeTag(vibe)           // "🌹 Romantic"
+getVibeTag(vibe)           // "🌹 Romantic" — date idea lead column
+getBudgetTag(budget)       // "💵 Under $30" — date idea image tag
 getAreaLabel(neighborhood, borough)  // "SoHo, Manhattan"
 formatCardDate(start, end) // { dayName, dayNumber, monthYear, through }
 isFreePrice(price)
@@ -123,6 +127,30 @@ Neighborhood list from the loaded pop-ups so the options cannot drift from the
 content. Every dropdown leads with an **"All …" option carrying an empty
 value**, which `selectOption` reads as clearing the filter.
 
+### `window.NycResultsList` — `results-list.js`
+```js
+buildEmptyState(doc, { message, actionLabel, onClear })
+renderResults(container, entries, { renderBody, message, actionLabel, onClear, doc })
+```
+The replace, the empty check and the no-results markup. What a page does with a
+**non-empty** list is its own business and arrives as `renderBody` — Pop-Ups
+groups by month, Date Ideas renders a flat list. The empty state lives here
+because its markup has to match `.results-empty` in `results.css`, and one
+stylesheet with two builders is how the two drift apart; only the wording is
+per-page.
+
+### `window.NycResultsDetail` — `results-modal.js`
+```js
+initDetailModal(doc, container, { getEntries, type, returnLabel, detailHref })
+getEntryId(href) / findEntry(entries, id) / isPlainLeftClick(event)
+```
+Card click → detail modal, plus the history push so Back dismisses the modal
+rather than leaving the list. Clicks are **delegated**, so re-rendering on a
+filter change needs no re-binding, and a **modified click stays a real link** so
+cmd-click and middle-click still open the detail page. `returnLabel` and
+`detailHref` are the per-page parts; `popups-modal.js` and `dateideas-modal.js`
+are those two configurations and keep their own public APIs.
+
 ### `window.NycResultsFilter` — `results-filter.js`
 ```js
 isSet(value)                                 // '' / null / undefined are unset
@@ -161,6 +189,16 @@ Vibe, Budget and Neighborhood, per §7.2 — **no date range and no borough**.
 Note `vibe` and `budget` both offer a **"free"** value, so a matcher wired to
 the wrong field still looks right on any entry where the two agree; there is a
 test built on a pair that disagrees.
+
+### `window.NycDateIdeasList` / `window.NycDateIdeasDetail` (date ideas page only)
+```js
+NycDateIdeasList.renderResults(container, entries, { onClear })   // flat, no grouping
+NycDateIdeasList.EMPTY_MESSAGE / EMPTY_ACTION_LABEL
+NycDateIdeasDetail.initDetailModal(doc, container, { getEntries })
+```
+No month grouping: date ideas are evergreen, so there is nothing to group on.
+The modal takes `type: 'date-idea'`, which is what selects the vibe tag over
+the category and the evergreen share label.
 
 ### `window.NycPopupsFilter` — `popups-filter.js` (pop-ups page only)
 ```js
@@ -358,6 +396,27 @@ Recorded so they are not re-litigated:
   they are closed schema enums, and building them from the loaded content
   would make the bar change shape as content comes and goes. **Neighborhood is
   data-driven**, as on Pop-Ups, from the one pool this page has.
+- **The date idea card's image tag is the budget, not the vibe** (#306). Epic
+  3 put `getVibeTag` in both slots, so every card printed the same word twice.
+  §7.2 specifies only the vibe *column*; the image tag's counterpart on a
+  pop-up card is the category, so the two slots carry different fields here
+  too. **"Free" is both a price and a budget tier**, so the bracket is dropped
+  when the exact price in the lead column already says it.
+- **The share button says "Share Date Idea"** on date ideas (#306). §6.5's
+  literal text is "Share Event", written for the Pop-Ups modal; §6.5 already
+  sanctions a page-appropriate return label, and a date idea is not an event.
+- **The detail modal adapts itself to evergreen content** rather than being
+  forked (#306). With no date it omits the date line and the Add to Calendar
+  block, which `modal.js` already did — `formatDetailDateTime` and
+  `buildGoogleCalendarUrl` both return empty for an entry with no dates.
+- **Date idea results are not grouped** (#306). Pop-Ups groups cards by month;
+  evergreen content has no date to group on, and §7.2 asks for a plain list.
+- **The external `link` / `link_text` fields are not in the redesign modal.**
+  §6.5's left panel lists tag, title, date, location, description, Add to
+  Calendar, Share — no external link — so Epic 4 shipped without one and #306
+  kept that for symmetry. Both pop-ups and date ideas carry the fields, and the
+  *legacy* date idea detail page renders them as a "Learn More" link, so this
+  is a real gap in the spec rather than a Date Ideas one. Tracked separately.
 - **Date ideas have no date filter.** §7.2 gives them Vibe/Budget/Neighborhood;
   they are evergreen. The picker is page-agnostic and mounts wherever a dates
   chip exists.

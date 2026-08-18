@@ -72,16 +72,19 @@ test.beforeEach(async ({ page }) => {
   )
 })
 
-/** Results are still legacy tiles until #306 swaps them for shared cards. */
-const resultTiles = (page) => page.locator('#dateIdeasGrid .popup-tile')
+/** Shared event cards with the flag on (#306); legacy tiles without it. */
+const resultTiles = (page) => page.locator('#dateIdeasGrid .event-card')
+
+const legacyTiles = (page) => page.locator('#dateIdeasGrid .popup-tile')
 
 async function renderedNames(page) {
-  return page.locator('#dateIdeasGrid .popup-tile__details h3').allTextContents()
+  return page.locator('#dateIdeasGrid .event-card__title').allTextContents()
 }
 
 async function gotoDateIdeas(page, { flag = 'on' } = {}) {
   await page.goto(`/date-ideas.html?redesign=${flag}`)
-  await expect(resultTiles(page)).toHaveCount(DOCUMENTS.length)
+  const items = flag === 'on' ? resultTiles(page) : legacyTiles(page)
+  await expect(items).toHaveCount(DOCUMENTS.length)
 }
 
 /**
@@ -282,7 +285,8 @@ test('the filter wiring does not run at all with the flag off', async ({ page })
   // The controls are hidden and the legacy page renders every date idea.
   await expect(page.locator('.search-bar-container')).toBeHidden()
   await expect(page.locator('.filter-bar')).toBeHidden()
-  await expect(resultTiles(page)).toHaveCount(DOCUMENTS.length)
+  await expect(legacyTiles(page)).toHaveCount(DOCUMENTS.length)
+  await expect(resultTiles(page)).toHaveCount(0)
 
   // Those three assertions alone cannot tell the two states apart: with the
   // flag off nothing publishes search:change or filters:change, so a filter

@@ -15,6 +15,20 @@
         'date-idea': 'date-idea.html',
     };
 
+    /**
+     * REDESIGN.md 6.5 says "Share Event", written for the Pop-Ups modal. A date
+     * idea is not an event, and 6.5 already sanctions a page-appropriate label
+     * for the return bar; this is the same move on the share button.
+     */
+    const SHARE_LABELS = {
+        popup: 'Share Event',
+        'date-idea': 'Share Date Idea',
+    };
+
+    function getShareLabel(type) {
+        return SHARE_LABELS[type] || SHARE_LABELS.popup;
+    }
+
     const FOCUSABLE = [
         'a[href]',
         'button:not([disabled])',
@@ -215,7 +229,7 @@
             body.appendChild(calendar);
         }
 
-        const share = el(doc, 'button', 'modal-detail__share', 'Share Event');
+        const share = el(doc, 'button', 'modal-detail__share', getShareLabel(type));
         share.type = 'button';
         body.appendChild(share);
 
@@ -368,6 +382,7 @@
 
     const api = {
         FOCUSABLE,
+        getShareLabel,
         buildGoogleCalendarUrl,
         getShareData,
         formatDetailDateTime,

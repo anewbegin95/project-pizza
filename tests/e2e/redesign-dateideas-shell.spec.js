@@ -58,39 +58,17 @@ test.beforeEach(async ({ page }) => {
 
 /**
  * Navigates and waits for date-ideas.js to have replaced the prebuilt static
- * tiles with the stub's. Cards are still legacy tiles in both flag states —
- * #306 is what swaps them for the shared event cards.
+ * tiles with the stub's. Since #306 the flag-on page renders shared event
+ * cards itself; flag-off it still renders legacy tiles.
  */
 async function gotoDateIdeas(page, { flag = 'on' } = {}) {
   await page.goto(`/date-ideas.html?redesign=${flag}`)
-  await expect(page.locator('#dateIdeasGrid .popup-tile')).toHaveCount(DOCUMENTS.length)
+  const selector = flag === 'on' ? '#dateIdeasGrid .event-card' : '#dateIdeasGrid .popup-tile'
+  await expect(page.locator(selector)).toHaveCount(DOCUMENTS.length)
 }
 
-/** Replaces the grid contents with shared event cards and returns their locator. */
+/** The cards the page rendered for itself. */
 async function renderCards(page) {
-  await page.evaluate((data) => {
-    const grid = document.getElementById('dateIdeasGrid')
-    grid.innerHTML = ''
-    for (const idea of data) {
-      grid.appendChild(
-        window.NycCards.buildEventCard(
-          {
-            id: idea.slug,
-            name: idea.name,
-            vibe: idea.vibe,
-            budget: idea.budget,
-            borough: idea.borough,
-            neighborhood: idea.neighborhood,
-            venue_name: idea.venue_name,
-            price: idea.price,
-            short_desc: idea.short_description,
-            img: 'resources/images/images/default-popup-image.webp',
-          },
-          { type: 'date-idea' }
-        )
-      )
-    }
-  }, DOCUMENTS)
   return page.locator('.event-card')
 }
 

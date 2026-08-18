@@ -32,6 +32,19 @@
         free: {emoji: '✨', label: 'Free'},
     };
 
+    /**
+     * Date idea budget tiers, which take the image tag the category holds on a
+     * pop-up card. The vibe already has the lead column (REDESIGN.md 7.2), so
+     * repeating it here said the same word twice; the two slots carry
+     * different fields, as they do on a pop-up.
+     */
+    const BUDGET_LABELS = {
+        free: {emoji: '\u2728', label: 'Free'},
+        under_30: {emoji: '\ud83d\udcb5', label: 'Under $30'},
+        '30_to_75': {emoji: '\ud83d\udcb5', label: '$30\u2013$75'},
+        '75_plus': {emoji: '\ud83d\udcb5', label: '$75+'},
+    };
+
     /** Borough enum values as they should read on a card. */
     const BOROUGH_LABELS = {
         manhattan: 'Manhattan',
@@ -115,6 +128,11 @@
         return getTag(VIBE_LABELS, vibe);
     }
 
+    /** e.g. "💵 Under $30" for the date idea card's image tag. */
+    function getBudgetTag(budget) {
+        return getTag(BUDGET_LABELS, budget);
+    }
+
     /**
      * Joins neighborhood and borough for the card's location line, turning the
      * borough enum into its display name. An unmapped value is title-cased
@@ -185,7 +203,16 @@
         image.loading = 'lazy';
         media.appendChild(image);
 
-        const tag = isDateIdea ? getVibeTag(data.vibe) : getCategoryTag(data.category);
+        // Date ideas show the budget tier here; the vibe has the lead column.
+        // "Free" is both a price and a tier, though, so the bracket is dropped
+        // when the exact price in the lead column already says it — otherwise
+        // the card prints the same word twice.
+        let tag;
+        if (isDateIdea) {
+            tag = isFreePrice(data.price) && data.budget === 'free' ? '' : getBudgetTag(data.budget);
+        } else {
+            tag = getCategoryTag(data.category);
+        }
         if (tag) media.appendChild(createElement(doc, 'span', 'event-card__tag', tag));
 
         return media;
@@ -238,10 +265,12 @@
     const api = {
         CATEGORY_LABELS,
         VIBE_LABELS,
+        BUDGET_LABELS,
         formatCardDate,
         isFreePrice,
         getCategoryTag,
         getVibeTag,
+        getBudgetTag,
         getAreaLabel,
         buildEventCard,
     };
