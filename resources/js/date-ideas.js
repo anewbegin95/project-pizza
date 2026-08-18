@@ -92,11 +92,43 @@ if (typeof document !== 'undefined') {
                 const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
                 const grid = document.getElementById('dateIdeasGrid');
                 if (!grid) return;
-                grid.innerHTML = '';
-                dateIdeas.forEach(idea => {
-                    const tile = createDateIdeaTile(idea);
-                    if (tile) grid.appendChild(tile);
-                });
+
+                // With the redesign on, the search box and filter chips drive
+                // the rendered set. Flag-off pages render everything, as before.
+                const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+
+                function renderDateIdeas(list) {
+                    grid.innerHTML = '';
+                    list.forEach(idea => {
+                        const tile = createDateIdeaTile(idea);
+                        if (tile) grid.appendChild(tile);
+                    });
+                }
+
+                if (redesignOn && window.NycDateIdeasFilter) {
+                    const filter = window.NycDateIdeasFilter;
+                    const controller = filter.createFilterController(document, {
+                        onChange: state => renderDateIdeas(filter.filterDateIdeas(dateIdeas, state)),
+                    });
+
+                    // The neighborhood list comes from the content rather than
+                    // a hardcoded set, so no date idea is unreachable by that
+                    // filter. Vibe and Budget stay in the markup: they are
+                    // closed schema enums, and offering only the ones currently
+                    // published would make the filter bar change shape as
+                    // content comes and goes.
+                    if (window.NycFilters && window.NycFilters.setOptions) {
+                        window.NycFilters.setOptions(
+                            'neighborhood',
+                            filter.getDistinctNeighborhoods(dateIdeas)
+                        );
+                    }
+
+                    renderDateIdeas(controller.apply(dateIdeas));
+                    return;
+                }
+
+                renderDateIdeas(dateIdeas);
             })
             .catch(error => {
                 console.error('Failed to fetch date ideas:', error);

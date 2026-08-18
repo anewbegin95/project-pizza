@@ -28,6 +28,7 @@ environments**. Nothing in this document is user-visible today; append
 | Detail modal | `modals.css` (`.modal--detail*`) | `modal.js` | `window.NycModal` | §6.5 |
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
 | Results region (shared) | `results.css` | — | — | §6.3/6.4 |
+| Filtering core (shared) | — | `results-filter.js` | `window.NycResultsFilter` | §6.2/6.3 |
 | Pop-Ups page shell | `popups-redesign.css` | — | — | §7.1 |
 | Date Ideas page shell | `dateideas-redesign.css` | — | — | §7.2 |
 | Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
@@ -122,6 +123,45 @@ Neighborhood list from the loaded pop-ups so the options cannot drift from the
 content. Every dropdown leads with an **"All …" option carrying an empty
 value**, which `selectOption` reads as clearing the filter.
 
+### `window.NycResultsFilter` — `results-filter.js`
+```js
+isSet(value)                                 // '' / null / undefined are unset
+matchesQuery(entry, query, fields)           // case-insensitive, over the given fields
+getDistinctValues(entries, field)            // → [{ value, label }], deduped and sorted
+createMatcher({ searchFields, fields, extra })  // → (entry, state) => boolean
+filterEntries(entries, state, matches)
+createFilterController(doc, { initialState, matches, onChange })
+```
+The filtering both discovery pages share. What differs per page is
+**configuration, not code**: which fields the search reads, which state key
+reads which entry field, and any predicate that is not an equality check.
+
+`fields` maps a **state key to an entry field** — they are not always the same
+word, since Pop-Ups' `type` chip filters on `category`. A state key with no
+entry in the map is **ignored** rather than compared against a field the entry
+lacks, so a stray key from another page cannot silently empty the results.
+`extra` takes `(entry, state) => boolean` predicates for anything that is not
+equality; Pop-Ups' date range arrives that way.
+
+`popups-filter.js` and `dateideas-filter.js` are the two configurations. Both
+keep their own public API and delegate here, so page code is unchanged and the
+two pages cannot drift apart on the parts that are genuinely the same.
+
+### `window.NycDateIdeasFilter` — `dateideas-filter.js` (date ideas page only)
+```js
+createFilterController(doc, { onChange })  // → { getState(), apply(entries) }
+filterDateIdeas(entries, state)
+matchesFilters(entry, state)
+matchesQuery(entry, query)      // name, venue_name, neighborhood
+getDistinctNeighborhoods(entries)
+createInitialState()            // { query, vibe, budget, neighborhood }
+SEARCH_FIELDS / FILTER_FIELDS
+```
+Vibe, Budget and Neighborhood, per §7.2 — **no date range and no borough**.
+Note `vibe` and `budget` both offer a **"free"** value, so a matcher wired to
+the wrong field still looks right on any entry where the two agree; there is a
+test built on a pair that disagrees.
+
 ### `window.NycPopupsFilter` — `popups-filter.js` (pop-ups page only)
 ```js
 createFilterController(doc, { onChange })  // → { getState(), apply(entries) }
@@ -133,7 +173,10 @@ overlapsRange(entry, range)
 getDistinctNeighborhoods(entries)
 ```
 Merges `search:change` and `filters:change` into one state object and decides
-*what* shows; the page still owns rendering. Date ranges match on **overlap**,
+*what* shows; the page still owns rendering. Since #305 the merge, the search
+and the equality checks come from `NycResultsFilter` — what stays here is the
+Pop-Ups configuration and the date-range matching, which no other page has.
+Date ranges match on **overlap**,
 so a multi-day run surfaces for any range touching it. Recurring events match
 only their base span — nothing on the site expands recurrence into occurrences.
 
@@ -307,6 +350,14 @@ Recorded so they are not re-litigated:
   shared stack. Nothing stamps `data-view` there — `search.js` only does that
   for a page with toggle buttons — so no rule may make the list's visibility
   depend on it.
+- **Date Ideas' filters are a configuration, not a second implementation**
+  (#305). REDESIGN.md §7.2 says the filter logic "can be shared from
+  `filters.js` (parameterize for page type)"; in practice `filters.js` is the
+  *bar* and the matching lived in `popups-filter.js`, so the shared piece
+  became `results-filter.js`. Vibe and Budget stay hardcoded in the markup —
+  they are closed schema enums, and building them from the loaded content
+  would make the bar change shape as content comes and goes. **Neighborhood is
+  data-driven**, as on Pop-Ups, from the one pool this page has.
 - **Date ideas have no date filter.** §7.2 gives them Vibe/Budget/Neighborhood;
   they are evergreen. The picker is page-agnostic and mounts wherever a dates
   chip exists.
