@@ -1,0 +1,84 @@
+/* -----------------------------------------------------------------------------
+  SHARED RESULTS REGION (redesign only)
+  The band below the filter bar that both discovery pages render their results
+  into: the region's width and gutter, the single-column card stack, the divider
+  above it and the no-results state inside it.
+
+  Extracted from popups-redesign.css in #304, when Date Ideas became the second
+  page to need it. Anything that belongs to one page stays in that page's own
+  stylesheet — view switching and month groups in popups-redesign.css, the
+  legacy grid override in dateideas-redesign.css. Nothing here applies with the
+  flag off. See REDESIGN.md sections 6.3, 6.4, 7.1 and 7.2.
+----------------------------------------------------------------------------- */
+
+/* Flag-off defaults. The list panel is deliberately absent: it holds the
+   prebuilt static tiles, which are the no-JS experience on both pages and have
+   to stay visible before any script has run. */
+.results-divider,
+.results-empty {
+  display: none;
+}
+
+/* The region carries the width and gutter for its panels, matching
+   .search-bar-container and .filter-bar so all three share an edge. */
+:root[data-redesign='on'] .results,
+body.redesign-enabled .results {
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--space-sm) var(--space-sm-md) var(--space-lg);
+}
+
+/* Cards stack in one column up to --container-max-width. See section 6.4.
+   Date Ideas has only this panel — no map, no calendar — but it is the same
+   list, so it carries the same class and this rule serves both. */
+:root[data-redesign='on'] .results__panel--list,
+body.redesign-enabled .results__panel--list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+/* Aligned to the card edges rather than the viewport. */
+:root[data-redesign='on'] .results-divider,
+body.redesign-enabled .results-divider {
+  display: block;
+  max-width: calc(var(--container-max-width) - (2 * var(--space-sm-md)));
+  margin-inline: auto;
+}
+
+/* No results (derived — REDESIGN.md does not specify one) ------------------ */
+
+:root[data-redesign='on'] .results-empty,
+body.redesign-enabled .results-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-lg) var(--space-sm);
+  text-align: center;
+}
+
+:root[data-redesign='on'] .results-empty__message,
+body.redesign-enabled .results-empty__message {
+  margin: 0;
+  color: var(--nyc-charcoal);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .results,
+  body.redesign-enabled .results {
+    padding-inline: var(--space-sm);
+  }
+
+  :root[data-redesign='on'] .results__panel--list,
+  body.redesign-enabled .results__panel--list {
+    gap: var(--space-xs);
+  }
+
+  :root[data-redesign='on'] .results-divider,
+  body.redesign-enabled .results-divider {
+    max-width: calc(100% - (2 * var(--space-sm)));
+  }
+}

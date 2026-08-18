@@ -1,10 +1,11 @@
 # Redesign Shared Components
 
-> **Status:** Epics 3 and 4 complete on `staging`; Epic 5 (the Calendar view)
-> in progress. Every component below is built and tested, and **Pop-Ups wires
-> all of them to live data** (#294–#300) — read `pop-ups.html` and its
+> **Status:** Epics 3, 4 and 5 complete on `staging`; Epic 6 (Date Ideas) in
+> progress. Every component below is built and tested, and **Pop-Ups wires
+> all of them to live data** (#294–#302) — read `pop-ups.html` and its
 > `popups-*.js` modules as the worked example.
-> **Not yet wired:** Date Ideas (Epic 6) and Home (Epic 7).
+> **Partly wired:** Date Ideas — the shell landed in #304; filters, cards and
+> the detail flow are #305–#307. **Not yet wired:** Home (Epic 7).
 > **Spec:** `REDESIGN.md` §6. **Responsive targets:** `docs/RESPONSIVE-QA.md`.
 > **Note:** `REDESIGN.md` predates the site's CSP; where they conflict, the CSP
 > wins and the deviation is recorded in §5.
@@ -26,6 +27,9 @@ environments**. Nothing in this document is user-visible today; append
 | Event cards | `cards.css` | `cards.js` | `window.NycCards` | §6.4 |
 | Detail modal | `modals.css` (`.modal--detail*`) | `modal.js` | `window.NycModal` | §6.5 |
 | Interior page shell | `interior.css` | — | — | *derived, see §5* |
+| Results region (shared) | `results.css` | — | — | §6.3/6.4 |
+| Pop-Ups page shell | `popups-redesign.css` | — | — | §7.1 |
+| Date Ideas page shell | `dateideas-redesign.css` | — | — | §7.2 |
 | Map view (Pop-Ups) | `map.css` | `popups-map.js` | `window.NycPopupsMap` | §6.6 |
 | Calendar view (Pop-Ups) | `popups-calendar.css` | `popups-calendar.js` | `window.NycPopupsCalendar` | *derived, see §5* |
 
@@ -288,6 +292,21 @@ Recorded so they are not re-litigated:
   where that would be visible. No published pop-up currently sets
   `recurring`, so this is tracked as its own issue rather than as part of
   Epic 5.
+- **The results region is one stylesheet, the page shells are their own**
+  (#304). `results.css` holds what both discovery pages share — the region's
+  width and gutter, the single-column card stack, the divider and the
+  no-results state — and each page adds only what is its own:
+  `popups-redesign.css` for view switching, month groups and the `#popupsGrid`
+  padding override, `dateideas-redesign.css` for the `#dateIdeasGrid` one. It
+  was all in `popups-redesign.css` until Date Ideas became the second page to
+  need it. `.results-divider` is why the split is not cosmetic: its flag-off
+  `display: none` lived in a stylesheet `date-ideas.html` did not link, so a
+  stray rule was visible on the **legacy** page from Epic 3 until #304.
+- **Date Ideas' grid carries `.results__panel--list`** even though the page has
+  one panel and no toggle. It is the same list; the class is what gets it the
+  shared stack. Nothing stamps `data-view` there — `search.js` only does that
+  for a page with toggle buttons — so no rule may make the list's visibility
+  depend on it.
 - **Date ideas have no date filter.** §7.2 gives them Vibe/Budget/Neighborhood;
   they are evergreen. The picker is page-agnostic and mounts wherever a dates
   chip exists.

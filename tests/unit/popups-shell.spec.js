@@ -16,7 +16,11 @@ function expectCssToMatch(css, pattern) {
 }
 
 describe('pop-ups results region styles', () => {
-  const css = read('resources/css/popups-redesign.css')
+  // The page loads results.css and popups-redesign.css together: the shared
+  // region moved to the former in #304, the pop-ups-only rules stayed in the
+  // latter. Assertions about the shell as a whole read both; assertions about
+  // where a rule has to live name their file.
+  const css = ['resources/css/results.css', 'resources/css/popups-redesign.css'].map(read).join('\n')
 
   it('leaves the legacy grid alone until the flag is on', () => {
     expectCssToMatch(css, ":root[data-redesign='on'] .results__panel--list")
@@ -61,7 +65,10 @@ describe('pop-ups results region styles', () => {
 })
 
 describe('redesign-only shell elements are hidden with the flag off', () => {
-  const css = read('resources/css/popups-redesign.css').replaceAll(/\/\*[\s\S]*?\*\//g, '')
+  const css = ['resources/css/results.css', 'resources/css/popups-redesign.css']
+    .map(read)
+    .join('\n')
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
 
   it.each(['.results__panel--map', '.results__panel--calendar', '.results-divider'])('%s carries an unscoped display: none default', (selector) => {
     const hidesUnscoped = css.split('}').some((block) => {
@@ -81,7 +88,8 @@ describe('redesign-only shell elements are hidden with the flag off', () => {
 describe('pop-ups.html shell markup', () => {
   const html = read('pop-ups.html')
 
-  it('links the shell stylesheet', () => {
+  it('links the shell stylesheets', () => {
+    expect(html).toContain('resources/css/results.css')
     expect(html).toContain('resources/css/popups-redesign.css')
   })
 
@@ -111,7 +119,9 @@ describe('legacy pop-ups grid', () => {
     // already makes for section.popups-grid's margin and background.
     expect(read('resources/css/popups.css')).toMatch(/section#popupsGrid/)
 
-    const shell = read('resources/css/popups-redesign.css')
+    // Comments stripped first — this file's own prose says "padding at
+    // !important", which the declaration regex below matched happily.
+    const shell = read('resources/css/popups-redesign.css').replaceAll(/\/\*[\s\S]*?\*\//g, '')
     const gatedPadding = shell
       .split('}')
       .filter((block) => /padding[^;]*!important/.test(block))
