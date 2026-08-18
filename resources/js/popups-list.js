@@ -8,6 +8,12 @@
 (function (global) {
     'use strict';
 
+    // Browser: results-list.js is loaded first and has set the global.
+    // Node (unit tests): fall back to require.
+    const core =
+        (global && global.NycResultsList) ||
+        (typeof require === 'function' ? require('./results-list.js') : null);
+
     // === CONSTANTS ===
 
     const EASTERN_ZONE = 'America/New_York';
@@ -90,23 +96,13 @@
         return element;
     }
 
-    /**
-     * The only dead end in the flow, so it offers the way out rather than
-     * leaving people to guess which of four filters to undo. The button asks
-     * the filter bar to clear, which also empties the search box (#295).
-     */
+    /** The Pop-Ups wording of the shared empty state. */
     function buildEmptyState(doc, { onClear } = {}) {
-        const wrapper = createElement(doc, 'div', 'results-empty');
-        wrapper.setAttribute('role', 'status');
-        wrapper.appendChild(createElement(doc, 'p', 'results-empty__message', EMPTY_MESSAGE));
-
-        const button = createElement(doc, 'button', 'ui-btn ui-btn--primary results-empty__action', EMPTY_ACTION_LABEL);
-        button.type = 'button';
-        button.addEventListener('click', () => {
-            if (typeof onClear === 'function') onClear();
+        return core.buildEmptyState(doc, {
+            message: EMPTY_MESSAGE,
+            actionLabel: EMPTY_ACTION_LABEL,
+            onClear,
         });
-        wrapper.appendChild(button);
-        return wrapper;
     }
 
     function buildGroup(doc, group, buildCard) {
@@ -132,23 +128,22 @@
      * empty state when there are none.
      */
     function renderResults(container, entries, options = {}) {
-        if (!container) return;
-        const doc = options.doc || container.ownerDocument;
         const buildCard =
             options.buildCard ||
             ((entry) => global.NycCards && global.NycCards.buildEventCard(entry, { type: 'popup' }));
 
-        container.replaceChildren();
-
-        const list = Array.isArray(entries) ? entries : [];
-        if (list.length === 0) {
-            container.appendChild(buildEmptyState(doc, options));
-            return;
-        }
-
-        for (const group of groupByMonth(list)) {
-            container.appendChild(buildGroup(doc, group, buildCard));
-        }
+        core.renderResults(container, entries, {
+            doc: options.doc,
+            message: EMPTY_MESSAGE,
+            actionLabel: EMPTY_ACTION_LABEL,
+            onClear: options.onClear,
+            // The Pop-Ups part: month groups. See section 6.4.
+            renderBody: (target, list, doc) => {
+                for (const group of groupByMonth(list)) {
+                    target.appendChild(buildGroup(doc, group, buildCard));
+                }
+            },
+        });
     }
 
     const api = {

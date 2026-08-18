@@ -96,12 +96,34 @@ if (typeof document !== 'undefined') {
                 // With the redesign on, the search box and filter chips drive
                 // the rendered set. Flag-off pages render everything, as before.
                 const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+                const useCards = redesignOn && window.NycDateIdeasList && window.NycCards;
 
                 function renderDateIdeas(list) {
+                    if (useCards) {
+                        // Shared event cards with a vibe column in place of the
+                        // date one, and a no-results state that offers the way
+                        // out. See REDESIGN.md sections 6.4 and 7.2.
+                        window.NycDateIdeasList.renderResults(grid, list, {
+                            onClear: () => {
+                                const clear = document.querySelector('.filter-bar__clear');
+                                if (clear) clear.click();
+                            },
+                        });
+                        return;
+                    }
                     grid.innerHTML = '';
                     list.forEach(idea => {
                         const tile = createDateIdeaTile(idea);
                         if (tile) grid.appendChild(tile);
+                    });
+                }
+
+                // Cards open the detail modal rather than navigating.
+                // Delegated, so re-rendering on every filter change needs no
+                // re-binding.
+                if (useCards && window.NycDateIdeasDetail) {
+                    window.NycDateIdeasDetail.initDetailModal(document, grid, {
+                        getEntries: () => dateIdeas,
                     });
                 }
 

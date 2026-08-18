@@ -7,6 +7,8 @@ const {
   formatCardDate,
   isFreePrice,
   getCategoryTag,
+  getBudgetTag,
+  BUDGET_LABELS,
   getAreaLabel,
 } = require('../../resources/js/cards.js')
 
@@ -121,6 +123,30 @@ describe('category and vibe tags', () => {
   it('returns an empty tag for an unknown or missing category', () => {
     expect(getCategoryTag('nonsense')).toBe('')
     expect(getCategoryTag(undefined)).toBe('')
+  })
+})
+
+describe('getBudgetTag', () => {
+  // The date idea card's image tag. Its counterpart on a pop-up card is the
+  // category; the vibe already has the lead column, so repeating it over the
+  // image said the same word twice. REDESIGN.md 7.2 specifies only the column.
+  it('maps every schema budget tier to a label', () => {
+    for (const value of ['free', 'under_30', '30_to_75', '75_plus']) {
+      expect(BUDGET_LABELS[value]).toEqual(
+        expect.objectContaining({ emoji: expect.any(String), label: expect.any(String) })
+      )
+    }
+  })
+
+  it('reads as the tier a person picked in the filter', () => {
+    expect(getBudgetTag('under_30')).toContain('Under $30')
+    expect(getBudgetTag('30_to_75')).toContain('$30')
+    expect(getBudgetTag('75_plus')).toContain('$75+')
+  })
+
+  it('returns an empty tag for an unknown or missing budget', () => {
+    expect(getBudgetTag('nonsense')).toBe('')
+    expect(getBudgetTag(undefined)).toBe('')
   })
 })
 
