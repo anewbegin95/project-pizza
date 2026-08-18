@@ -1,7 +1,10 @@
-// Filter and search state for the redesigned Pop-Ups page. Subscribes to the
-// `search:change` and `filters:change` events the shared components publish
-// and reduces them to one predicate over the mapped pop-up list. Rendering
-// stays with the page — this module decides *what* shows, not how.
+// Filter and search state for the redesigned Pop-Ups page. The filtering
+// itself lives in results-filter.js, which both discovery pages share; this is
+// the Pop-Ups configuration of it, plus the date-range matching that is
+// pop-ups-only — date ideas are evergreen and have no dates chip.
+//
+// The public API is unchanged: pop-ups.js and the calendar call the same names
+// they always have.
 // See REDESIGN.md sections 6.2/6.3 and docs/redesign-components.md.
 //
 // Wrapped in an IIFE: classic scripts share one global lexical scope, and a
@@ -9,10 +12,24 @@
 (function (global) {
     'use strict';
 
-    // === CONSTANTS ===
+    // Browser: results-filter.js is loaded first and has set the global.
+    // Node (unit tests): fall back to require. Guarded so a missing global in
+    // the browser fails as a clear undefined rather than on `require`.
+    const core =
+        (global && global.NycResultsFilter) ||
+        (typeof require === 'function' ? require('./results-filter.js') : null);
+
+    // === CONFIGURATION ===
 
     /** Fields the search box looks at, matching what its placeholder promises. */
     const SEARCH_FIELDS = ['name', 'venue_name', 'neighborhood'];
+
+    /** Chip state key -> the entry field it filters on. "type" reads `category`. */
+    const FILTER_FIELDS = {
+        borough: 'borough',
+        neighborhood: 'neighborhood',
+        type: 'category',
+    };
 
     const EASTERN_ZONE = 'America/New_York';
 
@@ -20,7 +37,7 @@
 
     const RANGE_SEPARATOR = '..';
 
-    // === PURE HELPERS ===
+    // === DATE RANGE (pop-ups only) ===
 
     /**
      * Date-only strings are anchored at noon UTC. `new Date('2026-07-25')` is
@@ -75,39 +92,34 @@
         return startDay <= toDayKey(range.to) && endDay >= toDayKey(range.from);
     }
 
-    /** Case-insensitive substring match across the searchable fields. */
-    function matchesQuery(entry, query) {
-        const needle = String(query == null ? '' : query).trim().toLowerCase();
-        if (!needle) return true;
-        if (!entry) return false;
-
-        return SEARCH_FIELDS.some((field) => {
-            const value = entry[field];
-            return typeof value === 'string' && value.toLowerCase().includes(needle);
-        });
+    /** The date range is not an equality check, so it rides in as a predicate. */
+    function matchesDates(entry, state) {
+        if (!core.isSet(state.dates)) return true;
+        return overlapsRange(entry, parseDateRange(state.dates));
     }
 
-    /** The "All …" option carries an empty value, which reads as unset. */
-    function isSet(value) {
-        return value !== null && value !== undefined && value !== '';
+    const matches = core.createMatcher({
+        searchFields: SEARCH_FIELDS,
+        fields: FILTER_FIELDS,
+        extra: [matchesDates],
+    });
+
+    // === PUBLIC HELPERS ===
+
+    function createInitialState() {
+        return { query: '', borough: null, neighborhood: null, type: null, dates: null };
+    }
+
+    function matchesQuery(entry, query) {
+        return core.matchesQuery(entry, query, SEARCH_FIELDS);
     }
 
     function matchesFilters(entry, state) {
-        if (!state) return true;
-        if (!entry) return false;
-
-        if (!matchesQuery(entry, state.query)) return false;
-        if (isSet(state.borough) && entry.borough !== state.borough) return false;
-        if (isSet(state.neighborhood) && entry.neighborhood !== state.neighborhood) return false;
-        if (isSet(state.type) && entry.category !== state.type) return false;
-        if (isSet(state.dates) && !overlapsRange(entry, parseDateRange(state.dates))) return false;
-        return true;
+        return matches(entry, state);
     }
 
     function filterPopups(entries, state) {
-        const list = Array.isArray(entries) ? entries : [];
-        if (!state) return list.slice();
-        return list.filter((entry) => matchesFilters(entry, state));
+        return core.filterEntries(entries, state, matches);
     }
 
     /**
@@ -115,49 +127,21 @@
      * drift from the content or hide events behind a stale option list.
      */
     function getDistinctNeighborhoods(entries) {
-        const seen = new Map();
-        for (const entry of Array.isArray(entries) ? entries : []) {
-            const name = entry && typeof entry.neighborhood === 'string' ? entry.neighborhood.trim() : '';
-            if (name && !seen.has(name)) seen.set(name, { value: name, label: name });
-        }
-        return [...seen.values()].sort((a, b) =>
-            a.label.localeCompare(b.label, 'en', { sensitivity: 'base' })
-        );
+        return core.getDistinctValues(entries, 'neighborhood');
     }
 
-    // === DOM WIRING ===
-
-    /**
-     * Merges the two event streams into one state object and reports every
-     * change. The components stay unaware of each other; this is the only
-     * place that knows a query and a set of chips describe one result set.
-     */
-    function createFilterController(doc, { onChange } = {}) {
-        let state = { query: '', borough: null, neighborhood: null, type: null, dates: null };
-
-        function publish() {
-            if (typeof onChange === 'function') onChange({ ...state });
-        }
-
-        doc.addEventListener('search:change', (event) => {
-            state = { ...state, query: (event.detail && event.detail.query) || '' };
-            publish();
+    function createFilterController(doc, options) {
+        return core.createFilterController(doc, {
+            initialState: createInitialState(),
+            matches,
+            onChange: (options || {}).onChange,
         });
-
-        doc.addEventListener('filters:change', (event) => {
-            const incoming = (event.detail && event.detail.state) || {};
-            state = { ...state, ...incoming };
-            publish();
-        });
-
-        return {
-            getState: () => ({ ...state }),
-            apply: (entries) => filterPopups(entries, state),
-        };
     }
 
     const api = {
         SEARCH_FIELDS,
+        FILTER_FIELDS,
+        createInitialState,
         matchesQuery,
         matchesFilters,
         filterPopups,

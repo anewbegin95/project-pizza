@@ -33,6 +33,8 @@
     <script src="resources/js/date-ideas.js" defer></script>
     <script src="resources/js/search.js" defer></script>
     <script src="resources/js/filters.js" defer></script>
+    <script src="resources/js/results-filter.js" defer></script>
+    <script src="resources/js/dateideas-filter.js" defer></script>
     <script src="resources/js/cards.js" defer></script>
     <script src="resources/js/modal.js" defer></script>
     <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
@@ -73,6 +75,7 @@
             <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
           </button>
           <ul class="filter-dropdown" role="listbox" aria-label="Vibe" hidden>
+            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Vibes">All Vibes</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="romantic" data-label="Romantic">&#127801; Romantic</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="adventurous" data-label="Adventurous">&#129517; Adventurous</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="chill" data-label="Chill">&#127810; Chill</li>
@@ -87,6 +90,7 @@
             <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
           </button>
           <ul class="filter-dropdown" role="listbox" aria-label="Budget" hidden>
+            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Budgets">All Budgets</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="free" data-label="Free">Free</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="under_30" data-label="Under $30">Under $30</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="30_to_75" data-label="$30&#8211;$75">$30&#8211;$75</li>
@@ -98,7 +102,11 @@
             <span class="filter-chip__label">Neighborhood</span>
             <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
           </button>
+          <!-- Options past "All" are replaced at runtime from the loaded
+               date ideas, so the list cannot drift from the content. These
+               are the no-JS fallback. -->
           <ul class="filter-dropdown" role="listbox" aria-label="Neighborhood" hidden>
+            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Neighborhoods">All Neighborhoods</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Corona" data-label="Corona">Corona</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Fordham" data-label="Fordham">Fordham</li>
             <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Lincoln Square" data-label="Lincoln Square">Lincoln Square</li>
