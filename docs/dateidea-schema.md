@@ -51,24 +51,26 @@ All recurrence fields are hidden unless `has_date_and_time` and `recurring` are 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `vibe` | string (enum) | — | Vibe for filtering and the card vibe label. Values: `romantic`, `adventurous`, `chill`, `foodie`, `cultural`, `free`. |
-| `budget` | string (enum) | — | Budget tier for the budget filter dropdown. Values: `free`, `under_30` (Under $30), `30_to_75` ($30–$75), `75_plus` ($75+). |
+| `budget` | string (enum) | — | **Hidden in Studio.** Existing values still feed the Budget filter; new date ideas have none. Values: `free`, `under_30` (Under $30), `30_to_75` ($30–$75), `75_plus` ($75+). |
 | `is_featured` | boolean | — | Featured card variant with expanded image. Default: `false`. |
 
 ### Location & Geography
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
-| `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
-| `venue_name` | string | — | Name of the venue for the date idea. |
-| `address` | text | — | Full street address of the venue. (Not geocoded — date ideas have no map view.) |
-| `location` | string | — | Legacy free-text location. Prefer `venue_name` + `address` for new content. |
+| `borough` | string (enum) | — | **Read-only, hidden in Studio.** Derived from `location` by `scripts/geocode-popups.js`. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
+| `neighborhood` | string | — | **Read-only, hidden in Studio.** Not currently derived (see `docs/popup-schema.md` for why). Existing values are retained. |
+| `venue_name` | string | — | **Hidden in Studio (retired).** Superseded by `location`. |
+| `address` | text | — | **Hidden in Studio (retired).** Superseded by `location`. Kept as a geocoding fallback for older documents. |
+| `location` | string | — | **The location field.** Free text: street address, cross streets, or a venue name. Drives geocoding, which derives `latitude`, `longitude` and `borough`. |
+| `latitude` | number | — | Read-only, hidden in Studio. Auto-populated from `location` by `scripts/geocode-popups.js`. |
+| `longitude` | number | — | Read-only, hidden in Studio. Auto-populated from `location` by `scripts/geocode-popups.js`. |
 
 ### Pricing
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `price` | string | — | Price badge label (e.g., "Free", "$40 per person"). |
+| `price` | string | — | **Hidden in Studio.** Existing values still render as a badge on cards; new date ideas have none. |
 
 ### Content
 

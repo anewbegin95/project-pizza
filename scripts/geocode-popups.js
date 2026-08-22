@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 /**
- * Geocodes pop-up addresses via Nominatim (OpenStreetMap, free/no API key) and
- * writes the resulting latitude/longitude back into Sanity, so the map view
- * can read coordinates through the same public GROQ queries as every other
- * field. CMS editors never enter coordinates by hand.
+ * Geocodes pop-up and date-idea locations via Nominatim (OpenStreetMap,
+ * free/no API key) and writes latitude/longitude plus the derived borough back
+ * into Sanity, so the map view and the borough filter read them through the
+ * same public GROQ queries as every other field. CMS editors never enter
+ * coordinates or a borough by hand.
+ *
+ * Location text comes from the `location` field, falling back to `address` for
+ * the handful of older documents that used the retired venue_name + address
+ * pair. Nominatim chokes on the parenthetical asides editors habitually add
+ * ("112 East 11th St (Moxy East Village)"), so a stripped variant is tried too.
  *
  * A local cache (data/geocode-cache.json) keyed by venue name + address means
  * unchanged addresses are never re-queried against Nominatim on later runs.
@@ -33,12 +39,52 @@ const CACHE_PATH = path.resolve(__dirname, '..', 'data', 'geocode-cache.json');
 const NOMINATIM_USER_AGENT = 'nyc-slice-of-life-geocoder/1.0 (https://github.com/anewbegin95/project-pizza)';
 const NOMINATIM_THROTTLE_MS = 1100;
 
-/** GROQ query — pop-ups with an address but no geocoded coordinates yet. */
-const POPUPS_MISSING_COORDS_QUERY = `*[_type == "pop-ups" && defined(address) && address != "" && (!defined(latitude) || !defined(longitude))] {
+/**
+ * Bounding box around the five boroughs. Sent to Nominatim as a bounded
+ * viewbox and re-checked on the response, because loosening the query chain
+ * makes far-away false positives easy: "Washington & Water St (Brooklyn)"
+ * matched a Washington/Water intersection in Syracuse, 250 miles upstate,
+ * which would have written a map pin there.
+ */
+const NYC_BOUNDS = { minLat: 40.47, maxLat: 40.93, minLon: -74.28, maxLon: -73.68 };
+
+/**
+ * GROQ query — pop-ups and date ideas that have location text but are still
+ * missing coordinates or a derived borough. Borough is included in the
+ * condition so documents geocoded before borough derivation existed get
+ * picked up on the next run rather than staying blank forever.
+ */
+const DOCS_NEEDING_GEOCODE_QUERY = `*[_type in ["pop-ups", "date_ideas"]
+  && ((defined(location) && location != "") || (defined(address) && address != ""))
+  && (!defined(latitude) || !defined(longitude) || !defined(borough))] {
   _id,
+  _type,
   venue_name,
-  address
+  address,
+  location
 }`;
+
+/**
+ * Nominatim labels the borough in `suburb`, and names the county when it does
+ * not. Both are mapped to the schema's borough values. "Citywide" is never
+ * derived — it is an editorial choice, not a geocoding result.
+ */
+const BOROUGH_BY_SUBURB = {
+  'manhattan': 'manhattan',
+  'brooklyn': 'brooklyn',
+  'queens': 'queens',
+  'bronx': 'bronx',
+  'the bronx': 'bronx',
+  'staten island': 'staten_island',
+};
+
+const BOROUGH_BY_COUNTY = {
+  'new york county': 'manhattan',
+  'kings county': 'brooklyn',
+  'queens county': 'queens',
+  'bronx county': 'bronx',
+  'richmond county': 'staten_island',
+};
 
 // ---------------------------------------------------------------------------
 // Sanity API (read via public CDN, write via authenticated Mutate API)
@@ -168,6 +214,12 @@ function geocodeAddress(queryText, timeoutMs = 15000) {
         url.searchParams.set('format', 'json');
         url.searchParams.set('limit', '1');
         url.searchParams.set('q', queryText);
+        url.searchParams.set('addressdetails', '1');
+        url.searchParams.set(
+            'viewbox',
+            `${NYC_BOUNDS.minLon},${NYC_BOUNDS.maxLat},${NYC_BOUNDS.maxLon},${NYC_BOUNDS.minLat}`
+        );
+        url.searchParams.set('bounded', '1');
 
         const req = https.get(
             url,
@@ -184,7 +236,15 @@ function geocodeAddress(queryText, timeoutMs = 15000) {
                     try {
                         const parsed = JSON.parse(data);
                         if (Array.isArray(parsed) && parsed.length > 0) {
-                            resolve({ lat: parseFloat(parsed[0].lat), lon: parseFloat(parsed[0].lon) });
+                            const lat = parseFloat(parsed[0].lat);
+                            const lon = parseFloat(parsed[0].lon);
+                            // Treat an out-of-area hit as a miss so the next
+                            // candidate query gets its turn.
+                            resolve(
+                                isWithinNycBounds(lat, lon)
+                                    ? { lat, lon, borough: normalizeBorough(parsed[0].address) }
+                                    : null
+                            );
                         } else {
                             resolve(null);
                         }
@@ -219,27 +279,74 @@ function normalizeAddressKey(venueName, address) {
     return `${parts.join(', ')}, New York, NY`;
 }
 
+/** Whether a geocoded point falls inside the NYC bounding box. */
+function isWithinNycBounds(lat, lon) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+    return (
+        lat >= NYC_BOUNDS.minLat &&
+        lat <= NYC_BOUNDS.maxLat &&
+        lon >= NYC_BOUNDS.minLon &&
+        lon <= NYC_BOUNDS.maxLon
+    );
+}
+
+/**
+ * Maps a Nominatim address breakdown onto one of the schema's borough values.
+ * `suburb` carries the borough name for every NYC result seen so far; `county`
+ * is the fallback for the results that omit it. Returns null when neither
+ * resolves, which is the right answer for an address outside the five
+ * boroughs as well as for a lookup that landed somewhere unexpected.
+ */
+function normalizeBorough(address) {
+    if (!address || typeof address !== 'object') return null;
+    const suburb = String(address.suburb || '').trim().toLowerCase();
+    if (BOROUGH_BY_SUBURB[suburb]) return BOROUGH_BY_SUBURB[suburb];
+    const county = String(address.county || '').trim().toLowerCase();
+    if (BOROUGH_BY_COUNTY[county]) return BOROUGH_BY_COUNTY[county];
+    return null;
+}
+
+/**
+ * Drops parenthetical asides and collapses the whitespace they leave behind.
+ * Editors use them for venue names and cross streets ("199 Avenue B (Pavlo
+ * Mochi)"), and Nominatim returns no match at all rather than ignoring them.
+ */
+function stripParentheticals(text) {
+    return String(text == null ? '' : text)
+        .replace(/\([^)]*\)?/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/\s*,\s*$/, '')
+        .trim();
+}
+
 /** Appends ", New York, NY" unless the text already names New York / NY. */
 function withCitySuffix(text) {
     return /new york|,\s*ny\b/i.test(text) ? text : `${text}, New York, NY`;
 }
 
 /**
- * Ordered Nominatim query candidates for a pop-up, most to least precise:
- * the street address, an intersection-friendly "&" → "and" variant, then the
- * venue name alone as a landmark lookup (catches parks, plazas, and stores
- * whose address text Nominatim can't parse).
+ * Ordered Nominatim query candidates for a document, most to least precise:
+ * the location text as written, an intersection-friendly "&" → "and" variant,
+ * the same two with parenthetical asides stripped, then the venue name alone
+ * as a landmark lookup (catches parks, plazas, and stores whose location text
+ * Nominatim can't parse). Duplicates collapse, so text without an ampersand or
+ * a parenthesis produces the same short list it always did.
  */
 function buildGeocodeQueries(venueName, address) {
     const venue = (venueName || '').trim();
     const addr = (address || '').trim();
     const queries = [];
-    if (addr) {
-        queries.push(withCitySuffix(addr));
-        if (addr.includes('&')) {
-            queries.push(withCitySuffix(addr.replace(/\s*&\s*/g, ' and ')));
+
+    const withVariants = (text) => {
+        if (!text) return;
+        queries.push(withCitySuffix(text));
+        if (text.includes('&')) {
+            queries.push(withCitySuffix(text.replace(/\s*&\s*/g, ' and ')));
         }
-    }
+    };
+
+    withVariants(addr);
+    withVariants(stripParentheticals(addr));
     if (venue) {
         queries.push(withCitySuffix(venue));
     }
@@ -276,7 +383,9 @@ async function resolveCoordinates(key, queries, cache, deps = {}) {
     const geocode = deps.geocode || geocodeAddress;
     const wait = deps.sleep || sleep;
 
-    if (cache[key]) {
+    // A hit from before borough derivation existed has no `borough` key, so it
+    // is treated as a miss rather than pinning the document to a blank borough.
+    if (cache[key] && Object.prototype.hasOwnProperty.call(cache[key], 'borough')) {
         return { coords: cache[key], cacheDirty: false };
     }
 
@@ -308,15 +417,15 @@ async function main() {
         process.exit(1);
     }
 
-    console.log('Fetching pop-ups with an address but no coordinates yet...');
-    let popups;
+    console.log('Fetching pop-ups and date ideas missing coordinates or a borough...');
+    let docs;
     try {
-        popups = await sanityFetch(POPUPS_MISSING_COORDS_QUERY);
+        docs = await sanityFetch(DOCS_NEEDING_GEOCODE_QUERY);
     } catch (err) {
-        console.error('Failed to fetch pop-ups from Sanity:', err.message);
+        console.error('Failed to fetch documents from Sanity:', err.message);
         process.exit(1);
     }
-    console.log(`Found ${popups.length} pop-up(s) to geocode.`);
+    console.log(`Found ${docs.length} document(s) to geocode.`);
 
     const cache = loadCache();
     let cacheDirty = false;
@@ -324,10 +433,14 @@ async function main() {
     let geocoded = 0;
     let skipped = 0;
     let failed = 0;
+    let boroughsResolved = 0;
 
-    for (const popup of popups) {
-        const key = normalizeAddressKey(popup.venue_name, popup.address);
-        const queries = buildGeocodeQueries(popup.venue_name, popup.address);
+    for (const doc of docs) {
+        // `location` is the field editors actually fill in; `address` is the
+        // retired one, kept as a fallback for older documents.
+        const locationText = (doc.location || doc.address || '').trim();
+        const key = normalizeAddressKey(doc.venue_name, locationText);
+        const queries = buildGeocodeQueries(doc.venue_name, locationText);
         if (!key || queries.length === 0) {
             skipped++;
             continue;
@@ -350,12 +463,18 @@ async function main() {
             continue;
         }
 
-        mutations.push({
-            patch: {
-                id: popup._id,
-                set: { latitude: coords.lat, longitude: coords.lon },
-            },
-        });
+        const set = { latitude: coords.lat, longitude: coords.lon };
+        // Only write a borough we actually resolved. Blanking one that an
+        // editor set by hand before the field went read-only would be a
+        // silent regression.
+        if (coords.borough) {
+            set.borough = coords.borough;
+            boroughsResolved++;
+        } else {
+            console.warn(`No borough resolved for "${key}" — leaving it unset.`);
+        }
+
+        mutations.push({ patch: { id: doc._id, set } });
         geocoded++;
     }
 
@@ -367,11 +486,11 @@ async function main() {
     if (mutations.length === 0) {
         console.log('No coordinate updates to write back to Sanity.');
     } else if (dryRun) {
-        console.log(`Dry run: would write coordinates for ${mutations.length} pop-up(s) to Sanity.`);
+        console.log(`Dry run: would write coordinates for ${mutations.length} document(s) to Sanity (${boroughsResolved} with a borough).`);
     } else {
         try {
             await sanityMutate(mutations, token);
-            console.log(`Wrote coordinates for ${mutations.length} pop-up(s) back to Sanity.`);
+            console.log(`Wrote coordinates for ${mutations.length} document(s) back to Sanity (${boroughsResolved} with a borough).`);
         } catch (err) {
             console.error('Failed to write coordinates back to Sanity:', err.message);
             process.exit(1);
@@ -388,4 +507,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { normalizeAddressKey, buildGeocodeQueries, geocodeAddress, sanityFetch, sanityMutate, parseMutateResponse, loadCache, saveCache, resolveCoordinates };
+module.exports = { normalizeAddressKey, buildGeocodeQueries, stripParentheticals, normalizeBorough, isWithinNycBounds, geocodeAddress, sanityFetch, sanityMutate, parseMutateResponse, loadCache, saveCache, resolveCoordinates };

@@ -43,26 +43,26 @@
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `category` | string (enum) | — | Event type for filtering and map pin icons. Values: `food_drink`, `market`, `art_culture`, `beauty`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
+| `category` | string (enum) | — | **Hidden in Studio.** Existing values still drive the Type filter and map pin icons; new pop-ups have none. Event type. Values: `food_drink`, `market`, `art_culture`, `beauty`, `fashion`, `wellness`, `music`, `vintage_thrift`. |
 | `is_featured` | boolean | — | Featured card variant with expanded image. Default: `false`. |
 
 ### Location & Geography
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `borough` | string (enum) | — | NYC borough. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
-| `neighborhood` | string | — | Neighborhood within the borough (e.g., Chelsea, SoHo). |
-| `venue_name` | string | — | Name of the hosting venue. |
-| `address` | text | — | Full street address of the venue. Coordinates for the map view are geocoded from this field automatically. |
-| `latitude` | number | — | Read-only. Auto-populated from `address` by `scripts/geocode-popups.js`. |
-| `longitude` | number | — | Read-only. Auto-populated from `address` by `scripts/geocode-popups.js`. |
-| `location` | string | — | Legacy free-text location. Prefer `venue_name` + `address` for new content. |
+| `borough` | string (enum) | — | **Read-only, hidden in Studio.** Derived from `location` by `scripts/geocode-popups.js`. Values: `manhattan`, `brooklyn`, `queens`, `bronx`, `staten_island`, `citywide` (for multi-location content; exempts `neighborhood`/`address` from content validation). |
+| `neighborhood` | string | — | **Read-only, hidden in Studio.** Not currently derived; NYC ZIPs and Nominatim are both too coarse to label it reliably (10001 covers both Herald Square and Chelsea). Existing values are retained. |
+| `venue_name` | string | — | **Hidden in Studio (retired).** Superseded by `location`. |
+| `address` | text | — | **Hidden in Studio (retired).** Superseded by `location`, which geocoding now reads first. Kept as a fallback for the handful of older documents that used it. |
+| `latitude` | number | — | Read-only, hidden in Studio. Auto-populated from `location` by `scripts/geocode-popups.js`. |
+| `longitude` | number | — | Read-only, hidden in Studio. Auto-populated from `location` by `scripts/geocode-popups.js`. |
+| `location` | string | — | **The location field.** Free text: street address, cross streets, or a venue name. Drives geocoding, which derives `latitude`, `longitude` and `borough`. |
 
 ### Pricing
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `price` | string | — | Price badge label (e.g., "Free", "$15–30"). |
+| `price` | string | — | **Hidden in Studio.** Existing values still render as a badge on cards and in the modal; new pop-ups have none. |
 
 ### Content
 
@@ -117,4 +117,8 @@ Both `POPUPS` and `POPUP_BY_ID` queries project the fields needed by the front e
 - Computed `display_in_popups_page` and `display_in_carousel` (auto-hide expired events)
 - `imageUrl` (resolved from `image.asset->url`)
 
-> **Note:** `latitude`/`longitude` are derived from the `address` field by `scripts/geocode-popups.js`, which geocodes via Nominatim (OpenStreetMap, no API key) and writes the coordinates back into Sanity through the write-enabled Mutate API. It runs on a schedule via `.github/workflows/geocode-popups.yml` (and can be triggered manually) and caches lookups in `data/geocode-cache.json` to avoid re-geocoding unchanged addresses. CMS editors never enter coordinates by hand — the fields are marked `readOnly` in Studio.
+> **Note:** `latitude`, `longitude` and `borough` are derived from the `location` field by `scripts/geocode-popups.js`, which geocodes via Nominatim (OpenStreetMap, no API key) and writes the values back into Sanity through the write-enabled Mutate API. It runs on a schedule via `.github/workflows/geocode-popups.yml` (and can be triggered manually) and caches lookups in `data/geocode-cache.json`. CMS editors never enter any of the three by hand; all are `readOnly` and hidden in Studio.
+>
+> Borough comes from Nominatim's `suburb`, falling back to `county`. Queries are constrained to an NYC bounding box and re-checked on the response, because the fallback query chain otherwise produces distant false positives (`Washington & Water St (Brooklyn)` matched an intersection in Syracuse). Location text with a parenthetical aside is retried with the aside stripped, since Nominatim returns no match rather than ignoring it.
+>
+> Expect roughly 9 in 10 to resolve. Text that names no place at all (`Moving truck, see details`, `All PopUp Bagel locations`) and bare intersections (`Mercer St & Prince St`) do not geocode, and those documents keep an empty `borough`.

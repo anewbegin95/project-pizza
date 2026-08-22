@@ -1,8 +1,8 @@
 name: Geocode Pop-up Addresses
 
-# Geocodes pop-up addresses via Nominatim and writes latitude/longitude back
-# into Sanity so the map view can read coordinates through the normal public
-# GROQ queries. Runs on a schedule and can also be triggered manually.
+# Geocodes pop-up and date-idea `location` text via Nominatim and writes
+# latitude/longitude plus the derived borough back into Sanity, so the map view
+# and the borough filter read them through the normal public GROQ queries. Runs on a schedule and can also be triggered manually.
 #
 # Requires a SANITY_WRITE_TOKEN repo secret (a Sanity API token with write
 # access, created in Studio under API > Tokens). This workflow is the only
