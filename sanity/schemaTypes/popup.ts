@@ -250,7 +250,9 @@ export const popupType = defineType({
     defineField({
       name: 'category',
       type: 'string',
-      description: 'Event category used for filtering and map pin icons.',
+      hidden: true,
+      description:
+        'Hidden from the Studio form. Existing values are still read by the Pop-Ups Type filter and the map pin icons; new pop-ups will not have one.',
       options: {
         list: [
           {title: 'Food & Drink', value: 'food_drink'},
@@ -268,7 +270,10 @@ export const popupType = defineType({
     defineField({
       name: 'borough',
       type: 'string',
-      description: 'NYC borough for geographic filtering.',
+      readOnly: true,
+      hidden: true,
+      description:
+        'Auto-populated from the address by the geocoding automation. Do not edit manually.',
       options: {
         list: [
           {title: 'Manhattan', value: 'manhattan'},
@@ -284,17 +289,22 @@ export const popupType = defineType({
     defineField({
       name: 'neighborhood',
       type: 'string',
-      description: 'Neighborhood within the borough (e.g., Chelsea, SoHo, Williamsburg).',
+      readOnly: true,
+      hidden: true,
+      description:
+        'Auto-populated from the address by the geocoding automation. Do not edit manually.',
     }),
     defineField({
       name: 'venue_name',
       type: 'string',
+      hidden: true,
       description: 'Name of the venue hosting the pop-up event.',
     }),
     defineField({
       name: 'address',
       type: 'text',
       rows: 2,
+      hidden: true,
       description:
         'Full street address of the venue. Coordinates for the map view are geocoded from this field automatically.',
     }),
@@ -302,18 +312,22 @@ export const popupType = defineType({
       name: 'latitude',
       type: 'number',
       readOnly: true,
+      hidden: true,
       description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
     }),
     defineField({
       name: 'longitude',
       type: 'number',
       readOnly: true,
+      hidden: true,
       description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
     }),
     defineField({
       name: 'price',
       type: 'string',
-      description: 'Price label shown as a badge on event cards (e.g., "Free", "$15–30").',
+      hidden: true,
+      description:
+        'Hidden from the Studio form. Existing values still render as a badge on cards and in the detail modal; new pop-ups will not have one.',
     }),
     defineField({
       name: 'is_featured',
@@ -324,7 +338,8 @@ export const popupType = defineType({
     defineField({
       name: 'location',
       type: 'string',
-      description: 'Legacy free-text location field. Prefer venue_name + address for new content.',
+      description:
+        'Where the event is. Free text is fine (street address, cross streets, or a venue name). The borough is derived from this automatically.',
     }),
     defineField({
       name: 'link',

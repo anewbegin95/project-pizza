@@ -293,7 +293,9 @@ export const dateIdeaType = defineType({
     defineField({
         name: 'budget',
         type: 'string',
-        description: 'Budget tier used for the budget filter dropdown.',
+        hidden: true,
+        description:
+          'Hidden from the Studio form. Existing values still feed the Budget filter; new date ideas will not have one.',
         options: {
           list: [
             {title: 'Free', value: 'free'},
@@ -307,7 +309,10 @@ export const dateIdeaType = defineType({
     defineField({
         name: 'borough',
         type: 'string',
-        description: 'NYC borough for geographic filtering.',
+        readOnly: true,
+        hidden: true,
+        description:
+          'Auto-populated from the address by the geocoding automation. Do not edit manually.',
         options: {
           list: [
             {title: 'Manhattan', value: 'manhattan'},
@@ -323,23 +328,45 @@ export const dateIdeaType = defineType({
     defineField({
         name: 'neighborhood',
         type: 'string',
-        description: 'Neighborhood within the borough (e.g., Chelsea, SoHo, Williamsburg).',
+        readOnly: true,
+        hidden: true,
+        description:
+          'Auto-populated from the address by the geocoding automation. Do not edit manually.',
     }),
     defineField({
         name: 'venue_name',
         type: 'string',
+        hidden: true,
         description: 'Name of the venue for the date idea.',
     }),
     defineField({
         name: 'address',
         type: 'text',
         rows: 2,
-        description: 'Full street address of the venue.',
+        hidden: true,
+        description:
+          'Full street address of the venue. Borough and neighborhood are derived from this field automatically.',
+    }),
+    defineField({
+        name: 'latitude',
+        type: 'number',
+        readOnly: true,
+        hidden: true,
+        description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
+    }),
+    defineField({
+        name: 'longitude',
+        type: 'number',
+        readOnly: true,
+        hidden: true,
+        description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
     }),
     defineField({
         name: 'price',
         type: 'string',
-        description: 'Price label shown as a badge on cards (e.g., "Free", "$40 per person").',
+        hidden: true,
+        description:
+          'Hidden from the Studio form. Existing values still render as a badge on cards; new date ideas will not have one.',
     }),
     defineField({
         name: 'is_featured',
@@ -350,7 +377,8 @@ export const dateIdeaType = defineType({
     defineField({
         name: 'location',
         type: 'string',
-        description: 'Legacy free-text location field. Prefer venue_name + address for new content.',
+        description:
+          'Where the event is. Free text is fine (street address, cross streets, or a venue name). The borough is derived from this automatically.',
     }),
     defineField({
         name: 'link',
