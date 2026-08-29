@@ -55,7 +55,11 @@ describe('interior page styles', () => {
   })
 })
 
-describe('supporting page markup', () => {
+// Parked with the redesign (#403): #402 unloads this markup from the page,
+// so these assertions have nothing to find. The module-logic and CSS-file
+// tests above still run and keep the parked code verified for the future
+// refactor. Re-enable by reverting #402 and dropping the `.skip`.
+describe.skip('supporting page markup', () => {
   it.each(SUPPORTING_PAGES)('%s adopts the shared shell', (page) => {
     const html = read(page)
     // The shell classes sit alongside each page's existing ones.

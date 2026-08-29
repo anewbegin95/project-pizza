@@ -15,13 +15,8 @@
     <link rel="stylesheet" href="resources/css/header.css">
     <link rel="stylesheet" href="resources/css/hero.css">
     <link rel="stylesheet" href="resources/css/buttons.css">
-    <link rel="stylesheet" href="resources/css/search.css">
-    <link rel="stylesheet" href="resources/css/filters.css">
-    <link rel="stylesheet" href="resources/css/cards.css">
     <link rel="stylesheet" href="resources/css/popups.css">
   <link rel="stylesheet" href="resources/css/date_ideas.css">
-    <link rel="stylesheet" href="resources/css/results.css">
-    <link rel="stylesheet" href="resources/css/dateideas-redesign.css">
     <link rel="stylesheet" href="resources/css/popup_details.css">
     <link rel="stylesheet" href="resources/css/modals.css">
     <link rel="stylesheet" href="resources/css/footer.css">
@@ -31,16 +26,6 @@
     <script src="resources/js/sanity-client.js" defer></script>
     <script src="resources/js/sanity-queries.js" defer></script>
     <script src="resources/js/date-ideas.js" defer></script>
-    <script src="resources/js/search.js" defer></script>
-    <script src="resources/js/filters.js" defer></script>
-    <script src="resources/js/results-filter.js" defer></script>
-    <script src="resources/js/dateideas-filter.js" defer></script>
-    <script src="resources/js/cards.js" defer></script>
-    <script src="resources/js/results-list.js" defer></script>
-    <script src="resources/js/dateideas-list.js" defer></script>
-    <script src="resources/js/modal.js" defer></script>
-    <script src="resources/js/results-modal.js" defer></script>
-    <script src="resources/js/dateideas-modal.js" defer></script>
     <link rel="icon" href="resources/images/icons/favicon.ico" type="image/x-icon">
   </head>
   <body>
@@ -61,81 +46,10 @@
       </section>
 
       <!-- Search (redesign only; no map view for date ideas) -->
-      <div class="search-bar-container">
-        <div class="search-bar">
-          <svg class="search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
-          </svg>
-          <input class="ui-input search-bar__input" type="search" placeholder="Search events, venues, neighborhoods..." aria-label="Search events, venues, and neighborhoods">
-        </div>
-      </div>
-
-      <!-- Filter bar (redesign only) -->
-      <div class="filter-bar" role="toolbar" aria-label="Filter date ideas" data-filter-page="date-ideas">
-        <div class="filter-bar__group">
-          <button type="button" class="ui-filter-chip filter-chip" data-filter="vibe" data-label="Vibe" aria-haspopup="listbox" aria-expanded="false">
-            <span class="filter-chip__label">Vibe</span>
-            <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
-          </button>
-          <ul class="filter-dropdown" role="listbox" aria-label="Vibe" hidden>
-            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Vibes">All Vibes</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="romantic" data-label="Romantic">&#127801; Romantic</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="adventurous" data-label="Adventurous">&#129517; Adventurous</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="chill" data-label="Chill">&#127810; Chill</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="foodie" data-label="Foodie">&#127860; Foodie</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="cultural" data-label="Cultural">&#127914; Cultural</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="free" data-label="Free">&#10024; Free</li>
-          </ul>
-        </div>
-        <div class="filter-bar__group">
-          <button type="button" class="ui-filter-chip filter-chip" data-filter="budget" data-label="Budget" aria-haspopup="listbox" aria-expanded="false">
-            <span class="filter-chip__label">Budget</span>
-            <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
-          </button>
-          <ul class="filter-dropdown" role="listbox" aria-label="Budget" hidden>
-            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Budgets">All Budgets</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="free" data-label="Free">Free</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="under_30" data-label="Under $30">Under $30</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="30_to_75" data-label="$30&#8211;$75">$30&#8211;$75</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="75_plus" data-label="$75+">$75+</li>
-          </ul>
-        </div>
-        <div class="filter-bar__group">
-          <button type="button" class="ui-filter-chip filter-chip" data-filter="neighborhood" data-label="Neighborhood" aria-haspopup="listbox" aria-expanded="false">
-            <span class="filter-chip__label">Neighborhood</span>
-            <span class="filter-chip__chevron" aria-hidden="true">&#9662;</span>
-          </button>
-          <!-- Options past "All" are replaced at runtime from the loaded
-               date ideas, so the list cannot drift from the content. These
-               are the no-JS fallback. -->
-          <ul class="filter-dropdown" role="listbox" aria-label="Neighborhood" hidden>
-            <li class="filter-dropdown__option" role="option" aria-selected="true" data-value="" data-label="All Neighborhoods">All Neighborhoods</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Corona" data-label="Corona">Corona</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Fordham" data-label="Fordham">Fordham</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Lincoln Square" data-label="Lincoln Square">Lincoln Square</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Meatpacking District" data-label="Meatpacking District">Meatpacking District</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Midtown" data-label="Midtown">Midtown</li>
-            <li class="filter-dropdown__option" role="option" aria-selected="false" data-value="Washington Heights" data-label="Washington Heights">Washington Heights</li>
-          </ul>
-        </div>
-        <button type="button" class="ui-btn--text filter-bar__clear" hidden>&#215; Clear all</button>
-      </div>
-      <p class="results-count" aria-live="polite">0 date ideas found</p>
-      <hr class="ui-divider results-divider">
-
-      <!-- Results region. The grid is the legacy .date-ideas-grid, restyled by
-           results.css when the flag is on. There is only one panel: date ideas
-           are evergreen, so section 7.2 gives the page no List/Map toggle, and
-           search.js never stamps data-view here. The grid stays in the DOM
-           under its own id — prebuild-events.js injects the static tiles
-           between the markers, and filters.js counts the results inside it. -->
-      <div class="results">
-        <section class="date-ideas-grid results__panel--list" id="dateIdeasGrid">
-          <!-- STATIC_DATE_IDEAS_START -->
-          <!-- STATIC_DATE_IDEAS_END -->
-        </section>
-      </div>
+      <section class="date-ideas-grid" id="dateIdeasGrid">
+        <!-- STATIC_DATE_IDEAS_START -->
+        <!-- STATIC_DATE_IDEAS_END -->
+      </section>
     </main>
     <!-- The footer content will be dynamically loaded here -->
     <div id="footer-placeholder"></div>

@@ -164,7 +164,11 @@ describe('getDistinctNeighborhoods', () => {
   })
 })
 
-describe('date-ideas.html filter markup', () => {
+// Parked with the redesign (#403): #402 unloads this markup from the page,
+// so these assertions have nothing to find. The module-logic and CSS-file
+// tests above still run and keep the parked code verified for the future
+// refactor. Re-enable by reverting #402 and dropping the `.skip`.
+describe.skip('date-ideas.html filter markup', () => {
   const fs = require('node:fs')
   const path = require('node:path')
   const html = fs.readFileSync(path.resolve(__dirname, '..', '..', 'date-ideas.html'), 'utf8')
