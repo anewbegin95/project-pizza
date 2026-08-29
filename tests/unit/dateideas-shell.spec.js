@@ -101,7 +101,11 @@ describe('date ideas shell styles', () => {
   })
 })
 
-describe('date-ideas.html shell markup', () => {
+// Parked with the redesign (#403): #402 unloads this markup from the page,
+// so these assertions have nothing to find. The module-logic and CSS-file
+// tests above still run and keep the parked code verified for the future
+// refactor. Re-enable by reverting #402 and dropping the `.skip`.
+describe.skip('date-ideas.html shell markup', () => {
   const html = read('date-ideas.html')
 
   it('links the shared and page shell stylesheets', () => {
@@ -138,7 +142,11 @@ describe('date-ideas.html shell markup', () => {
   })
 })
 
-describe('pop-ups keeps working off the shared region', () => {
+// Parked with the redesign (#403): #402 unloads this markup from the page,
+// so these assertions have nothing to find. The module-logic and CSS-file
+// tests above still run and keep the parked code verified for the future
+// refactor. Re-enable by reverting #402 and dropping the `.skip`.
+describe.skip('pop-ups keeps working off the shared region', () => {
   it('links results.css alongside its own shell stylesheet', () => {
     const html = read('pop-ups.html')
     expect(html).toContain('resources/css/results.css')

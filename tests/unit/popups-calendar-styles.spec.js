@@ -91,7 +91,11 @@ describe('calendar view styles', () => {
   })
 })
 
-describe('calendar view markup', () => {
+// Parked with the redesign (#403): #402 unloads this markup from the page,
+// so these assertions have nothing to find. The module-logic and CSS-file
+// tests above still run and keep the parked code verified for the future
+// refactor. Re-enable by reverting #402 and dropping the `.skip`.
+describe.skip('calendar view markup', () => {
   const html = read('pop-ups.html')
 
   it('links the calendar stylesheet and script', () => {
