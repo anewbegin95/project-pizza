@@ -1,0 +1,148 @@
+/* =============================================================================
+   CONSENT BAR (issue #396, part of the #160 analytics PRD)
+
+   Non-modal fixed bottom bar offering Accept and Decline. The markup is built
+   by resources/js/consent.js and only exists in the DOM once that module mounts
+   it, so there is nothing here to hide by default and no layout to shift.
+
+   -----------------------------------------------------------------------------
+   THIS IS NOT A REDESIGN COMPONENT — DO NOT ADD A FLAG SCOPE.
+   -----------------------------------------------------------------------------
+   CLAUDE.md's house rule is that every new component is gated in both halves:
+   CSS scoped to `:root[data-redesign='on'], body.redesign-enabled`, with an
+   unscoped `display: none` default for anything that must not leak flag-off.
+   That rule is inverted here, deliberately.
+
+   The redesign flag defaults OFF in every environment and the redesign itself
+   is parked (#403). Scoping these rules to it would leave the live site with an
+   unstyled or invisible consent bar — a control that does not work, which is
+   precisely the failure mode the NY AG's *Website Privacy Controls* guide names
+   and the one this component exists to avoid.
+
+   Consent is a property of the site, not of a design. These rules apply in both
+   flag states on all nine pages. resources/js/consent.js carries the same note.
+
+   Accept and Decline share one class with no modifier, and sit in equal grid
+   columns, so neither can drift into looking like the primary action. An e2e
+   test compares their computed styles; keep any new rule on the shared class.
+============================================================================= */
+
+.nyc-consent {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1100; /* above the header (1001) and modals (1000) */
+  background-color: var(--nyc-navy);
+  color: var(--nyc-white);
+  border-top: 4px solid var(--nyc-fuschia);
+  box-shadow: var(--shadow-xl);
+  font-family: var(--nyc-font-body);
+  line-height: 1.5;
+}
+
+.nyc-consent__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.nyc-consent__message {
+  flex: 1 1 320px;
+  min-width: 0;
+  margin: 0;
+  color: var(--nyc-white);
+  font-size: var(--font-xs-md);
+}
+
+.nyc-consent__link {
+  color: var(--nyc-white);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+}
+
+.nyc-consent__link:hover {
+  color: var(--nyc-pink);
+}
+
+/* Equal columns rather than equal padding: the two labels are different
+   lengths, so only the track can guarantee identical rendered widths. */
+.nyc-consent__actions {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: var(--space-xs);
+}
+
+.nyc-consent__button {
+  min-height: 44px; /* touch target */
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--nyc-white);
+  color: var(--nyc-navy);
+  border: 2px solid var(--nyc-white);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nyc-consent__button:hover {
+  background-color: var(--nyc-pink);
+  color: var(--nyc-navy);
+}
+
+/* buttons.css resets `a:focus, button:focus` to no outline and no shadow site
+   wide. Without this the bar is unusable by keyboard, so it is styled on
+   :focus rather than :focus-visible — an always-visible ring on a two-button
+   consent choice is the safer trade. */
+.nyc-consent__button:focus,
+.nyc-consent__link:focus {
+  outline: 3px solid var(--nyc-pink);
+  outline-offset: 2px;
+}
+
+/* Footer entry point. Styled to sit inside .site-footer__links next to the
+   real links, which means undoing the browser's button chrome. */
+.nyc-consent__settings {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--nyc-white);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nyc-consent__settings:hover {
+  color: var(--nyc-fuschia);
+}
+
+.nyc-consent__settings:focus {
+  outline: 3px solid var(--nyc-pink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .nyc-consent__inner {
+    padding: var(--space-sm) var(--space-sm);
+  }
+
+  /* Stacked, still full width and still equal: neither answer gets the
+     wider or the higher target. */
+  .nyc-consent__actions {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

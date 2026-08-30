@@ -72,11 +72,24 @@ A Node script (no browser APIs) that queries Sanity directly over HTTPS and rewr
 
 Environment-aware feature flag gating an in-progress redesign, loaded first (blocking, not deferred) in every page's `<head>`. Resolves on/off via, in priority order: `?redesign=on|off` URL param > `window.REDESIGN_CONFIG` (optionally loaded from a separate untracked `resources/js/redesign-config.js`) > hostname-based environment default (dev/staging/prod all default OFF). See README for full config API.
 
+### Consent module (`resources/js/consent.js`, ungated)
+
+Ships the consent state machine and banner UI for the #160 analytics work (#396). **Nothing consumes it yet and the banner is not rendered** — the bootstrap builds `window.NycConsent` and binds the footer control, but never mounts the bar. Issue 3 of #160 adds the one line that does, in the same PR that rewrites `privacy_policy.html`.
+
+- State is `granted` | `denied` | `unset`, in **localStorage** under `nyc-consent`, not a cookie. Anything unrecognised (absent, corrupt, storage throwing) reads as `unset`, which under opt-in means not tracked.
+- **GPC (`navigator.globalPrivacyControl`) or DNT (`navigator.doNotTrack`) resolves `denied` and the banner is never auto-shown.** The signal is a default for people who never answered, not a veto: an explicitly stored choice outranks it, so the Accept button in the footer control always does what it says.
+- Publishes `consent:change` on `document`, same seam convention as `filters:change` / `search:change`.
+- `renderBanner(doc)` is guarded and mounts only when a choice is still open; `openSettings(doc)` (the footer link) always mounts. `denied` is permanent — the site never re-prompts.
+- The footer's "Cookie settings" button is bound by **delegation from `document`**, because `partials-loader.js` injects the footer with `insertAdjacentHTML` and `pop-ups.js` re-injects it after its Sanity fetch.
+- **This is not a redesign component and must not be gated** — not the CSS, not the JS. The flag defaults off in every environment and the redesign is parked (#403), so a gate would disable consent on the live site. Both files carry a comment saying why, and `tests/unit/consent.spec.js` fails if a redesign scope or flag check appears in either.
+- Accept and Decline share one class with no modifier and sit in equal grid columns; `tests/e2e/consent.spec.js` compares their computed styles. That file must keep its exact name — `playwright.config.js` sets `testIgnore: '**/redesign-*.spec.js'`, so a `redesign-` prefix would silently skip it.
+
 ### Redesign shared components (`docs/redesign-components.md`)
 
 Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map toggle, filter bar/chips/dropdowns, date range picker, event cards, detail modal, interior-page shell. Epic 4 wired all of it up on Pop-Ups. **`docs/redesign-components.md` is the reference**: component inventory, public APIs, the events they publish, deviations from REDESIGN.md, and the traps below. Read it before building on them.
 
 - **Everything is gated, in both halves.** CSS rules are scoped to `:root[data-redesign='on'], body.redesign-enabled`, and anything that must not appear flag-off carries an unscoped `display: none` default. JS bootstraps return early unless `window.REDESIGN_FLAG.isEnabled()`. A component doing only one half leaks into the legacy experience.
+  - **One deliberate exception: the consent bar** (`resources/js/consent.js`, `resources/css/consent.css`) — see below. It is ungated in both halves on purpose. Do not "fix" it.
 - **New JS modules are wrapped in an IIFE exposing a single `window.NycX`** (`NycCards`, `NycModal`, `NycFilters`, `NycDatePicker`, and the Pop-Ups modules `NycPopupsFilter`, `NycPopupsList`, `NycPopupsDetail`, `NycPopupsMap`). Classic scripts share one global lexical scope, so a duplicate top-level `const` silently kills the whole file — this happened with `EASTERN_TIMEZONE` between `cards.js` and `pop-ups.js`. An e2e test asserts each redesign page loads with zero page errors.
 - **Components publish events rather than calling each other**: `viewtoggle:change`, `search:change`, `filters:change`, `filters:clear`. On Pop-Ups these are consumed by `popups-filter.js` and `popups-map.js`; Date Ideas re-uses them in Epic 6.
 - **Anchor date-only strings at noon UTC.** `new Date('2026-07-25')` is UTC midnight, i.e. the previous evening in Eastern time, so all-day events render a day early. `prebuild-events.js`, `cards.js`, `modal.js`, `popups-filter.js` and `popups-list.js` all do this.

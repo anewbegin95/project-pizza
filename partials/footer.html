@@ -7,6 +7,11 @@
       <a href="/date-ideas.html" class="site-footer__link">Date Ideas</a>
       <a href="/contact_us.html" class="site-footer__link">Contact</a>
       <a href="/privacy_policy.html" class="site-footer__link">Privacy Policy</a>
+      <!-- Withdrawal has to be exactly as easy as granting, so the control is
+           permanent and one click. A real <button> bound by delegation in
+           resources/js/consent.js: this partial is injected with
+           insertAdjacentHTML, which never runs <script> tags. -->
+      <button type="button" class="site-footer__link nyc-consent__settings" data-consent-settings>Cookie settings</button>
     </nav>
     <div class="site-footer__social">
       <span>Follow us on: </span>
