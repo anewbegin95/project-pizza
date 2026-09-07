@@ -74,7 +74,7 @@ Environment-aware feature flag gating an in-progress redesign, loaded first (blo
 
 ### Consent module (`resources/js/consent.js`, ungated)
 
-Ships the consent state machine and banner UI for the #160 analytics work (#396). **Nothing consumes it yet and the banner is not rendered** — the bootstrap builds `window.NycConsent` and binds the footer control, but never mounts the bar. Issue 3 of #160 adds the one line that does, in the same PR that rewrites `privacy_policy.html`.
+Ships the consent state machine and banner UI for the #160 analytics work (#396), **live since #398**: the bootstrap builds `window.NycConsent`, binds the footer control, and mounts the bar. `resources/js/analytics.js` is its only consumer.
 
 - State is `granted` | `denied` | `unset`, in **localStorage** under `nyc-consent`, not a cookie. Anything unrecognised (absent, corrupt, storage throwing) reads as `unset`, which under opt-in means not tracked.
 - **GPC (`navigator.globalPrivacyControl`) or DNT (`navigator.doNotTrack`) resolves `denied` and the banner is never auto-shown.** The signal is a default for people who never answered, not a veto: an explicitly stored choice outranks it, so the Accept button in the footer control always does what it says.
@@ -82,7 +82,19 @@ Ships the consent state machine and banner UI for the #160 analytics work (#396)
 - `renderBanner(doc)` is guarded and mounts only when a choice is still open; `openSettings(doc)` (the footer link) always mounts. `denied` is permanent — the site never re-prompts.
 - The footer's "Cookie settings" button is bound by **delegation from `document`**, because `partials-loader.js` injects the footer with `insertAdjacentHTML` and `pop-ups.js` re-injects it after its Sanity fetch.
 - **This is not a redesign component and must not be gated** — not the CSS, not the JS. The flag defaults off in every environment and the redesign is parked (#403), so a gate would disable consent on the live site. Both files carry a comment saying why, and `tests/unit/consent.spec.js` fails if a redesign scope or flag check appears in either.
-- Accept and Decline share one class with no modifier and sit in equal grid columns; `tests/e2e/consent.spec.js` compares their computed styles. That file must keep its exact name — `playwright.config.js` sets `testIgnore: '**/redesign-*.spec.js'`, so a `redesign-` prefix would silently skip it.
+- Accept and Decline share one class with no modifier and sit in equal grid columns; `tests/e2e/consent.spec.js` compares their computed styles. That file must keep its exact name — `playwright.config.js` sets `testIgnore: '**/redesign-*.spec.js'`, so a `redesign-` prefix would silently skip it. Same rule for `tests/e2e/analytics-consent.spec.js`.
+- **The bar mounts on `document.fonts.ready`, not immediately.** It is bottom-anchored, so the web-font swap reflowed its message, grew it ~20px and jumped it upward — that doubled CLS on every page (0.086 → 0.19) and cost ~7 Lighthouse performance points when #398 first turned it on. A 2s timer caps the wait so a stalled font request can never suppress the choice.
+
+### Analytics loader (`resources/js/analytics.js`, ungated)
+
+GA4 behind the consent gate (#398). Exposes `window.NycAnalytics`, subscribes to `consent:change`, and on `granted` — and nothing else — injects `gtag.js` for `G-JYLM80LHT2`, configures it, and sends one `page_view`.
+
+- **On `denied` / `unset` / anything unrecognised it does nothing at all**: no script tag, no `dataLayer`, no cookie, no request. `tests/e2e/analytics-consent.spec.js` asserts that with Playwright request interception across all nine pages; it is the load-bearing test of the milestone.
+- **Ungated for the same reason consent.js is**, and `tests/unit/analytics.spec.js` fails if a flag check appears. `redesign_flag` is *reported* as a `page_view` parameter, never consulted as a condition.
+- Loaded **after** `consent.js` in every page's `<head>` — both deferred, so document order decides, and the loader reads `NycConsent.getState()` at bootstrap to serve a returning visitor who already granted.
+- Config sets `anonymize_ip`, `allow_google_signals: false`, `allow_ad_personalization_signals: false`, `allow_linker: false`, `transport_type: 'beacon'` (§2.4: tiles and slides assign `location.href` synchronously), and `send_page_view: false` so the one `page_view` is explicit. `page_type` and `env` also ride the config, so #399's events inherit them.
+- Withdrawal sets Google's `ga-disable-G-JYLM80LHT2` switch and expires the `_ga*` cookies. gtag cannot be torn out of a loaded page; `privacy_policy.html` describes exactly this rather than overclaiming.
+- **Lighthouse never consents, so gtag never loads in a CI run.** If the performance score moves, suspect the gate before the budget.
 
 ### Redesign shared components (`docs/redesign-components.md`)
 
