@@ -17,7 +17,11 @@
  */
 const { test, expect } = require('@playwright/test')
 
-/** Mount the banner the way the activation PR eventually will — explicitly. */
+/**
+ * Asks for the bar explicitly. Since #398 the bootstrap already mounts it for a
+ * visitor who has not answered, so this is idempotent there; it still returns
+ * false for a settled visitor, which is what the re-prompt tests assert.
+ */
 async function renderBanner(page) {
   return page.evaluate(() => Boolean(window.NycConsent.renderBanner()))
 }
@@ -105,10 +109,48 @@ test('ignoring the banner leaves the visitor untracked', async ({ page }) => {
   expect(await getState(page)).toBe('unset')
 })
 
-test('nothing renders on load, so the page is visually unchanged', async ({ page }) => {
+// Inverted by #398. Until the GA4 loader existed there was nothing to consent
+// to, so mounting a bar would have misrepresented the site. Now the loader is
+// shipped on every page and the choice has to be offered before it can be made.
+test('the bar mounts on load, once, for a visitor who has not answered', async ({ page }) => {
   await page.goto('/about.html')
   await page.waitForFunction(() => Boolean(window.NycConsent))
-  await expect(page.locator('.nyc-consent')).toHaveCount(0)
+
+  await expect(page.locator('.nyc-consent')).toHaveCount(1)
+  await expect(page.getByRole('region', { name: /cookie|analytics|consent/i })).toBeVisible()
+
+  // The bar is appended to <body> and the header and footer arrive later from
+  // fetched partials; neither injection may duplicate or dislodge it.
+  await expect(page.locator('.site-footer')).toBeVisible()
+  await expect(page.locator('.nyc-consent')).toHaveCount(1)
+})
+
+// The bar is bottom-anchored, so if it mounts before the web fonts swap in it
+// grows and jumps upward. That regression doubled CLS on every page and cost
+// ~7 Lighthouse performance points when #398 first turned the bar on.
+test('the bar paints once and never moves after mounting', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__barShift = 0
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.hadRecentInput) continue
+        const movedTheBar = (entry.sources || []).some((source) => source.node
+          && source.node.classList
+          && source.node.classList.contains('nyc-consent'))
+        if (movedTheBar) {
+          window.__barShift += entry.value
+        }
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+  })
+
+  await page.setViewportSize({ width: 400, height: 720 })
+  await page.goto('/about.html')
+  await expect(page.locator('.nyc-consent')).toHaveCount(1)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForTimeout(1000)
+
+  expect(await page.evaluate(() => window.__barShift)).toBe(0)
 })
 
 test('Decline persists across a reload and is never re-prompted', async ({ page }) => {
@@ -244,7 +286,7 @@ test('renders and settles with zero page errors', async ({ page }) => {
   expect(errors).toEqual([])
 })
 
-test('the module is present on every page that ships it', async ({ page }) => {
+test('the module is present, and the bar offered, on every page that ships it', async ({ page }) => {
   const pages = [
     '/',
     '/pop-ups.html',
@@ -261,6 +303,6 @@ test('the module is present on every page that ships it', async ({ page }) => {
     await page.goto(url)
     await page.waitForFunction(() => Boolean(window.NycConsent))
     expect(await getState(page), `state on ${url}`).toBe('unset')
-    await expect(page.locator('.nyc-consent'), `no banner on ${url}`).toHaveCount(0)
+    await expect(page.locator('.nyc-consent'), `banner on ${url}`).toHaveCount(1)
   }
 })

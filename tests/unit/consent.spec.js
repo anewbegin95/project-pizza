@@ -17,6 +17,7 @@ const {
   hasOptOutSignal,
   resolveState,
   createConsent,
+  whenFontsSettled,
 } = require('../../resources/js/consent.js')
 
 const projectRoot = path.resolve(__dirname, '..', '..')
@@ -218,6 +219,71 @@ describe('consent:change', () => {
   })
 })
 
+/**
+ * The bar is bottom-anchored, so a height change moves its top edge. Mounting
+ * before the web fonts swap in made it grow ~20px and jump upward, doubling CLS
+ * on every page (0.086 -> 0.19) and costing ~7 Lighthouse performance points.
+ * The behavioural half of this lives in `tests/e2e/consent.spec.js`.
+ */
+describe('deferring the mount past the font swap', () => {
+  function createFontsScope(readyPromise) {
+    const timers = []
+    return {
+      doc: { fonts: readyPromise ? { ready: readyPromise } : undefined },
+      scope: { setTimeout: (fn, delay) => { timers.push({ fn, delay }); return timers.length } },
+      timers,
+    }
+  }
+
+  it('waits for document.fonts.ready before mounting', async () => {
+    let resolveFonts
+    const ready = new Promise((resolve) => { resolveFonts = resolve })
+    const { doc, scope } = createFontsScope(ready)
+
+    let mounted = false
+    whenFontsSettled(doc, scope, () => { mounted = true })
+    expect(mounted).toBe(false)
+
+    resolveFonts()
+    await ready
+    await Promise.resolve()
+    expect(mounted).toBe(true)
+  })
+
+  it('mounts only once, even when the timer and the fonts both fire', async () => {
+    const ready = Promise.resolve()
+    const { doc, scope, timers } = createFontsScope(ready)
+
+    let mounts = 0
+    whenFontsSettled(doc, scope, () => { mounts += 1 })
+    await ready
+    await Promise.resolve()
+    timers.forEach((timer) => timer.fn())
+
+    expect(mounts).toBe(1)
+  })
+
+  // A consent choice that never appears because a font request stalled would be
+  // the "control that does not work" failure mode, arrived at sideways.
+  it('caps the wait with a timer so the choice is always offered', () => {
+    const { doc, scope, timers } = createFontsScope(new Promise(() => {}))
+
+    let mounted = false
+    whenFontsSettled(doc, scope, () => { mounted = true })
+    expect(timers).toHaveLength(1)
+    expect(timers[0].delay).toBeGreaterThan(0)
+
+    timers[0].fn()
+    expect(mounted).toBe(true)
+  })
+
+  it('mounts synchronously where the font loading API is absent', () => {
+    let mounted = false
+    whenFontsSettled({}, { setTimeout: () => {} }, () => { mounted = true })
+    expect(mounted).toBe(true)
+  })
+})
+
 describe('banner visibility rules', () => {
   it('offers the banner only to a visitor who has not answered and sends no signal', () => {
     const { consent } = createConsentFor()
@@ -281,10 +347,21 @@ describe('consent.js is deliberately ungated', () => {
     expect(js).toMatch(/NOT a redesign component/i)
   })
 
-  // Issue #396 ships the mechanism with the banner unrendered; nothing may
-  // auto-show it until the activation PR.
-  it('does not auto-render the banner at bootstrap', () => {
-    expect(code.slice(code.indexOf("typeof window !== 'undefined'"))).not.toContain('renderBanner(')
+  // Inverted by #398, which is the activation PR this test was waiting for.
+  // #396 shipped the mechanism with the bar unrendered because a consent bar
+  // over a site that loaded no tracker would itself have been a
+  // misrepresentation. Now that analytics.js exists, the opposite is true: a
+  // GA4 loader with no way to answer it is the failure mode.
+  it('auto-renders the banner at bootstrap', () => {
+    expect(code.slice(code.indexOf("typeof window !== 'undefined'"))).toContain('renderBanner(')
+  })
+
+  // `renderBanner` is the guarded entry point and `openSettings` is not, so
+  // bootstrapping through the wrong one would re-prompt every visitor who has
+  // already declined — on every page load, forever.
+  it('auto-renders through the guarded entry point, not openSettings', () => {
+    const bootstrap = code.slice(code.indexOf("typeof window !== 'undefined'"))
+    expect(bootstrap).not.toContain('openSettings(')
   })
 })
 

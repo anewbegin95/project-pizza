@@ -6,11 +6,13 @@
  * on the document alongside the existing `filters:change` / `search:change`
  * seam convention.
  *
- * NOTHING CONSUMES THIS YET. The bootstrap deliberately does not render the
- * banner: showing a consent bar while the site sets no cookie and loads no
- * tracker would itself be the misrepresentation the NY AG's *Website Privacy
- * Controls* guide targets. Issue 3 of #160 adds the one line that renders it,
- * in the same PR that rewrites privacy_policy.html.
+ * LIVE since #398. The bootstrap now renders the banner, and
+ * `resources/js/analytics.js` subscribes to `consent:change` and loads GA4 on
+ * `granted` and on nothing else. Until that PR the bar was deliberately not
+ * mounted: showing a consent bar while the site set no cookie and loaded no
+ * tracker would itself have been the misrepresentation the NY AG's *Website
+ * Privacy Controls* guide targets. The banner, the loader, and the rewritten
+ * privacy_policy.html shipped together, which is what keeps all three honest.
  *
  * ---------------------------------------------------------------------------
  * THIS IS NOT A REDESIGN COMPONENT — DO NOT ADD A FLAG GATE.
@@ -52,6 +54,8 @@
   const BANNER_MESSAGE = 'We would like to use Google Analytics to see which pop-ups and pages people '
     + 'actually find useful. Nothing is loaded and nothing is stored unless you accept, and you can '
     + 'change your mind at any time from the “Cookie settings” link in the footer.';
+  const BANNER_MOUNT_TIMEOUT_MS = 2000;
+
   const PRIVACY_POLICY_HREF = '/privacy_policy.html';
   const PRIVACY_POLICY_TEXT = 'Read our Privacy Policy';
 
@@ -307,6 +311,42 @@
     });
   }
 
+  /**
+   * The bar is anchored to the bottom, so anything that changes its height
+   * moves its top edge. The site's web fonts swap in around 100ms after the bar
+   * first paints and reflow the message, growing it by ~20px — measured on
+   * about.html at a 400px viewport, 2026-09-07: mounted at h=201/top=519, then
+   * h=222/top=498. That is a visible jump, and it doubled the page's CLS
+   * (0.086 -> 0.19) and cost ~7 Lighthouse performance points.
+   *
+   * Waiting for the fonts means the bar paints once, at its final size. Nothing
+   * is waiting to read it, so the delay is free; the timer is there because a
+   * consent choice that depends on a font request completing would be a control
+   * that does not work if the font never arrives.
+   */
+  function whenFontsSettled(doc, scope, callback) {
+    const fonts = doc && doc.fonts;
+    const canDefer = fonts && fonts.ready && typeof fonts.ready.then === 'function'
+      && scope && typeof scope.setTimeout === 'function';
+
+    if (!canDefer) {
+      callback();
+      return;
+    }
+
+    let settled = false;
+    const runOnce = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      callback();
+    };
+
+    scope.setTimeout(runOnce, BANNER_MOUNT_TIMEOUT_MS);
+    fonts.ready.then(runOnce, runOnce);
+  }
+
   /** localStorage getter that survives browsers where touching it throws. */
   function getLocalStorage(scope) {
     try {
@@ -326,6 +366,8 @@
     buildBanner,
     createConsent,
     bindSettingsControl,
+    whenFontsSettled,
+    BANNER_MOUNT_TIMEOUT_MS,
   };
 
   if (typeof module !== 'undefined' && module.exports) {
@@ -340,7 +382,12 @@
       document: window.document,
     });
     bindSettingsControl(window.document, window.NycConsent);
-    // No banner is mounted here, on purpose — see the header comment. Issue 3
-    // of #160 is what turns it on.
+    // Activation (#398). `renderBanner` is guarded: it mounts only for a
+    // visitor who has neither answered nor sent GPC/DNT, so this never
+    // re-prompts anyone. The bar has to exist before a choice can be made, and
+    // resources/js/analytics.js loads nothing until one is.
+    whenFontsSettled(window.document, window, () => {
+      window.NycConsent.renderBanner(window.document);
+    });
   }
 }(typeof globalThis !== 'undefined' ? globalThis : this));
