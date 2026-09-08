@@ -335,6 +335,11 @@ function createPopupTile(popup, skipPopupsPageCheck = false) {
     const tile = document.createElement('div');
     // BEM/component refactor for popup tile
     tile.className = 'popup-tile popup-tile--horizontal';
+    // Read by resources/js/analytics-events.js (#399). This tile is a <div>
+    // with no href — #404 makes it a real anchor — so the id has nowhere else
+    // to come from. Date Ideas tiles are anchors and need none of this.
+    tile.setAttribute('data-analytics-id', popup.id);
+    tile.setAttribute('data-analytics-type', 'popup');
 
     // Left: Image
     const imgContainer = document.createElement('div');

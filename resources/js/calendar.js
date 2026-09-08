@@ -100,6 +100,14 @@ function renderCalendar(month, year) {
     document.querySelector('.calendar-month-year').textContent =
         firstDay.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
+    // Machine-readable copy of the same thing, for analytics-events.js (#399).
+    // The displayed label is localised prose; `months_from_current` needs a
+    // value that can be subtracted, and one no visitor ever typed.
+    const calendarHeader = document.querySelector('.calendar-header');
+    if (calendarHeader) {
+        calendarHeader.setAttribute('data-analytics-month', `${year}-${String(month + 1).padStart(2, '0')}`);
+    }
+
     // The calendar grid is always 6 rows of 7 days (to cover all possible month layouts)
     // 'day' starts negative if the month doesn't start on Sunday, so we fill in blanks
     let day = 1 - startDayOfWeek; // May start negative if the month doesn't start on Sunday
@@ -275,6 +283,10 @@ function placePopupsInGrid(month, year) {
       const sanitizedStartDatetime = popup.start_datetime.replace(/[:]/g, '-');
       const uniqueId = `${popup.name.replace(/\s+/g, '-').toLowerCase()}-${sanitizedStartDatetime}`;
       bar.setAttribute('data-event-id', uniqueId);
+      // `data-event-id` is a per-occurrence key for the segment highlighting,
+      // not a document id — a multi-day pop-up has several. `entry_id` has to
+      // be the Sanity id or the same event counts as several in GA4 (#399).
+      bar.setAttribute('data-analytics-id', popup.id);
       popup._calendarUniqueId = uniqueId;
 
       // Accessibility and highlight logic

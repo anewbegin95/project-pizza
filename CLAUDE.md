@@ -96,6 +96,55 @@ GA4 behind the consent gate (#398). Exposes `window.NycAnalytics`, subscribes to
 - Withdrawal sets Google's `ga-disable-G-JYLM80LHT2` switch and expires the `_ga*` cookies. gtag cannot be torn out of a loaded page; `privacy_policy.html` describes exactly this rather than overclaiming.
 - **Lighthouse never consents, so gtag never loads in a CI run.** If the performance score moves, suspect the gate before the budget.
 
+### Click instrumentation (`resources/js/analytics-events.js`, ungated)
+
+The eight custom events of #160 §5, shipped by #399. One IIFE exposing
+`window.NycAnalyticsEvents`, loaded after `analytics.js` on all nine pages.
+Everything it resolves goes out through `NycAnalytics.track(name, params)` —
+**the events module never touches `window.gtag` or `dataLayer`**, so the consent
+gate stays in exactly one file. `tests/unit/analytics-events.spec.js` fails if
+either name appears here.
+
+- **Never instrument a render path.** The carousel auto-advances every 5s
+  (`carousel.js:179`); hanging events off rendering would log phantom
+  engagement on every homepage visit. Every rule keys off a real interaction.
+  The first test in `tests/e2e/analytics-events.spec.js` loads the homepage,
+  waits through two auto-advances and asserts zero events — it fails if you
+  get this wrong, and it checks the carousel actually advanced so an empty
+  carousel cannot pass it silently.
+- **The listeners are bound in the capture phase.** Calendar bars
+  (`calendar.js:296`), "+N more" links and carousel dots all call
+  `stopPropagation()` in their own handlers, so a bubble-phase listener on
+  `document` would never see a calendar click at all. Capture also means the
+  DOM is read *before* those handlers mutate it, which is what makes
+  `menu_open` (fires only when the menu is currently closed) and
+  `calendar_month_change` (reads the month being left, then applies the
+  direction) deterministic rather than ordering-dependent.
+- **`page_type` and `env` are not on the events.** They ride the gtag `config`
+  call in `analytics.js`, so GA4 stamps them on everything from the page.
+- **`data-analytics-*` attributes exist only where a class cannot carry the
+  value**: carousel slides and the carousel title (`carousel.js` — one slide is
+  in the DOM at a time, so index and id are unrecoverable otherwise), pop-ups
+  tiles (`pop-ups.js` — a `<div>` with no href until #404), and the calendar
+  header's `data-analytics-month`. On calendar bars, **`data-analytics-id`
+  takes precedence over `data-event-id`**: the latter is a per-occurrence
+  segment key, so a multi-day pop-up carries several and would count as
+  several entries.
+- Deliberately silent: **carousel dots** (they open nothing, and no event in §5
+  covers changing slide — a ninth name would be permanent) and the footer's
+  **Cookie settings** button (a privacy control is not navigation). A social
+  destination inside the header nav — the Substack link — is a `social_click`,
+  not a `nav_click`, so each placement has one answer rather than one split
+  across two events.
+- **Ungated for the same reason `consent.js` and `analytics.js` are**, and the
+  unit spec fails if a flag check appears. `tests/e2e/analytics-events.spec.js`
+  must keep its exact name — `playwright.config.js` sets
+  `testIgnore: '**/redesign-*.spec.js'`.
+- **Sanity's CORS allowlist rejects every local origin**, so tiles, slides and
+  calendar bars render empty against a local server and the click tests would
+  pass vacuously. `tests/e2e/helpers/sanity-stub.js` stubs the origin with
+  fixtures, which also makes `entry_id` and `position` assertable.
+
 ### Redesign shared components (`docs/redesign-components.md`)
 
 Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map toggle, filter bar/chips/dropdowns, date range picker, event cards, detail modal, interior-page shell. Epic 4 wired all of it up on Pop-Ups. **`docs/redesign-components.md` is the reference**: component inventory, public APIs, the events they publish, deviations from REDESIGN.md, and the traps below. Read it before building on them.
