@@ -65,9 +65,12 @@ function dateIdea(index, overrides = {}) {
  * Pop-ups that land on today, so the calendar page — which only ever renders
  * the month it is showing — actually has bars to click.
  */
-function todayPopups(count = 2) {
+function todayPopups(count = 2, { utc = false } = {}) {
   const today = new Date()
-  const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const [year, month, day] = utc
+    ? [today.getUTCFullYear(), today.getUTCMonth() + 1, today.getUTCDate()]
+    : [today.getFullYear(), today.getMonth() + 1, today.getDate()]
+  const iso = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   return Array.from({ length: count }, (unused, index) => popup(index + 1, {
     start_datetime: `${iso}T14:00:00.000Z`,
     end_datetime: `${iso}T22:00:00.000Z`,

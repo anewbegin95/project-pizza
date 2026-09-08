@@ -125,7 +125,9 @@ function renderCalendar(month, year) {
 
             if (day > 0 && day <= daysInMonth) {
                 // Valid day in the current month
-                const date = new Date(year, month, day);
+                // Anchored at noon UTC for the same reason as the cell date
+                // in the "+N more" handler below.
+                const date = new Date(Date.UTC(year, month, day, 12, 0, 0));
                 cell.setAttribute('data-date', formatDateId(date));
                 cell.innerHTML = `<div class="calendar-date">${day}</div>`;
                 cell.classList.add('active-day');
@@ -373,7 +375,13 @@ function placePopupsInGrid(month, year) {
             const firstDayOfMonth = new Date(year, month, 1);
             const startDayOfWeek = firstDayOfMonth.getDay();
             const cellDay = week * 7 + col - startDayOfWeek + 1;
-            const cellDate = new Date(year, month, cellDay);
+            // Noon UTC, not local midnight. formatDateId reads the date in
+            // America/New_York, and local midnight is still the previous day
+            // there for any visitor at or east of UTC — which made this modal
+            // match nothing and open empty for all of them. Noon UTC lands on
+            // the intended day in Eastern from every timezone. Same idiom the
+            // rest of the codebase uses for date-only values.
+            const cellDate = new Date(Date.UTC(year, month, cellDay, 12, 0, 0));
             // Find all pop-ups (from global popups array) that occur on this date
             const cellDateId = formatDateId(cellDate);
             const popupsForDay = popups.filter(popup => {
