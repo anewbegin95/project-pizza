@@ -243,8 +243,18 @@ test.describe('content_open reaches GA4 before the page navigates away', () => {
     await ready(page)
     await accept(page)
 
+    // Wait for the grid to have finished placing bars before looking for the
+    // overflow link. The link only exists once a day holds more pop-ups than
+    // getMaxVisible() (4 above 900px wide, 2 below), so looking too early on a
+    // cold runner races the Sanity fetch. This does not mask a real failure:
+    // if the fixtures never crowd a single day, the assertion below still
+    // fails — but it now says how many bars actually landed.
+    await expect(page.locator('.calendar-popup-bar').first()).toBeVisible()
+    const barCount = await page.locator('.calendar-popup-bar').count()
+
     const moreLink = page.locator('.calendar-more-link').first()
-    await expect(moreLink).toBeVisible()
+    await expect(moreLink, `no "+N more" link; ${barCount} bars rendered at viewport `
+      + `${JSON.stringify(page.viewportSize())}`).toBeVisible()
     await moreLink.click()
 
     const tile = page.locator('.day-popups-grid .popup-tile').first()
