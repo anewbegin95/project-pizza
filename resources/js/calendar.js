@@ -100,6 +100,14 @@ function renderCalendar(month, year) {
     document.querySelector('.calendar-month-year').textContent =
         firstDay.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
+    // Machine-readable copy of the same thing, for analytics-events.js (#399).
+    // The displayed label is localised prose; `months_from_current` needs a
+    // value that can be subtracted, and one no visitor ever typed.
+    const calendarHeader = document.querySelector('.calendar-header');
+    if (calendarHeader) {
+        calendarHeader.setAttribute('data-analytics-month', `${year}-${String(month + 1).padStart(2, '0')}`);
+    }
+
     // The calendar grid is always 6 rows of 7 days (to cover all possible month layouts)
     // 'day' starts negative if the month doesn't start on Sunday, so we fill in blanks
     let day = 1 - startDayOfWeek; // May start negative if the month doesn't start on Sunday
@@ -117,7 +125,9 @@ function renderCalendar(month, year) {
 
             if (day > 0 && day <= daysInMonth) {
                 // Valid day in the current month
-                const date = new Date(year, month, day);
+                // Anchored at noon UTC for the same reason as the cell date
+                // in the "+N more" handler below.
+                const date = new Date(Date.UTC(year, month, day, 12, 0, 0));
                 cell.setAttribute('data-date', formatDateId(date));
                 cell.innerHTML = `<div class="calendar-date">${day}</div>`;
                 cell.classList.add('active-day');
@@ -275,6 +285,10 @@ function placePopupsInGrid(month, year) {
       const sanitizedStartDatetime = popup.start_datetime.replace(/[:]/g, '-');
       const uniqueId = `${popup.name.replace(/\s+/g, '-').toLowerCase()}-${sanitizedStartDatetime}`;
       bar.setAttribute('data-event-id', uniqueId);
+      // `data-event-id` is a per-occurrence key for the segment highlighting,
+      // not a document id — a multi-day pop-up has several. `entry_id` has to
+      // be the Sanity id or the same event counts as several in GA4 (#399).
+      bar.setAttribute('data-analytics-id', popup.id);
       popup._calendarUniqueId = uniqueId;
 
       // Accessibility and highlight logic
@@ -361,7 +375,13 @@ function placePopupsInGrid(month, year) {
             const firstDayOfMonth = new Date(year, month, 1);
             const startDayOfWeek = firstDayOfMonth.getDay();
             const cellDay = week * 7 + col - startDayOfWeek + 1;
-            const cellDate = new Date(year, month, cellDay);
+            // Noon UTC, not local midnight. formatDateId reads the date in
+            // America/New_York, and local midnight is still the previous day
+            // there for any visitor at or east of UTC — which made this modal
+            // match nothing and open empty for all of them. Noon UTC lands on
+            // the intended day in Eastern from every timezone. Same idiom the
+            // rest of the codebase uses for date-only values.
+            const cellDate = new Date(Date.UTC(year, month, cellDay, 12, 0, 0));
             // Find all pop-ups (from global popups array) that occur on this date
             const cellDateId = formatDateId(cellDate);
             const popupsForDay = popups.filter(popup => {

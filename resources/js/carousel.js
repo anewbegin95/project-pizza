@@ -30,12 +30,18 @@ function filterCarouselPopups(popups) {
  * @param {Object} popup - Pop-up object containing details.
  * @param {HTMLElement} dotBar - Dot navigation element.
  * @param {boolean} [isFirstSlide=false] - Whether this is the first (LCP candidate) slide. When true, lazy loading is skipped so the browser fetches the image eagerly.
+ * @param {number} [index=0] - Index of this pop-up within the featured list.
  * @returns {HTMLElement} - The carousel slide element.
  */
-function createCarouselSlide(popup, dotBar, isFirstSlide = false) {
+function createCarouselSlide(popup, dotBar, isFirstSlide = false, index = 0) {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     slide.tabIndex = 0; // Make slide focusable for keyboard navigation
+    // Read by resources/js/analytics-events.js (#399). The slide carries no
+    // href, and only one slide is in the DOM at a time, so neither the id nor
+    // the position can be recovered from the document without these.
+    slide.setAttribute('data-analytics-id', popup.id);
+    slide.setAttribute('data-analytics-position', String(index));
 
     const img = document.createElement('img');
     img.src = popup.img || 'resources/images/images/default-popup-image.webp';
@@ -109,6 +115,19 @@ function createCarouselDots(count, activeIndex, onDotClick) {
     return dotBar;
 }
 
+/**
+ * Points the carousel heading at the slide currently on screen, for
+ * resources/js/analytics-events.js (#399). Attributes only — no event.
+ * @param {Object} popup - The pop-up the title would open.
+ * @param {number} index - Its index within the featured list.
+ */
+function markCarouselTitle(popup, index) {
+    const title = document.querySelector('.carousel-title');
+    if (!title || !popup) return;
+    title.setAttribute('data-analytics-id', popup.id);
+    title.setAttribute('data-analytics-position', String(index));
+}
+
 // === CAROUSEL LOGIC ===
 
 /**
@@ -165,9 +184,15 @@ function initCarousel(popups) {
      */
     function renderCarousel(nextIndex = null, direction = 'right') {
         const oldSlide = container.querySelector('.carousel-slide');
-        const dots = createCarouselDots(featuredPopups.length, nextIndex !== null ? nextIndex : currentIndex, goToSlide);
-        const slide = createCarouselSlide(featuredPopups[nextIndex !== null ? nextIndex : currentIndex], dots, !hasRenderedOnce);
+        const index = nextIndex !== null ? nextIndex : currentIndex;
+        const dots = createCarouselDots(featuredPopups.length, index, goToSlide);
+        const slide = createCarouselSlide(featuredPopups[index], dots, !hasRenderedOnce, index);
         hasRenderedOnce = true;
+        // The title navigates to whichever slide is showing, so it has to carry
+        // the same pointers the slide does (#399). Setting them here rather
+        // than in a listener keeps the render path free of analytics: nothing
+        // is sent from here, and the 5s auto-advance stays silent.
+        markCarouselTitle(featuredPopups[index], index);
         container.appendChild(slide);
         animateSlideIn(slide, direction);
         animateSlideOut(oldSlide, direction);

@@ -227,6 +227,28 @@
       expireAnalyticsCookies(doc, locationLike.hostname);
     }
 
+    /**
+     * The one way a custom event reaches GA4 (#399). `active` is the consent
+     * gate, so keeping the send here rather than letting the events module call
+     * `window.gtag` itself keeps that gate in a single file — a second call
+     * site would be a second thing to get wrong, on the one control the NY AG
+     * guide says has to actually work.
+     *
+     * `page_type` and `env` are deliberately absent: they ride the `config`
+     * call above, so GA4 stamps them onto every event from this page already.
+     *
+     * Returns whether anything was sent, which is what makes the refusal path
+     * testable rather than merely invisible.
+     */
+    function track(name, parameters) {
+      if (!active || typeof name !== 'string' || name === '') {
+        return false;
+      }
+      const gtag = ensureGtag();
+      gtag('event', name, Object.assign({}, parameters));
+      return true;
+    }
+
     function handleState(state) {
       if (state === GRANTED) {
         activate();
@@ -247,6 +269,7 @@
     return {
       start,
       handleState,
+      track,
       isLoaded: () => loaded,
       isActive: () => active,
     };

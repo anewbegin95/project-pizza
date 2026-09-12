@@ -424,6 +424,86 @@ describe('withdrawal after granting', () => {
   })
 })
 
+/**
+ * The send seam #399 builds on. It lives here, not in the events module,
+ * because `isActive()` is the consent gate: a second file calling
+ * `window.gtag` directly would duplicate that gate, and the gate is the whole
+ * compliance posture. One file decides whether anything is sent.
+ */
+describe('track(): the one way an event reaches GA4', () => {
+  it('sends nothing when the visitor has not answered', () => {
+    const { scope, analytics } = setUp({ state: 'unset' })
+    analytics.start()
+
+    expect(analytics.track('content_open', { surface: 'list' })).toBe(false)
+    expect(scope.gtag).toBeUndefined()
+    expect(scope.dataLayer).toBeUndefined()
+  })
+
+  it('sends nothing when the visitor declined', () => {
+    const { scope, analytics } = setUp({ state: 'denied' })
+    analytics.start()
+
+    expect(analytics.track('content_open', { surface: 'list' })).toBe(false)
+    expect(scope.dataLayer).toBeUndefined()
+  })
+
+  it('sends nothing after a withdrawal, even though gtag is still loaded', () => {
+    const { doc, scope, analytics } = setUp({ state: 'granted' })
+    analytics.start()
+    publishConsent(doc, 'denied')
+
+    const before = dataLayerCalls(scope).length
+    expect(analytics.track('social_click', { platform: 'instagram' })).toBe(false)
+    expect(dataLayerCalls(scope).length).toBe(before)
+  })
+
+  it('forwards the event name and parameters once a grant is in place', () => {
+    const { scope, analytics } = setUp({ state: 'granted' })
+    analytics.start()
+
+    expect(analytics.track('content_open', { surface: 'list', entry_id: 'abc' })).toBe(true)
+
+    const sent = dataLayerCalls(scope).filter((call) => call[0] === 'event' && call[1] === 'content_open')
+    expect(sent).toHaveLength(1)
+    expect(sent[0][2]).toEqual({ surface: 'list', entry_id: 'abc' })
+  })
+
+  it('sends an event with no parameters of its own', () => {
+    const { scope, analytics } = setUp({ state: 'granted' })
+    analytics.start()
+
+    expect(analytics.track('menu_open')).toBe(true)
+    const sent = dataLayerCalls(scope).filter((call) => call[1] === 'menu_open')
+    expect(sent[0][2]).toEqual({})
+  })
+
+  // page_type and env ride the `config` call, so GA4 stamps them onto every
+  // subsequent event from this page automatically (§5). Duplicating them into
+  // each event's own parameters would be redundant payload on every click.
+  it('leaves page_type and env to the config rather than repeating them', () => {
+    const { scope, analytics } = setUp({ state: 'granted', pathname: '/calendar.html', env: 'staging' })
+    analytics.start()
+    analytics.track('calendar_month_change', { direction: 'next' })
+
+    const config = dataLayerCalls(scope).find((call) => call[0] === 'config')
+    expect(config[2]).toMatchObject({ page_type: 'calendar', env: 'staging' })
+
+    const sent = dataLayerCalls(scope).find((call) => call[1] === 'calendar_month_change')
+    expect(sent[2]).toEqual({ direction: 'next' })
+  })
+
+  it('refuses a name that is not a usable GA4 event name', () => {
+    const { scope, analytics } = setUp({ state: 'granted' })
+    analytics.start()
+    const before = dataLayerCalls(scope).length
+
+    expect(analytics.track('', {})).toBe(false)
+    expect(analytics.track(null, {})).toBe(false)
+    expect(dataLayerCalls(scope).length).toBe(before)
+  })
+})
+
 describe('analytics.js is deliberately ungated', () => {
   const js = read('resources/js/analytics.js')
   const code = stripComments(js)

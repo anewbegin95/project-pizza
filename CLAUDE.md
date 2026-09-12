@@ -96,6 +96,55 @@ GA4 behind the consent gate (#398). Exposes `window.NycAnalytics`, subscribes to
 - Withdrawal sets Google's `ga-disable-G-JYLM80LHT2` switch and expires the `_ga*` cookies. gtag cannot be torn out of a loaded page; `privacy_policy.html` describes exactly this rather than overclaiming.
 - **Lighthouse never consents, so gtag never loads in a CI run.** If the performance score moves, suspect the gate before the budget.
 
+### Click instrumentation (`resources/js/analytics-events.js`, ungated)
+
+The eight custom events of #160 §5, shipped by #399. One IIFE exposing
+`window.NycAnalyticsEvents`, loaded after `analytics.js` on all nine pages.
+Everything it resolves goes out through `NycAnalytics.track(name, params)` —
+**the events module never touches `window.gtag` or `dataLayer`**, so the consent
+gate stays in exactly one file. `tests/unit/analytics-events.spec.js` fails if
+either name appears here.
+
+- **Never instrument a render path.** The carousel auto-advances every 5s
+  (`carousel.js:179`); hanging events off rendering would log phantom
+  engagement on every homepage visit. Every rule keys off a real interaction.
+  The first test in `tests/e2e/analytics-events.spec.js` loads the homepage,
+  waits through two auto-advances and asserts zero events — it fails if you
+  get this wrong, and it checks the carousel actually advanced so an empty
+  carousel cannot pass it silently.
+- **The listeners are bound in the capture phase.** Calendar bars
+  (`calendar.js:296`), "+N more" links and carousel dots all call
+  `stopPropagation()` in their own handlers, so a bubble-phase listener on
+  `document` would never see a calendar click at all. Capture also means the
+  DOM is read *before* those handlers mutate it, which is what makes
+  `menu_open` (fires only when the menu is currently closed) and
+  `calendar_month_change` (reads the month being left, then applies the
+  direction) deterministic rather than ordering-dependent.
+- **`page_type` and `env` are not on the events.** They ride the gtag `config`
+  call in `analytics.js`, so GA4 stamps them on everything from the page.
+- **`data-analytics-*` attributes exist only where a class cannot carry the
+  value**: carousel slides and the carousel title (`carousel.js` — one slide is
+  in the DOM at a time, so index and id are unrecoverable otherwise), pop-ups
+  tiles (`pop-ups.js` — a `<div>` with no href until #404), and the calendar
+  header's `data-analytics-month`. On calendar bars, **`data-analytics-id`
+  takes precedence over `data-event-id`**: the latter is a per-occurrence
+  segment key, so a multi-day pop-up carries several and would count as
+  several entries.
+- Deliberately silent: **carousel dots** (they open nothing, and no event in §5
+  covers changing slide — a ninth name would be permanent) and the footer's
+  **Cookie settings** button (a privacy control is not navigation). A social
+  destination inside the header nav — the Substack link — is a `social_click`,
+  not a `nav_click`, so each placement has one answer rather than one split
+  across two events.
+- **Ungated for the same reason `consent.js` and `analytics.js` are**, and the
+  unit spec fails if a flag check appears. `tests/e2e/analytics-events.spec.js`
+  must keep its exact name — `playwright.config.js` sets
+  `testIgnore: '**/redesign-*.spec.js'`.
+- **Sanity's CORS allowlist rejects every local origin**, so tiles, slides and
+  calendar bars render empty against a local server and the click tests would
+  pass vacuously. `tests/e2e/helpers/sanity-stub.js` stubs the origin with
+  fixtures, which also makes `entry_id` and `position` assertable.
+
 ### Redesign shared components (`docs/redesign-components.md`)
 
 Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map toggle, filter bar/chips/dropdowns, date range picker, event cards, detail modal, interior-page shell. Epic 4 wired all of it up on Pop-Ups. **`docs/redesign-components.md` is the reference**: component inventory, public APIs, the events they publish, deviations from REDESIGN.md, and the traps below. Read it before building on them.
@@ -105,6 +154,7 @@ Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map to
 - **New JS modules are wrapped in an IIFE exposing a single `window.NycX`** (`NycCards`, `NycModal`, `NycFilters`, `NycDatePicker`, and the Pop-Ups modules `NycPopupsFilter`, `NycPopupsList`, `NycPopupsDetail`, `NycPopupsMap`). Classic scripts share one global lexical scope, so a duplicate top-level `const` silently kills the whole file — this happened with `EASTERN_TIMEZONE` between `cards.js` and `pop-ups.js`. An e2e test asserts each redesign page loads with zero page errors.
 - **Components publish events rather than calling each other**: `viewtoggle:change`, `search:change`, `filters:change`, `filters:clear`. On Pop-Ups these are consumed by `popups-filter.js` and `popups-map.js`; Date Ideas re-uses them in Epic 6.
 - **Anchor date-only strings at noon UTC.** `new Date('2026-07-25')` is UTC midnight, i.e. the previous evening in Eastern time, so all-day events render a day early. `prebuild-events.js`, `cards.js`, `modal.js`, `popups-filter.js` and `popups-list.js` all do this.
+  - **The mirror-image version bites in legacy code too: `new Date(year, month, day)` is *local* midnight.** Fed to `formatDateId` (which reads a date in `America/New_York`), it resolves to the **previous** day for every visitor at or east of UTC. That emptied the calendar's "+N more" modal for all of Europe, Africa, Asia and Australia, and was invisible in local runs because a US-Eastern machine never hits it — a UTC CI runner found it. `calendar.js` now uses `Date.UTC(year, month, day, 12, 0, 0)` in both places. `tests/e2e/calendar-day-modal.spec.js` pins `timezoneId: 'UTC'` to keep it caught; a calendar test that only ever runs in Eastern proves very little.
 - **`height: 100%` on an image inside an auto-sized grid area** resolves to the image's intrinsic height, so the source image ends up setting the container's height rather than filling it. Fixed twice — event cards (#376) and the detail modal (#380) — by taking the image out of flow. Related: a grid item with `overflow-y: auto` also needs `min-height: 0`, or the overflow never engages and content is clipped with no scrollbar.
 - **Legacy element and id selectors reach redesign components.** Bare `button` in `buttons.css` did (retired in #372), and `section#popupsGrid` in `popups.css` still sets padding at `!important` that no stack of classes can out-specify. Before retiring one, snapshot computed styles across pages in **both flag states** and diff — #372 found four legacy buttons with no styles of their own, including the menu toggle's 44px touch target.
 
