@@ -26,5 +26,845 @@
   "Domino Park, 15 River St, Brooklyn, NY 11249, New York, NY": {
     "lat": 40.7166283,
     "lon": -73.9665073
+  },
+  "Madison Square Park & Soho, New York, NY": null,
+  "620 6th Ave Ste 0105, New York, NY": {
+    "lat": 40.7401063,
+    "lon": -73.994625,
+    "borough": "manhattan"
+  },
+  "45 Grand St, New York, NY": {
+    "lat": 40.7161573,
+    "lon": -73.9653867,
+    "borough": "brooklyn"
+  },
+  "119 W 10th St, New York, NY": {
+    "lat": 40.7348705,
+    "lon": -73.9995522,
+    "borough": "manhattan"
+  },
+  "149 W 51st St, New York, NY": {
+    "lat": 40.761183,
+    "lon": -73.981311,
+    "borough": "manhattan"
+  },
+  "147 Grand St (Brooklyn), New York, NY": {
+    "lat": 40.7149441,
+    "lon": -73.9619099,
+    "borough": "brooklyn"
+  },
+  "Domino Park, New York, NY": {
+    "lat": 40.7141055,
+    "lon": -73.9682746,
+    "borough": "brooklyn"
+  },
+  "21 Greene St, New York, NY": {
+    "lat": 40.7211238,
+    "lon": -74.0027515,
+    "borough": "manhattan"
+  },
+  "Whitney Museum of American Art, 99 Gansevoort St, New York, NY": {
+    "lat": 40.7396451,
+    "lon": -74.008921,
+    "borough": "manhattan"
+  },
+  "4th Ave and E 12th St, New York, NY": null,
+  "18 E 13th St, New York, NY": {
+    "lat": 40.7347584,
+    "lon": -73.9932761,
+    "borough": "manhattan"
+  },
+  "31 East 17th St, New York, NY": {
+    "lat": 40.736993,
+    "lon": -73.9897933,
+    "borough": "manhattan"
+  },
+  "Prince Street b/t Mercer & Broadway, New York, NY": null,
+  "21 Spring St, New York, NY": {
+    "lat": 40.7218449,
+    "lon": -73.9946759,
+    "borough": "manhattan"
+  },
+  "188 Lafayette St, New York, NY": {
+    "lat": 40.7209136,
+    "lon": -73.9985174,
+    "borough": "manhattan"
+  },
+  "109 W Broadway (Bluestone Lane), New York, NY": {
+    "lat": 40.7160631,
+    "lon": -74.0085698,
+    "borough": "manhattan"
+  },
+  "9 Prince St, New York, NY": {
+    "lat": 40.7226915,
+    "lon": -73.9938388,
+    "borough": "manhattan"
+  },
+  "NYC Isshiki Matcha Locations, New York, NY": null,
+  "264 W 40th St, New York, NY": {
+    "lat": 40.7555761,
+    "lon": -73.9903488,
+    "borough": "manhattan"
+  },
+  "3 St Marks Pl, New York, NY": {
+    "lat": 40.7295614,
+    "lon": -73.9896767,
+    "borough": "manhattan"
+  },
+  "610 5th Ave, New York, NY": {
+    "lat": 40.7582677,
+    "lon": -73.9780225,
+    "borough": "manhattan"
+  },
+  "395 Bleecker St, New York, NY": {
+    "lat": 40.7024966,
+    "lon": -73.9142309,
+    "borough": "brooklyn"
+  },
+  "72 Spring St, New York, NY": {
+    "lat": 40.7224632,
+    "lon": -73.9977194,
+    "borough": "manhattan"
+  },
+  "Prince & Mercer, New York, NY": null,
+  "262 Mott St, New York, NY": {
+    "lat": 40.7238034,
+    "lon": -73.9943123,
+    "borough": "manhattan"
+  },
+  "255 W 34th St, New York, NY": {
+    "lat": 40.751561,
+    "lon": -73.9917486,
+    "borough": "manhattan"
+  },
+  "22 Wooster St, New York, NY": {
+    "lat": 40.7215235,
+    "lon": -74.0030602,
+    "borough": "manhattan"
+  },
+  "401 Bleecker St (Magnolia Bakery), New York, NY": {
+    "lat": 40.7358879,
+    "lon": -74.005,
+    "borough": "manhattan"
+  },
+  "94 Allen St, New York, NY": {
+    "lat": 40.7186157,
+    "lon": -73.9909443,
+    "borough": "manhattan"
+  },
+  "89 South St (Seaport Square), New York, NY": {
+    "lat": 40.7051819,
+    "lon": -74.0024556,
+    "borough": "manhattan"
+  },
+  "All PopUp Bagel locations, New York, NY": null,
+  "376 Bleecker St (Stoney Clover Lane), New York, NY": {
+    "lat": 40.7018833,
+    "lon": -73.9143056,
+    "borough": "brooklyn"
+  },
+  "3 E 89th St, New York, NY": {
+    "lat": 40.7834481,
+    "lon": -73.9587359,
+    "borough": "manhattan"
+  },
+  "506 Broadway, New York, NY": {
+    "lat": 40.7222227,
+    "lon": -73.999116,
+    "borough": "manhattan"
+  },
+  "103 Grand St, New York, NY": {
+    "lat": 40.715553,
+    "lon": -73.9633907,
+    "borough": "brooklyn"
+  },
+  "252 Elizabeth St, New York, NY": {
+    "lat": 40.7236292,
+    "lon": -73.9935817,
+    "borough": "manhattan"
+  },
+  "NYU's College of Arts & Science, New York, NY": null,
+  "Central Park South, New York, NY": {
+    "lat": 40.7677536,
+    "lon": -73.9810493,
+    "borough": "manhattan"
+  },
+  "182 W 4th St, New York, NY": {
+    "lat": 40.7323542,
+    "lon": -74.0018245,
+    "borough": "manhattan"
+  },
+  "MoMA, 11 W 53rd St, New York, NY": {
+    "lat": 40.7616124,
+    "lon": -73.9774992,
+    "borough": "manhattan"
+  },
+  "Manhattan, New York, NY": {
+    "lat": 40.7579554,
+    "lon": -73.9855319,
+    "borough": "manhattan"
+  },
+  "Domino Park (15 River St), New York, NY": {
+    "lat": 40.7141055,
+    "lon": -73.9682746,
+    "borough": "brooklyn"
+  },
+  "260 Bowery, New York, NY": {
+    "lat": 40.7232472,
+    "lon": -73.9933065,
+    "borough": "manhattan"
+  },
+  "119 N 1st St (Brooklyn), New York, NY": {
+    "lat": 40.7155635,
+    "lon": -73.9619103,
+    "borough": "brooklyn"
+  },
+  "541 W 25th St, New York, NY": {
+    "lat": 40.7498781,
+    "lon": -74.0047362,
+    "borough": "manhattan"
+  },
+  "151 W 34th St, New York, NY": {
+    "lat": 40.7508895,
+    "lon": -73.9892551,
+    "borough": "manhattan"
+  },
+  "95 Rivington St, New York, NY": {
+    "lat": 40.7199656,
+    "lon": -73.9886535,
+    "borough": "manhattan"
+  },
+  "1501 Broadway (City Pickle), New York, NY": {
+    "lat": 40.7572684,
+    "lon": -73.9866623,
+    "borough": "manhattan"
+  },
+  "1333 Broadway, New York, NY": {
+    "lat": 40.7512127,
+    "lon": -73.9879717,
+    "borough": "manhattan"
+  },
+  "Lil Sweet Treat locations, New York, NY": null,
+  "600 Broadway + 188 E 86th St, New York, NY": null,
+  "470 Broadway, New York, NY": {
+    "lat": 40.7210331,
+    "lon": -74.0001045,
+    "borough": "manhattan"
+  },
+  "422 W Broadway, New York, NY": {
+    "lat": 40.7252112,
+    "lon": -74.0016749,
+    "borough": "manhattan"
+  },
+  "NYC Parks, New York, NY": {
+    "lat": 40.737067,
+    "lon": -74.0011216,
+    "borough": "manhattan"
+  },
+  "21-27 9th Ave (Sephora Meapacking), New York, NY": {
+    "lat": 40.7569764,
+    "lon": -73.9937049,
+    "borough": "manhattan"
+  },
+  "1535 Broadway, New York, NY": {
+    "lat": 40.7585971,
+    "lon": -73.9861935,
+    "borough": "manhattan"
+  },
+  "Sephora Soho and Meatpacking, New York, NY": null,
+  "All STUDS locations, New York, NY": null,
+  "Nordstrom, Domino Park, Hudson Yards, New York, NY": null,
+  "64 W 21st St, New York, NY": {
+    "lat": 40.7413139,
+    "lon": -73.9933955,
+    "borough": "manhattan"
+  },
+  "1071 Madison Ave, New York, NY": {
+    "lat": 40.7773823,
+    "lon": -73.961166,
+    "borough": "manhattan"
+  },
+  "841 Washington St, New York, NY": {
+    "lat": 40.740785,
+    "lon": -74.0074088,
+    "borough": "manhattan"
+  },
+  "273 Lafayette St, 1 Washington Pl, New York, NY": null,
+  "115 Montague St, New York, NY": {
+    "lat": 40.6950814,
+    "lon": -73.9948457,
+    "borough": "brooklyn"
+  },
+  "37 Greenwich Ave (then moving locations), New York, NY": {
+    "lat": 40.735184,
+    "lon": -74.0004475,
+    "borough": "manhattan"
+  },
+  "127 Orchard St (Russ & Daughters Cafe), New York, NY": {
+    "lat": 40.7196388,
+    "lon": -73.9895629,
+    "borough": "manhattan"
+  },
+  "130 Greene St, New York, NY": {
+    "lat": 40.7252789,
+    "lon": -73.9988175,
+    "borough": "manhattan"
+  },
+  "The Elk Coffee (West Village + Nolita), New York, NY": null,
+  "191 Lafayette St, New York, NY": {
+    "lat": 40.7207754,
+    "lon": -73.9982531,
+    "borough": "manhattan"
+  },
+  "Liggett Terrace (Governor's Island), New York, NY": {
+    "lat": 40.6893819,
+    "lon": -74.0195078,
+    "borough": "manhattan"
+  },
+  "15+ locations in NYC, New York, NY": null,
+  "34th & Broadway + Spring St & Broadway, New York, NY": null,
+  "Mercer St & Prince St, New York, NY": null,
+  "Astor Place & Herald Square, New York, NY": null,
+  "Domino Square (Brooklyn), New York, NY": {
+    "lat": 40.7137288,
+    "lon": -73.9677807,
+    "borough": "brooklyn"
+  },
+  "93 1st Ave, New York, NY": {
+    "lat": 40.7262893,
+    "lon": -73.9865727,
+    "borough": "manhattan"
+  },
+  "2 Rivington St, New York, NY": {
+    "lat": 40.7215736,
+    "lon": -73.9930301,
+    "borough": "manhattan"
+  },
+  "Farm Rio SoHo & Williamsburg, New York, NY": null,
+  "377 Bleecker St, New York, NY": {
+    "lat": 40.702095,
+    "lon": -73.9146643,
+    "borough": "brooklyn"
+  },
+  "489 Broome St, New York, NY": {
+    "lat": 40.7229574,
+    "lon": -74.0027196,
+    "borough": "manhattan"
+  },
+  "575 Broadway, New York, NY": {
+    "lat": 40.7246194,
+    "lon": -73.9980642,
+    "borough": "manhattan"
+  },
+  "118 Greenwich Ave, New York, NY": {
+    "lat": 40.7384326,
+    "lon": -74.0020328,
+    "borough": "manhattan"
+  },
+  "62 Chelsea Piers, New York, NY": null,
+  "Bronx Zoo, 2300 Southern Boulevard (Bronx Zoo), New York, NY": {
+    "lat": 40.8493045,
+    "lon": -73.8771379,
+    "borough": "bronx"
+  },
+  "62 Bedford St, New York, NY": {
+    "lat": 40.7311268,
+    "lon": -74.0046067,
+    "borough": "manhattan"
+  },
+  "38 Gansevoort St, New York, NY": {
+    "lat": 40.7392933,
+    "lon": -74.0063386,
+    "borough": "manhattan"
+  },
+  "557 Broadway, New York, NY": {
+    "lat": 40.7239688,
+    "lon": -73.9982352,
+    "borough": "manhattan"
+  },
+  "Domino Park & Prospect Park, New York, NY": null,
+  "862 Broadway, New York, NY": {
+    "lat": 40.7372424,
+    "lon": -73.9899828,
+    "borough": "manhattan"
+  },
+  "169 8th Ave (Shy Shy), New York, NY": {
+    "lat": 40.7426916,
+    "lon": -74.0007531,
+    "borough": "manhattan"
+  },
+  "Manhattan Targets (check times in details), New York, NY": null,
+  "Lincoln Center, Lincoln Center Plaza, New York, NY": {
+    "lat": 40.7716398,
+    "lon": -73.9842799,
+    "borough": "manhattan"
+  },
+  "89 E 42nd St (Vanderbilt Hall), New York, NY": {
+    "lat": 40.7526944,
+    "lon": -73.977253,
+    "borough": "manhattan"
+  },
+  "50 Bowery (Hotel 50 Bowery JDV by Hyatt), New York, NY": {
+    "lat": 40.7159526,
+    "lon": -73.9967427,
+    "borough": "manhattan"
+  },
+  "142 Orchard St, New York, NY": {
+    "lat": 40.7200045,
+    "lon": -73.9891428,
+    "borough": "manhattan"
+  },
+  "75 Varick St (Chillhouse Soho), New York, NY": {
+    "lat": 40.7233442,
+    "lon": -74.0065729,
+    "borough": "manhattan"
+  },
+  "214 Lafayette St, New York, NY": {
+    "lat": 40.721872,
+    "lon": -73.9978876,
+    "borough": "manhattan"
+  },
+  "Spring & Mercer, New York, NY": {
+    "lat": 40.7235556,
+    "lon": -73.9995599,
+    "borough": "manhattan"
+  },
+  "200 Eastern Parkway, New York, NY": {
+    "lat": 40.6709546,
+    "lon": -73.9632948,
+    "borough": "brooklyn"
+  },
+  "389 Canal St, New York, NY": {
+    "lat": 40.7220655,
+    "lon": -74.0045235,
+    "borough": "manhattan"
+  },
+  "259 Elizabeth St, New York, NY": {
+    "lat": 40.7238491,
+    "lon": -73.9939211,
+    "borough": "manhattan"
+  },
+  "192 Front St, New York, NY": {
+    "lat": 40.7067445,
+    "lon": -74.004207,
+    "borough": "manhattan"
+  },
+  "14th St at 10th Ave, New York, NY": null,
+  "450 Broome St, New York, NY": {
+    "lat": 40.7221783,
+    "lon": -74.0003977,
+    "borough": "manhattan"
+  },
+  "99 MacDougal St, New York, NY": {
+    "lat": 40.7296565,
+    "lon": -74.001091,
+    "borough": "manhattan"
+  },
+  "2090 Broadway, New York, NY": {
+    "lat": 40.7783771,
+    "lon": -73.9815748,
+    "borough": "manhattan"
+  },
+  "Chelsea Triangle, New York, NY": null,
+  "12 E 18th St, New York, NY": {
+    "lat": 40.7379837,
+    "lon": -73.9910876,
+    "borough": "manhattan"
+  },
+  "580 5th Ave #1, New York, NY": null,
+  "151 West 34th St (Plaza), New York, NY": {
+    "lat": 40.7508895,
+    "lon": -73.9892551,
+    "borough": "manhattan"
+  },
+  "16 Morton St, New York, NY": {
+    "lat": 40.7311077,
+    "lon": -74.0037659,
+    "borough": "manhattan"
+  },
+  "683 Broadway, New York, NY": {
+    "lat": 40.7279757,
+    "lon": -73.994851,
+    "borough": "manhattan"
+  },
+  "89 South St (Pier 17), New York, NY": {
+    "lat": 40.7051819,
+    "lon": -74.0024556,
+    "borough": "manhattan"
+  },
+  "1 Wall St, New York, NY": {
+    "lat": 40.7071243,
+    "lon": -74.0118265,
+    "borough": "manhattan"
+  },
+  "Various locations, New York, NY": null,
+  "Moving truck, see details, New York, NY": null,
+  "42nd St Plaza (b/t 42nd & 43rd St), New York, NY": {
+    "lat": 40.7516246,
+    "lon": -73.9777097,
+    "borough": "manhattan"
+  },
+  "128 E 63rd St, New York, NY": {
+    "lat": 40.7647025,
+    "lon": -73.9669118,
+    "borough": "manhattan"
+  },
+  "510 5th Ave, New York, NY": {
+    "lat": 40.6671271,
+    "lon": -73.9884253,
+    "borough": "brooklyn"
+  },
+  "Moving truck, New York, NY": null,
+  "345 Adams St (Brooklyn), New York, NY": {
+    "lat": 40.6924317,
+    "lon": -73.9885461,
+    "borough": "brooklyn"
+  },
+  "48 Ludlow St, New York, NY": {
+    "lat": 40.5530131,
+    "lon": -74.1789448,
+    "borough": "staten_island"
+  },
+  "The Met Cloisters, 99 Margaret Corbin Dr, New York, NY": {
+    "lat": 40.8648286,
+    "lon": -73.931713,
+    "borough": "manhattan"
+  },
+  "413 Broome St, New York, NY": {
+    "lat": 40.7210428,
+    "lon": -73.9984401,
+    "borough": "manhattan"
+  },
+  "Long Beach Boardwalk, New York, NY": null,
+  "146 E Broadway, New York, NY": {
+    "lat": 40.7141498,
+    "lon": -73.9911224,
+    "borough": "manhattan"
+  },
+  "128 Charles St, New York, NY": {
+    "lat": 40.7341801,
+    "lon": -74.0074243,
+    "borough": "manhattan"
+  },
+  "West Village, UES, NoHo, New York, NY": null,
+  "199 Avenue B (Pavlo Mochi), New York, NY": {
+    "lat": 40.7282807,
+    "lon": -73.9786656,
+    "borough": "manhattan"
+  },
+  "393 Broadway, New York, NY": {
+    "lat": 40.7185427,
+    "lon": -74.0029631,
+    "borough": "manhattan"
+  },
+  "9 West 8th St (The Atrium at Ideal Glass Studio), New York, NY": {
+    "lat": 40.7327499,
+    "lon": -73.9969954,
+    "borough": "manhattan"
+  },
+  "419 Broome St (Flying Solo), New York, NY": {
+    "lat": 40.7211648,
+    "lon": -73.9987093,
+    "borough": "manhattan"
+  },
+  "177 Lafayette St, New York, NY": {
+    "lat": 40.7203637,
+    "lon": -73.9985948,
+    "borough": "manhattan"
+  },
+  "Herald Square & Soho Cafes, New York, NY": null,
+  "Sephora SoHo & Sephora Meatpacking, New York, NY": null,
+  "West Village, Nolita, Williamsburg, New York, NY": null,
+  "9 W 8th St, New York, NY": {
+    "lat": 40.7327499,
+    "lon": -73.9969954,
+    "borough": "manhattan"
+  },
+  "74 Wythe Ave, New York, NY": {
+    "lat": 40.7222161,
+    "lon": -73.9576977,
+    "borough": "brooklyn"
+  },
+  "Gansevoort Plaza, New York, NY": {
+    "lat": 40.7398379,
+    "lon": -74.006057,
+    "borough": "manhattan"
+  },
+  "11 Water St (Brooklyn Bridge Park), New York, NY": {
+    "lat": 40.7034856,
+    "lon": -73.9941336,
+    "borough": "brooklyn"
+  },
+  "229 Elizabeth St & 515 MetroTech Center, New York, NY": null,
+  "340 Bowery, New York, NY": {
+    "lat": 40.7261377,
+    "lon": -73.9921319,
+    "borough": "manhattan"
+  },
+  "873 Washington St, New York, NY": {
+    "lat": 40.7411739,
+    "lon": -74.0071855,
+    "borough": "manhattan"
+  },
+  "470 Kent Ave @ S 11th St (Williamsburg), New York, NY": null,
+  "Madison Square Park, New York, NY": {
+    "lat": 40.742203,
+    "lon": -73.9879655,
+    "borough": "manhattan"
+  },
+  "70 N 7th St (Williamsburg), New York, NY": {
+    "lat": 40.7198243,
+    "lon": -73.9610938,
+    "borough": "brooklyn"
+  },
+  "437 Broadway, New York, NY": {
+    "lat": 40.6305051,
+    "lon": -74.116221,
+    "borough": "staten_island"
+  },
+  "3 W 18th St, New York, NY": {
+    "lat": 40.7389472,
+    "lon": -73.9923405,
+    "borough": "manhattan"
+  },
+  "112 East 11th St (Moxy East Village), New York, NY": {
+    "lat": 40.731407,
+    "lon": -73.9894371,
+    "borough": "manhattan"
+  },
+  "Washington & Water St (Brooklyn), New York, NY": null,
+  "NYC Parks (various), Across NYC Parks, New York, NY": null,
+  "30 Rockefeller Plaza, New York, NY": {
+    "lat": 40.7591232,
+    "lon": -73.979556,
+    "borough": "manhattan"
+  },
+  "Aesop Nolita, Aesop Park Slope, New York, NY": null,
+  "123 Court St (Brooklyn), New York, NY": {
+    "lat": 40.6900552,
+    "lon": -73.9920062,
+    "borough": "brooklyn"
+  },
+  "The Met Cloisters, Met Cloisters, New York, NY": {
+    "lat": 40.8648684,
+    "lon": -73.9319228,
+    "borough": "manhattan"
+  },
+  "Pier 36, New York, NY": {
+    "lat": 40.709435,
+    "lon": -73.9857776,
+    "borough": "manhattan"
+  },
+  "FAO Schwarz in Rockefeller Plaza, New York, NY": null,
+  "216 Lafayette St, New York, NY": {
+    "lat": 40.7219334,
+    "lon": -73.9978394,
+    "borough": "manhattan"
+  },
+  "551 Hudson St (Dante West Village), New York, NY": {
+    "lat": 40.7352996,
+    "lon": -74.0062382,
+    "borough": "manhattan"
+  },
+  "151 West 34th St (Macy's Mezzanine), New York, NY": {
+    "lat": 40.7508895,
+    "lon": -73.9892551,
+    "borough": "manhattan"
+  },
+  "187 W 4th St (Claude Bakery), New York, NY": {
+    "lat": 40.7326427,
+    "lon": -74.0018191,
+    "borough": "manhattan"
+  },
+  "40A 10th Ave, New York, NY": {
+    "lat": 40.7574171,
+    "lon": -73.9970819,
+    "borough": "manhattan"
+  },
+  "145 Greene St, New York, NY": {
+    "lat": 40.7261039,
+    "lon": -73.9987153,
+    "borough": "manhattan"
+  },
+  "51 Spring St, New York, NY": {
+    "lat": 40.7221019,
+    "lon": -73.9964217,
+    "borough": "manhattan"
+  },
+  "118 E 40th St, New York, NY": {
+    "lat": 40.6528675,
+    "lon": -73.9403628,
+    "borough": "brooklyn"
+  },
+  "169 W 10th St, New York, NY": {
+    "lat": 40.7344593,
+    "lon": -74.0020971,
+    "borough": "manhattan"
+  },
+  "77 Essex St, New York, NY": {
+    "lat": 40.6826874,
+    "lon": -73.8831878,
+    "borough": "brooklyn"
+  },
+  "Broadway b/t 17th & 18th St, New York, NY": null,
+  "Washington Square Park North, New York, NY": {
+    "lat": 40.7308294,
+    "lon": -73.9967075,
+    "borough": "manhattan"
+  },
+  "374 Bleecker St, New York, NY": {
+    "lat": 40.7348893,
+    "lon": -74.0050356,
+    "borough": "manhattan"
+  },
+  "11 Greene St, New York, NY": {
+    "lat": 40.7207611,
+    "lon": -74.0031918,
+    "borough": "manhattan"
+  },
+  "109 W Broadway, New York, NY": {
+    "lat": 40.7160631,
+    "lon": -74.0085698,
+    "borough": "manhattan"
+  },
+  "Grand Central, Chelsea, DUMBO, New York, NY": null,
+  "37 Elizabeth St, New York, NY": {
+    "lat": 40.7167737,
+    "lon": -73.9969651,
+    "borough": "manhattan"
+  },
+  "1177 Broadway, New York, NY": {
+    "lat": 40.6928597,
+    "lon": -73.9274338,
+    "borough": "brooklyn"
+  },
+  "5 Times Square, New York, NY": {
+    "lat": 40.7558414,
+    "lon": -73.9875649,
+    "borough": "manhattan"
+  },
+  "251 Metropolitan Ave (Brooklyn), New York, NY": {
+    "lat": 40.7150187,
+    "lon": -73.9589023,
+    "borough": "brooklyn"
+  },
+  "Multiple locations in NYC, New York, NY": null,
+  "Astor Place, New York, NY": {
+    "lat": 40.7298497,
+    "lon": -73.9913897,
+    "borough": "manhattan"
+  },
+  "All Victoria's Secret stores, New York, NY": null,
+  "601 W 26th St (Starrett-Lehigh Building), New York, NY": {
+    "lat": 40.7515971,
+    "lon": -74.0065933,
+    "borough": "manhattan"
+  },
+  "461 6th Ave, New York, NY": {
+    "lat": 40.7353386,
+    "lon": -73.9985303,
+    "borough": "manhattan"
+  },
+  "74 Grand St, New York, NY": {
+    "lat": 40.7220618,
+    "lon": -74.0026493,
+    "borough": "manhattan"
+  },
+  "421 E 6th St, New York, NY": {
+    "lat": 40.726068,
+    "lon": -73.9851191,
+    "borough": "manhattan"
+  },
+  "291 Grand St, New York, NY": {
+    "lat": 40.7131893,
+    "lon": -73.9574129,
+    "borough": "brooklyn"
+  },
+  "Hudson Yards Public Square and Gardens, New York, NY": null,
+  "90 Kent Ave, New York, NY": {
+    "lat": 40.7209531,
+    "lon": -73.9622447,
+    "borough": "brooklyn"
+  },
+  "Louis Armstrong Stadium, 124-02 Roosevelt Ave, Corona, NY 11368, New York, NY": {
+    "lat": 40.7516282,
+    "lon": -73.8556701,
+    "borough": "queens"
+  },
+  "282 Hudson St, New York, NY": {
+    "lat": 40.7252899,
+    "lon": -74.0074819,
+    "borough": "manhattan"
+  },
+  "610 5th Ave (Kate Spade Rockefeller Center), New York, NY": {
+    "lat": 40.7582677,
+    "lon": -73.9780225,
+    "borough": "manhattan"
+  },
+  "128 Bedford Ave (Williamsburg), New York, NY": {
+    "lat": 40.7194468,
+    "lon": -73.9562479,
+    "borough": "brooklyn"
+  },
+  "120 Thompson St, New York, NY": {
+    "lat": 40.7259391,
+    "lon": -74.0015524,
+    "borough": "manhattan"
+  },
+  "Rockefeller Center Rink Level, New York, NY": null,
+  "51 Irving Place, New York, NY": {
+    "lat": 40.6835471,
+    "lon": -73.9596545,
+    "borough": "brooklyn"
+  },
+  "Broadway b/t 47th & 48th St, New York, NY": null,
+  "31 E 17th St, New York, NY": {
+    "lat": 40.736993,
+    "lon": -73.9897933,
+    "borough": "manhattan"
+  },
+  "Editions de Parfum Frederic Malle Store, 120 Prince St, New York, NY": {
+    "lat": 40.725138,
+    "lon": -73.9998539,
+    "borough": "manhattan"
+  },
+  "213 Bowery, New York, NY": {
+    "lat": 40.7214738,
+    "lon": -73.9933501,
+    "borough": "manhattan"
+  },
+  "21-27 9th Ave, New York, NY": {
+    "lat": 40.7569764,
+    "lon": -73.9937049,
+    "borough": "manhattan"
+  },
+  "Fort Greene Farmer's Market, New York, NY": null,
+  "Brooklyn Botanic Garden, New York, NY": {
+    "lat": 40.6676619,
+    "lon": -73.9636261,
+    "borough": "brooklyn"
+  },
+  "Washington Square N b/t University Pl + 5th Ave, New York, NY": null,
+  "Seaport, New York, NY": {
+    "lat": 40.7072394,
+    "lon": -74.0027434,
+    "borough": "manhattan"
+  },
+  "Soho + Williamsburg, New York, NY": null,
+  "390 Bleecker St, New York, NY": {
+    "lat": 40.7021909,
+    "lon": -73.9140042,
+    "borough": "brooklyn"
+  },
+  "NYC Matchaful Locations, New York, NY": null,
+  "337 Bleecker St, New York, NY": {
+    "lat": 40.7010699,
+    "lon": -73.9156872,
+    "borough": "brooklyn"
+  },
+  "15 River St (Domino Park), New York, NY": {
+    "lat": 40.9140737,
+    "lon": -73.7767517,
+    "borough": null
   }
 }
