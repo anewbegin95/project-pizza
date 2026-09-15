@@ -145,6 +145,28 @@ either name appears here.
   pass vacuously. `tests/e2e/helpers/sanity-stub.js` stubs the origin with
   fixtures, which also makes `entry_id` and `position` assertable.
 
+### Analytics reference (`docs/analytics-events.md`)
+
+**`docs/analytics-events.md` is the reference for the measurement itself** —
+event and parameter dictionary, the four `content_open` surfaces, the eight
+registered custom dimensions, the `object_verb` naming convention and its
+rules, the twelve traps, the GA4 explorations for the five design-brief
+questions, the decision rules agreed before any data arrived, and a debugging
+runbook. Read it before adding, renaming or removing an event.
+
+- **Renames are permanent seams.** GA4 does not rewrite historical data, so a
+  renamed event or parameter leaves a discontinuity that has to be explained
+  forever. Any new event follows the naming rules in §5 of that doc.
+- **An unregistered custom dimension is not queryable.** Adding a parameter
+  that anyone intends to report on means registering it in the GA4 UI too;
+  §4 lists the eight that exist and their value vocabularies.
+- **Two caveats belong on every report** and live in both the doc (§7) and the
+  GA4 property description: the consenting sample is biased rather than merely
+  partial, and staging shares the property with production, so every report
+  filters on `env = production`.
+- **Kill switch:** `docs/rollback-and-recovery.md` § "Analytics kill switch" —
+  property-level stop, deploy-level stop, and the PII procedure.
+
 ### Redesign shared components (`docs/redesign-components.md`)
 
 Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map toggle, filter bar/chips/dropdowns, date range picker, event cards, detail modal, interior-page shell. Epic 4 wired all of it up on Pop-Ups. **`docs/redesign-components.md` is the reference**: component inventory, public APIs, the events they publish, deviations from REDESIGN.md, and the traps below. Read it before building on them.
