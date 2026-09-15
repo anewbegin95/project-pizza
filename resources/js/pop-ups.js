@@ -45,6 +45,15 @@ function mapSanityPopup(item) {
         recurrence_by_weekday_ordinal: item.recurrence_by_weekday_ordinal || '',
         recurrence_by_monthly_weekday: item.recurrence_by_monthly_weekday || '',
         recurrence_end_date: item.recurrence_end_date || '',
+        category: item.category || '',
+        borough: item.borough || '',
+        neighborhood: item.neighborhood || '',
+        venue_name: item.venue_name || '',
+        address: item.address || '',
+        latitude: typeof item.latitude === 'number' ? item.latitude : null,
+        longitude: typeof item.longitude === 'number' ? item.longitude : null,
+        price: item.price || '',
+        is_featured: Boolean(item.is_featured),
         location: item.location || '',
         link: item.link || '',
         link_text: item.link_text || '',
@@ -326,6 +335,11 @@ function createPopupTile(popup, skipPopupsPageCheck = false) {
     const tile = document.createElement('div');
     // BEM/component refactor for popup tile
     tile.className = 'popup-tile popup-tile--horizontal';
+    // Read by resources/js/analytics-events.js (#399). This tile is a <div>
+    // with no href — #404 makes it a real anchor — so the id has nowhere else
+    // to come from. Date Ideas tiles are anchors and need none of this.
+    tile.setAttribute('data-analytics-id', popup.id);
+    tile.setAttribute('data-analytics-type', 'popup');
 
     // Left: Image
     const imgContainer = document.createElement('div');
@@ -637,12 +651,141 @@ function loadAndDisplayPopups() {
 
             const grid = document.getElementById('popupsGrid');
             if (!grid) return;
-            grid.innerHTML = '';
 
-            popups.forEach(popup => {
-                const tile = createPopupTile(popup);
-                if (tile) grid.appendChild(tile);
-            });
+            // With the redesign on, the search box and filter chips drive the
+            // rendered set. Flag-off pages render everything, as before.
+            const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+            const useCards = redesignOn && window.NycPopupsList && window.NycCards;
+
+            function renderPopups(list) {
+                if (useCards) {
+                    // Month-grouped event cards, with a no-results state that
+                    // offers the way out. See REDESIGN.md section 6.4.
+                    window.NycPopupsList.renderResults(grid, list, {
+                        onClear: () => {
+                            const clear = document.querySelector('.filter-bar__clear');
+                            if (clear) clear.click();
+                        },
+                    });
+                    return;
+                }
+                grid.innerHTML = '';
+                list.forEach(popup => {
+                    const tile = createPopupTile(popup);
+                    if (tile) grid.appendChild(tile);
+                });
+            }
+
+            // Cards open the detail modal rather than navigating. Delegated,
+            // so re-rendering on every filter change needs no re-binding.
+            let detail = null;
+            if (useCards && window.NycPopupsDetail) {
+                detail = window.NycPopupsDetail.initDetailModal(document, grid, {
+                    getEntries: () => popups,
+                    type: 'popup',
+                });
+            }
+
+            /** Map pins are not links, so they open the modal directly. */
+            function openDetail(entry) {
+                if (detail) detail.openEntry(entry);
+            }
+
+            // Map view. Leaflet cannot size itself inside a display:none panel,
+            // so the map is created the first time the toggle switches to it.
+            let mapView = null;
+            let shown = popups;
+            if (useCards && window.NycPopupsMap && window.L) {
+                const panel = document.querySelector('.results__panel--map');
+                if (panel) {
+                    mapView = window.NycPopupsMap.initMap(document, panel, {
+                        getEntries: () => shown,
+                        onSelect: entry => openDetail(entry),
+                    });
+                    document.addEventListener('viewtoggle:change', event => {
+                        if (event.detail && event.detail.view === 'map' && mapView) mapView.show();
+                    });
+                }
+            }
+
+            // Calendar view. Unlike List and Map it keeps past pop-ups: those
+            // two are limited to display_in_popups_page, which GROQ already
+            // expiry-filters, while the calendar takes the legacy calendar's
+            // rule so navigating back shows what ran then. See
+            // docs/redesign-components.md section 5.
+            const calendarPool = results.map(mapSanityPopup).filter(e =>
+                String(e.master_display).toUpperCase() === 'TRUE' &&
+                String(e.calendar).toUpperCase() === 'TRUE'
+            );
+            let calendarShown = calendarPool;
+            let calendarView = null;
+            let calendarMonth = null;
+
+            /** The count line while the calendar owns it. */
+            function getCalendarCountText() {
+                if (!calendarMonth) return '';
+                const noun = calendarMonth.count === 1 ? 'event' : 'events';
+                return `${calendarMonth.count} ${noun} in ${calendarMonth.label}`;
+            }
+
+            if (useCards && window.NycPopupsCalendar) {
+                const panel = document.querySelector('.results__panel--calendar');
+                if (panel) {
+                    calendarView = window.NycPopupsCalendar.initCalendar(document, panel, {
+                        getEntries: () => calendarShown,
+                        onSelect: entry => openDetail(entry),
+                        onMonthChange: month => {
+                            calendarMonth = month;
+                            if (window.NycFilters && window.NycFilters.refreshCount) {
+                                window.NycFilters.refreshCount();
+                            }
+                        },
+                    });
+
+                    // The calendar reports the month it is showing, not the
+                    // filtered list behind it, so it takes the count line while
+                    // it is the active view and hands it back on the way out.
+                    document.addEventListener('viewtoggle:change', event => {
+                        const isCalendar = event.detail && event.detail.view === 'calendar';
+                        if (isCalendar && calendarView) calendarView.show();
+                        if (window.NycFilters && window.NycFilters.setCountOwner) {
+                            window.NycFilters.setCountOwner(isCalendar ? getCalendarCountText : null);
+                        }
+                    });
+                }
+            }
+
+            if (redesignOn && window.NycPopupsFilter) {
+                const controller = window.NycPopupsFilter.createFilterController(document, {
+                    onChange: state => {
+                        shown = window.NycPopupsFilter.filterPopups(popups, state);
+                        renderPopups(shown);
+                        // Pins follow the same set as the list, in both views.
+                        if (mapView && mapView.isCreated()) mapView.render();
+                        // The calendar filters the same way over its own,
+                        // wider pool.
+                        calendarShown = window.NycPopupsFilter.filterPopups(calendarPool, state);
+                        if (calendarView) calendarView.render();
+                    },
+                });
+
+                // The neighborhood list comes from the content rather than a
+                // hardcoded set, so no event is unreachable by that filter.
+                // Both pools feed it: the calendar keeps past pop-ups, and a
+                // neighborhood only those use would otherwise be visible in
+                // the calendar but missing from the dropdown.
+                if (window.NycFilters && window.NycFilters.setOptions) {
+                    window.NycFilters.setOptions(
+                        'neighborhood',
+                        window.NycPopupsFilter.getDistinctNeighborhoods(popups.concat(calendarPool))
+                    );
+                }
+
+                shown = controller.apply(popups);
+                renderPopups(shown);
+            } else {
+                renderPopups(popups);
+            }
 
             // Inject JSON-LD for CollectionPage + ItemList of pop-ups
             // Only do this on the pop-ups.html listing page
@@ -741,6 +884,9 @@ function loadAndDisplayPopups() {
                   const placeholder = document.getElementById('footer-placeholder');
                   if (placeholder) {
                     placeholder.innerHTML = footerContent;
+                    // This overwrites the header/footer links partials-loader.js
+                    // already retargeted, so redo them (#302).
+                    if (window.applyRedesignLinks) window.applyRedesignLinks(document);
                   }
                 })
                 .catch((error) => {
@@ -755,35 +901,37 @@ function loadAndDisplayPopups() {
 
 // === EVENT LISTENERS ===
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Only run on pop-ups.html
-    if (document.getElementById('popupsGrid')) {
-        loadAndDisplayPopups();
-    }
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Only run on pop-ups.html
+        if (document.getElementById('popupsGrid')) {
+            loadAndDisplayPopups();
+        }
 
-    const returnButton = document.querySelector('.return-button');
-    if (returnButton) {
-        returnButton.addEventListener('click', () => {
-            const modal = document.getElementById('popupModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                // Remove highlight from all bars when modal closes
-                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
-            }
-        });
-    }
+        const returnButton = document.querySelector('.return-button');
+        if (returnButton) {
+            returnButton.addEventListener('click', () => {
+                const modal = document.getElementById('popupModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    // Remove highlight from all bars when modal closes
+                    document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+                }
+            });
+        }
 
-    const modal = document.getElementById('popupModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-                // Remove highlight from all bars when modal closes
-                document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
-            }
-        });
-    }
-});
+        const modal = document.getElementById('popupModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    // Remove highlight from all bars when modal closes
+                    document.querySelectorAll('.calendar-popup-bar--active').forEach(el => el.classList.remove('calendar-popup-bar--active'));
+                }
+            });
+        }
+    });
+}
 
 // Compatibility/fallback: support legacy populate function name if present
 function populatePopupModal(popup) {
@@ -794,6 +942,10 @@ function populatePopupModal(popup) {
     if (popup && popup.id) {
         window.location.href = `pop-up.html?id=${popup.id}`;
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mapSanityPopup, generatePopupId, toDisplayFlag };
 }
 
 // filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/pop-ups.js

@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: sanity/package-lock.json
 
@@ -95,7 +95,7 @@ jobs:
         if: ${{ steps.token_check.outputs.has_token == 'true' }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: sanity/package-lock.json
 

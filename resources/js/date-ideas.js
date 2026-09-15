@@ -24,6 +24,14 @@ function mapSanityDateIdea(item, index) {
     return {
         id: item.slug || item._id || generateEventId(item, index),
         name: item.name || '',
+        vibe: item.vibe || '',
+        budget: item.budget || '',
+        borough: item.borough || '',
+        neighborhood: item.neighborhood || '',
+        venue_name: item.venue_name || '',
+        address: item.address || '',
+        price: item.price || '',
+        is_featured: Boolean(item.is_featured),
         location: item.location || '',
         link: item.link || '',
         link_text: item.link_text || '',
@@ -77,19 +85,79 @@ function createDateIdeaTile(idea) {
 }
 
 // === MAIN FUNCTIONALITY ===
-document.addEventListener('DOMContentLoaded', () => {
-    sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
-        .then(results => {
-            const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
-            const grid = document.getElementById('dateIdeasGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            dateIdeas.forEach(idea => {
-                const tile = createDateIdeaTile(idea);
-                if (tile) grid.appendChild(tile);
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        sanityFetch(window.SANITY_QUERIES[DATE_IDEAS_QUERY])
+            .then(results => {
+                const dateIdeas = results.map((item, index) => mapSanityDateIdea(item, index));
+                const grid = document.getElementById('dateIdeasGrid');
+                if (!grid) return;
+
+                // With the redesign on, the search box and filter chips drive
+                // the rendered set. Flag-off pages render everything, as before.
+                const redesignOn = Boolean(window.REDESIGN_FLAG && window.REDESIGN_FLAG.isEnabled());
+                const useCards = redesignOn && window.NycDateIdeasList && window.NycCards;
+
+                function renderDateIdeas(list) {
+                    if (useCards) {
+                        // Shared event cards with a vibe column in place of the
+                        // date one, and a no-results state that offers the way
+                        // out. See REDESIGN.md sections 6.4 and 7.2.
+                        window.NycDateIdeasList.renderResults(grid, list, {
+                            onClear: () => {
+                                const clear = document.querySelector('.filter-bar__clear');
+                                if (clear) clear.click();
+                            },
+                        });
+                        return;
+                    }
+                    grid.innerHTML = '';
+                    list.forEach(idea => {
+                        const tile = createDateIdeaTile(idea);
+                        if (tile) grid.appendChild(tile);
+                    });
+                }
+
+                // Cards open the detail modal rather than navigating.
+                // Delegated, so re-rendering on every filter change needs no
+                // re-binding.
+                if (useCards && window.NycDateIdeasDetail) {
+                    window.NycDateIdeasDetail.initDetailModal(document, grid, {
+                        getEntries: () => dateIdeas,
+                    });
+                }
+
+                if (redesignOn && window.NycDateIdeasFilter) {
+                    const filter = window.NycDateIdeasFilter;
+                    const controller = filter.createFilterController(document, {
+                        onChange: state => renderDateIdeas(filter.filterDateIdeas(dateIdeas, state)),
+                    });
+
+                    // The neighborhood list comes from the content rather than
+                    // a hardcoded set, so no date idea is unreachable by that
+                    // filter. Vibe and Budget stay in the markup: they are
+                    // closed schema enums, and offering only the ones currently
+                    // published would make the filter bar change shape as
+                    // content comes and goes.
+                    if (window.NycFilters && window.NycFilters.setOptions) {
+                        window.NycFilters.setOptions(
+                            'neighborhood',
+                            filter.getDistinctNeighborhoods(dateIdeas)
+                        );
+                    }
+
+                    renderDateIdeas(controller.apply(dateIdeas));
+                    return;
+                }
+
+                renderDateIdeas(dateIdeas);
+            })
+            .catch(error => {
+                console.error('Failed to fetch date ideas:', error);
             });
-        })
-        .catch(error => {
-            console.error('Failed to fetch date ideas:', error);
-        });
-});
+    });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mapSanityDateIdea, generateEventId };
+}
