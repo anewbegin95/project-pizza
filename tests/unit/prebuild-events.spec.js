@@ -4,6 +4,7 @@ const {
   generateSitemap,
   escapeHtml,
   mapSanityPopup,
+  mapSanityDateIdea,
   injectStaticTiles,
 } = require('../../scripts/prebuild-events.js')
 const os = require('node:os')
@@ -42,6 +43,13 @@ describe('mapSanityPopup', () => {
       end_datetime: '2025-06-01T14:00:00',
       all_day: false,
       recurring: false,
+      category: 'food_drink',
+      borough: 'brooklyn',
+      neighborhood: 'Williamsburg',
+      venue_name: 'Pizza Palace',
+      address: '123 Main St, Brooklyn, NY',
+      price: '$15–30',
+      is_featured: true,
       location: 'Brooklyn, NY',
       display_overall: true,
       display_in_popups_page: true,
@@ -54,6 +62,95 @@ describe('mapSanityPopup', () => {
     expect(result.master_display).toBe('TRUE')
     expect(result.popups_page).toBe('TRUE')
     expect(result.img).toBe('https://cdn.example.com/img.jpg')
+    expect(result.category).toBe('food_drink')
+    expect(result.borough).toBe('brooklyn')
+    expect(result.neighborhood).toBe('Williamsburg')
+    expect(result.venue_name).toBe('Pizza Palace')
+    expect(result.address).toBe('123 Main St, Brooklyn, NY')
+    expect(result.price).toBe('$15–30')
+    expect(result.is_featured).toBe(true)
+  })
+
+  it('provides default values when new fields are undefined', () => {
+    const item = {
+      _id: 'minimal123',
+      name: 'Minimal Pop-Up',
+      display_overall: true,
+      display_in_popups_page: true,
+    }
+    const result = mapSanityPopup(item)
+    expect(result.category).toBe('')
+    expect(result.borough).toBe('')
+    expect(result.neighborhood).toBe('')
+    expect(result.venue_name).toBe('')
+    expect(result.address).toBe('')
+    expect(result.price).toBe('')
+    expect(result.is_featured).toBe(false)
+  })
+})
+
+describe('mapSanityDateIdea', () => {
+  it('maps a Sanity document to a date idea object', () => {
+    const item = {
+      _id: 'idea123',
+      name: 'Rooftop Dinner',
+      slug: 'rooftop-dinner',
+      vibe: 'romantic',
+      budget: '30_to_75',
+      borough: 'manhattan',
+      neighborhood: 'Chelsea',
+      venue_name: 'Sky Terrace',
+      address: '456 W 23rd St, New York, NY',
+      price: '$40 per person',
+      is_featured: true,
+      location: 'Chelsea, Manhattan',
+      link: 'https://example.com',
+      link_text: 'Book now',
+      short_description: 'Dinner with a skyline view.',
+      display_overall: true,
+      imageUrl: 'https://cdn.example.com/idea.jpg',
+    }
+    const result = mapSanityDateIdea(item, 0)
+    expect(result.id).toBe('rooftop-dinner')
+    expect(result.name).toBe('Rooftop Dinner')
+    expect(result.vibe).toBe('romantic')
+    expect(result.budget).toBe('30_to_75')
+    expect(result.borough).toBe('manhattan')
+    expect(result.neighborhood).toBe('Chelsea')
+    expect(result.venue_name).toBe('Sky Terrace')
+    expect(result.address).toBe('456 W 23rd St, New York, NY')
+    expect(result.price).toBe('$40 per person')
+    expect(result.is_featured).toBe(true)
+    expect(result.location).toBe('Chelsea, Manhattan')
+    expect(result.link).toBe('https://example.com')
+    expect(result.link_text).toBe('Book now')
+    expect(result.short_desc).toBe('Dinner with a skyline view.')
+    expect(result.img).toBe('https://cdn.example.com/idea.jpg')
+    expect(result.master_display).toBe('TRUE')
+  })
+
+  it('provides default values when new fields are undefined', () => {
+    const item = {
+      _id: 'minimal-idea',
+      name: 'Minimal Idea',
+      display_overall: true,
+    }
+    const result = mapSanityDateIdea(item, 2)
+    expect(result.id).toBe('minimal-idea')
+    expect(result.vibe).toBe('')
+    expect(result.budget).toBe('')
+    expect(result.borough).toBe('')
+    expect(result.neighborhood).toBe('')
+    expect(result.venue_name).toBe('')
+    expect(result.address).toBe('')
+    expect(result.price).toBe('')
+    expect(result.is_featured).toBe(false)
+  })
+
+  it('falls back to a slugified name plus index when slug and _id are missing', () => {
+    const result = mapSanityDateIdea({ name: 'Art Gallery Tour!' }, 3)
+    expect(result.id).toBe('art-gallery-tour-3')
+    expect(result.master_display).toBe('FALSE')
   })
 })
 

@@ -42,6 +42,28 @@
   overflow: hidden;
 }
 
+/* The month arrows took their whole appearance from the bare `button` rule in
+   buttons.css. It is retired (#372), so the legacy palette is stated here to
+   keep the calendar unchanged. The calendar's own redesign is Epic 5. */
+.calendar-header__prev-month,
+.calendar-header__next-month {
+  padding: var(--space-xs) var(--space-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--nyc-pink);
+  color: var(--nyc-fuschia);
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-regular);
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.calendar-header__prev-month:hover,
+.calendar-header__next-month:hover {
+  background-color: var(--nyc-fuschia);
+  color: var(--nyc-white);
+}
+
 .calendar-header__prev-month {
   justify-self: end;
 }

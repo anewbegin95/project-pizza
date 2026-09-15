@@ -1,0 +1,94 @@
+/* -----------------------------------------------------------------------------
+  POP-UPS PAGE SHELL (redesign only)
+  What the Pop-Ups page adds on top of the shared results region: the legacy
+  grid's padding override, month group headings, and switching between the
+  List, Map and Calendar panels.
+
+  The region itself, the single-column card stack, the divider and the
+  no-results state are page-agnostic and live in results.css, which this page
+  links alongside this file. Legacy tile and grid rules stay in popups.css;
+  nothing here applies with the flag off.
+  See REDESIGN.md sections 6.4 and 7.1.
+----------------------------------------------------------------------------- */
+
+/* Flag-off defaults for the panels this page adds. */
+.results__panel--map,
+.results__panel--calendar {
+  display: none;
+}
+
+/* popups.css sets section#popupsGrid's padding at !important, and an id beats
+   any number of stacked classes, so the shell cannot simply out-specify it.
+   Deleting the legacy rule would change the flag-off page below 975px — its
+   !important quietly outranks the media queries there too — so the padding is
+   handed back to the region instead. */
+:root[data-redesign='on'] section#popupsGrid,
+body.redesign-enabled section#popupsGrid {
+  padding: 0 !important;
+}
+
+/* Month groups (section 6.4) --------------------------------------------- */
+
+.event-group__heading {
+  display: none;
+}
+
+:root[data-redesign='on'] .event-group,
+body.redesign-enabled .event-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  margin: 0;
+  background: none;
+}
+
+/* Groups sit inside the list panel's own gap, so only later ones need space
+   above their heading. */
+:root[data-redesign='on'] .event-group + .event-group,
+body.redesign-enabled .event-group + .event-group {
+  margin-top: var(--space-md);
+}
+
+:root[data-redesign='on'] .event-group__heading,
+body.redesign-enabled .event-group__heading {
+  display: block;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--nyc-section-divider);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-display);
+  font-size: 40px;
+  font-weight: var(--font-weight-regular);
+}
+
+/* View switching ----------------------------------------------------------- */
+
+/* search.js reflects the toggle onto <html data-view>, so the panels follow it
+   without either side knowing about the other.
+
+   The list panel is hidden by "any view that isn't list" rather than by naming
+   the others, for two reasons. It has no flag-off `display: none` default —
+   the prebuilt static tiles are the no-JS experience, so it must show before
+   search.js has stamped anything, which `[data-view]` guarantees. And a view
+   added later (Calendar arrived in #298) cannot leave two panels stacked on
+   top of each other by being forgotten here. */
+:root[data-redesign='on'][data-view]:not([data-view='list']) .results__panel--list,
+:root[data-view]:not([data-view='list']) body.redesign-enabled .results__panel--list {
+  display: none;
+}
+
+:root[data-redesign='on'][data-view='map'] .results__panel--map,
+:root[data-view='map'] body.redesign-enabled .results__panel--map {
+  display: block;
+}
+
+:root[data-redesign='on'][data-view='calendar'] .results__panel--calendar,
+:root[data-view='calendar'] body.redesign-enabled .results__panel--calendar {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  :root[data-redesign='on'] .event-group__heading,
+  body.redesign-enabled .event-group__heading {
+    font-size: 28px;
+  }
+}

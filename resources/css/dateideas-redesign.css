@@ -1,0 +1,30 @@
+/* -----------------------------------------------------------------------------
+  DATE IDEAS PAGE SHELL (redesign only)
+  What the Date Ideas page adds on top of the shared results region in
+  results.css: neutralising the legacy grid's padding so the region can own it.
+
+  There is no view switching here and no month grouping. Date ideas are
+  evergreen, so REDESIGN.md section 7.2 gives the page no List/Map toggle and no
+  date filter — both recorded as deliberate deviations in
+  docs/redesign-components.md section 5. The cards' vibe column replaces the
+  pop-up date column inside cards.css, not here.
+
+  Legacy tile and grid rules stay in date_ideas.css; nothing here applies with
+  the flag off. See REDESIGN.md section 7.2.
+----------------------------------------------------------------------------- */
+
+/* date_ideas.css sets section#dateIdeasGrid's padding at !important, and an id
+   beats any number of stacked classes, so the shell cannot simply out-specify
+   it — the override has to match the id and carry !important too. Deleting the
+   legacy rule would change the flag-off page at every width: it is what makes
+   the grid 16px on all sides above 975px, and the restatements in its own media
+   queries are what make it 0 16px below. The padding is handed to the region
+   instead, exactly as popups-redesign.css does for #popupsGrid. */
+:root[data-redesign='on'] section#dateIdeasGrid,
+body.redesign-enabled section#dateIdeasGrid {
+  padding: 0 !important;
+}
+
+/* section.date-ideas-grid zeroes its margin at !important too, but the legacy
+   grid template is a plain class rule, so the shared single-column stack in
+   results.css out-specifies it without help. */
