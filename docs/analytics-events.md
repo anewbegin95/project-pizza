@@ -361,21 +361,30 @@ systematically different from the measured one.
 each other, not against absolute targets. **Do not compute precise conversion
 rates** — the denominator is unknowable.
 
-### 2. Staging and production share one property
+### 2. One property covers every environment
 
 Filter every report on `env = production`. Forgetting this quietly inflates
 every number with your own testing. `env` comes from the `data-env` attribute
 written by `redesign-flag.js`, which was deliberately kept when the rest of the
 parked redesign was unloaded (#402).
 
+**Today the traffic being excluded is local, not staging.** GitHub Pages builds
+from `main` only and there is no deployed staging site, so `env` reports
+`development` for the owners' own `localhost` browsing and `production` for
+everyone else; `staging` is in the hostname map
+(`staging.nycsliceoflife.com`) but nothing emits it. The filter is written as
+`env = production` rather than `env != development` so that it keeps working
+unchanged if a staging deployment ever appears.
+
 ### Property description — paste verbatim
 
 > NYC Slice of Life. Opt-in consent: data covers consenting visitors only,
 > typically 40–70% of traffic and NOT a random sample — privacy-conscious
 > visitors decline at higher rates. Directional only; do not compute precise
-> conversion rates. Staging and production share this property: filter every
-> report on env=production. Event dictionary: docs/analytics-events.md in the
-> project-pizza repo.
+> conversion rates. This property covers every environment, so filter every
+> report on env=production — otherwise the owners' own local browsing is in the
+> numbers. Event dictionary: docs/analytics-events.md in the project-pizza
+> repo.
 
 ---
 
