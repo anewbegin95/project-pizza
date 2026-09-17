@@ -867,5 +867,15 @@
     "lon": -73.7767517,
     "borough": null
   },
-  "9th Ave b/t 14th & 15th St (Chelsea Triangle), New York, NY": null
+  "9th Ave b/t 14th & 15th St (Chelsea Triangle), New York, NY": null,
+  "1542 3rd Ave, New York, NY": {
+    "lat": 40.7794817,
+    "lon": -73.9537572,
+    "borough": "manhattan"
+  },
+  "410 Lafayette St, New York, NY": {
+    "lat": 40.7303242,
+    "lon": -73.9908521,
+    "borough": "manhattan"
+  }
 }
