@@ -25,6 +25,19 @@
 | `end_date` | date | — | End date for multi-day all-day events. |
 | `all_day` | boolean | — | Enable for events with no specific time. Default: `false`. |
 
+**Which pair wins.** `all_day` selects the pair: when it is true the site reads
+`start_date`/`end_date`, and when it is false it reads `start_datetime`/`end_datetime`.
+The other pair is consulted only when the preferred one is empty on *both* fields.
+
+Toggling `all_day` in Studio only **hides** the unused pair — it never clears it — so a
+document that was authored as timed and later flipped to all-day keeps its old
+`start_datetime` indefinitely, and each field's validation short-circuits for the other
+mode so the leftover is never flagged. Picking the pair with `||` therefore let a stale
+timestamp outrank the correct date and render the event on the wrong day (#423). The
+selection lives in `pickPopupDates` in both `resources/js/pop-ups.js` and
+`scripts/prebuild-events.js`, and the GROQ sort and visibility clauses branch on
+`all_day` for the same reason. Keep all of them in step when changing this.
+
 ### Recurrence
 
 | Field | Type | Required | Description |
