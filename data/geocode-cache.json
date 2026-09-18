@@ -877,5 +877,10 @@
     "lat": 40.7303242,
     "lon": -73.9908521,
     "borough": "manhattan"
+  },
+  "30 Hudson Yards, New York, NY": {
+    "lat": 40.753983,
+    "lon": -74.0006028,
+    "borough": "manhattan"
   }
 }
