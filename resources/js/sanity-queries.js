@@ -73,7 +73,7 @@ window.SANITY_QUERIES = {
     "imageUrl": image.asset->url
   }`,
 
-  POPUPS: `*[_type == "pop-ups"] | order(coalesce(start_datetime, start_date) asc) {
+  POPUPS: `*[_type == "pop-ups"] | order(select(all_day == true => coalesce(start_date, start_datetime), coalesce(start_datetime, start_date)) asc) {
     _id,
     name,
     "slug": slug.current,
@@ -107,16 +107,24 @@ window.SANITY_QUERIES = {
     long_description,
     display_overall,
     display_in_calendar,
-    // For the pop-ups page: hide items whose end datetime has passed. For all-day events,
-    // end_date is a YYYY-MM-DD string and now() returns an ISO datetime string; since
-    // both are ISO format, lexicographic comparison is chronologically correct.
+    // For the pop-ups page: hide items whose end has passed. All-day events are
+    // checked against end_date first, because a document flipped to all-day in
+    // Studio keeps its old end_datetime and a past stale value would otherwise
+    // hide an event that is still months away (#423). For all-day events
+    // end_date is a YYYY-MM-DD string and now() returns an ISO datetime string;
+    // since both are ISO format, lexicographic comparison is chronologically
+    // correct.
     "display_in_popups_page": select(
+      all_day == true && defined(end_date) && end_date < now() => false,
+      all_day == true && defined(end_date) => display_in_popups_page,
       defined(end_datetime) && end_datetime < now() => false,
       defined(end_date) && end_date < now() => false,
       display_in_popups_page
     ),
     // For the carousel: same logic as above.
     "display_in_carousel": select(
+      all_day == true && defined(end_date) && end_date < now() => false,
+      all_day == true && defined(end_date) => display_in_carousel,
       defined(end_datetime) && end_datetime < now() => false,
       defined(end_date) && end_date < now() => false,
       display_in_carousel

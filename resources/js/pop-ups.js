@@ -24,9 +24,53 @@ function toDisplayFlag(value, defaultValue = 'FALSE') {
     return String(value).toUpperCase() === 'TRUE' ? 'TRUE' : 'FALSE';
 }
 
+/**
+ * Truncates a value to its Eastern calendar day. Date-only values pass
+ * through untouched; anything unparseable is returned as-is.
+ */
+function toEasternDateOnly(value) {
+    if (!value) return '';
+    const raw = String(value);
+    if (!raw.includes(':')) return raw;
+    const parsed = parsePopupDate(raw);
+    return parsed ? getEasternYMD(parsed) : raw;
+}
+
+/**
+ * Picks the date pair that matches the document's all_day flag.
+ *
+ * Sanity keeps both pairs on every document: toggling `all_day` only *hides*
+ * the unused pair in Studio (sanity/schemaTypes/popup.ts), it never unsets
+ * it, and each field's validation short-circuits to `true` for the other
+ * mode. So an event authored as timed and later flipped to all-day still
+ * carries a stale `start_datetime`. Picking with `||` let that stale value
+ * outrank the correct `start_date`; picking by the flag does not (#423).
+ *
+ * The other pair is used only when the preferred pair is empty on *both*
+ * fields — never when a correct value exists, since a per-field fallback
+ * would pull a stale end in beside a good start and render the range
+ * backwards. For all-day events that fallback is truncated to its Eastern
+ * calendar day, so an all-day event is always date-only downstream.
+ */
+function pickPopupDates(item, isAllDay) {
+    const dates = { start: item.start_date || '', end: item.end_date || '' };
+    const datetimes = { start: item.start_datetime || '', end: item.end_datetime || '' };
+    const preferred = isAllDay ? dates : datetimes;
+    if (preferred.start || preferred.end) return preferred;
+
+    const fallback = isAllDay ? datetimes : dates;
+    if (!isAllDay) return fallback;
+    return {
+        start: toEasternDateOnly(fallback.start),
+        end: toEasternDateOnly(fallback.end),
+    };
+}
+
 function mapSanityPopup(item) {
-    const startValue = item.start_datetime || item.start_date || '';
-    const endValue = item.end_datetime || item.end_date || '';
+    const allDayFlag = toDisplayFlag(item.all_day, 'FALSE');
+    const chosen = pickPopupDates(item, allDayFlag === 'TRUE');
+    const startValue = chosen.start;
+    const endValue = chosen.end;
 
     return {
         id: item.slug || item._id || generatePopupId(item),
@@ -35,7 +79,7 @@ function mapSanityPopup(item) {
         end_datetime: endValue,
         start_date: item.start_date || '',
         end_date: item.end_date || '',
-        all_day: toDisplayFlag(item.all_day, 'FALSE'),
+        all_day: allDayFlag,
         recurring: toDisplayFlag(item.recurring, 'FALSE'),
         recurrence_frequency: item.recurrence_frequency || '',
         recurrence_interval: item.recurrence_interval || '',
@@ -153,10 +197,17 @@ function formatPopupDate(start, end, allDay, recurring) {
     if (start != end && !start.includes(':') && !end.includes(':') && allDay === 'FALSE' && recurring === 'FALSE') {
         return `${startDateFormatted} – ${endDateFormatted}`;
     }
-    if ((start === end || (start && !end)) && allDay === 'TRUE' && recurring === 'FALSE') {
-        return `${startDateFormatted} (all day)`;
-    }
-    if (start != end && allDay === 'TRUE' && recurring === 'FALSE') {
+    // All-day events: compare Eastern calendar days rather than raw strings.
+    // A `start === end` string test is wrong the moment the two values arrive
+    // in different shapes ('2026-07-24' never equals '2026-07-24T23:00:00Z'),
+    // which is how a single-day event rendered as "X - X (all day)" (#423).
+    if (allDay === 'TRUE' && recurring === 'FALSE' && (startDate || endDate)) {
+        if (!startDate) {
+            return `${endDateFormatted} (all day)`;
+        }
+        if (!endDate || getEasternYMD(startDate) === getEasternYMD(endDate)) {
+            return `${startDateFormatted} (all day)`;
+        }
         return `${startDateFormatted} - ${endDateFormatted} (all day)`;
     }
     if (recurring === 'TRUE') {
@@ -945,7 +996,7 @@ function populatePopupModal(popup) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { mapSanityPopup, generatePopupId, toDisplayFlag };
+    module.exports = { mapSanityPopup, generatePopupId, toDisplayFlag, formatPopupDate, parsePopupDate };
 }
 
 // filepath: /Users/YouCanCallMeAll/code/project-pizza/resources/js/pop-ups.js
