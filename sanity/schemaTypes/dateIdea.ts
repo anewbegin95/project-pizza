@@ -275,8 +275,110 @@ export const dateIdeaType = defineType({
         hidden: ({document}) => !document?.has_date_and_time || !document?.recurring,
     }),
     defineField({
+        name: 'vibe',
+        type: 'string',
+        description: 'Vibe used for filtering and the card vibe label.',
+        options: {
+          list: [
+            {title: 'Romantic', value: 'romantic'},
+            {title: 'Adventurous', value: 'adventurous'},
+            {title: 'Chill', value: 'chill'},
+            {title: 'Foodie', value: 'foodie'},
+            {title: 'Cultural', value: 'cultural'},
+            {title: 'Free', value: 'free'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'budget',
+        type: 'string',
+        hidden: true,
+        description:
+          'Hidden from the Studio form. Existing values still feed the Budget filter; new date ideas will not have one.',
+        options: {
+          list: [
+            {title: 'Free', value: 'free'},
+            {title: 'Under $30', value: 'under_30'},
+            {title: '$30–$75', value: '30_to_75'},
+            {title: '$75+', value: '75_plus'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'borough',
+        type: 'string',
+        readOnly: true,
+        hidden: true,
+        description:
+          'Auto-populated from the address by the geocoding automation. Do not edit manually.',
+        options: {
+          list: [
+            {title: 'Manhattan', value: 'manhattan'},
+            {title: 'Brooklyn', value: 'brooklyn'},
+            {title: 'Queens', value: 'queens'},
+            {title: 'Bronx', value: 'bronx'},
+            {title: 'Staten Island', value: 'staten_island'},
+            {title: 'Citywide', value: 'citywide'},
+          ],
+          layout: 'dropdown',
+        },
+    }),
+    defineField({
+        name: 'neighborhood',
+        type: 'string',
+        readOnly: true,
+        hidden: true,
+        description:
+          'Auto-populated from the address by the geocoding automation. Do not edit manually.',
+    }),
+    defineField({
+        name: 'venue_name',
+        type: 'string',
+        hidden: true,
+        description: 'Name of the venue for the date idea.',
+    }),
+    defineField({
+        name: 'address',
+        type: 'text',
+        rows: 2,
+        hidden: true,
+        description:
+          'Full street address of the venue. Borough and neighborhood are derived from this field automatically.',
+    }),
+    defineField({
+        name: 'latitude',
+        type: 'number',
+        readOnly: true,
+        hidden: true,
+        description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
+    }),
+    defineField({
+        name: 'longitude',
+        type: 'number',
+        readOnly: true,
+        hidden: true,
+        description: 'Auto-populated by the geocoding automation from the address field. Do not edit manually.',
+    }),
+    defineField({
+        name: 'price',
+        type: 'string',
+        hidden: true,
+        description:
+          'Hidden from the Studio form. Existing values still render as a badge on cards; new date ideas will not have one.',
+    }),
+    defineField({
+        name: 'is_featured',
+        type: 'boolean',
+        description: 'Enable to display this date idea as a featured card with expanded image.',
+        initialValue: false,
+    }),
+    defineField({
         name: 'location',
         type: 'string',
+        description:
+          'Where the event is. Free text is fine (street address, cross streets, or a venue name). The borough is derived from this automatically.',
     }),
     defineField({
         name: 'link',

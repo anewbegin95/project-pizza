@@ -103,6 +103,7 @@ fetch('partials/header.html')
     const mountHeader = () => {
       if (!document.body) return;
       document.body.insertAdjacentHTML('afterbegin', headerContent);
+      applyRedesignLinks(document);
       initializeHeader();
     };
 
@@ -115,6 +116,41 @@ fetch('partials/header.html')
   .catch((error) => {
     console.error(error);
   });
+
+/**
+ * Retargets nav links that point somewhere else in the redesign. The partials
+ * are shared by both experiences and injected at runtime, so the markup keeps
+ * the legacy href and carries the redesign one alongside it — flag-off readers
+ * get exactly the file's own links. #302 uses this for Calendar, which the
+ * redesign treats as a view of Pop-Ups rather than a page of its own.
+ */
+function applyRedesignLinks(doc) {
+  if (!doc) return;
+  // Idempotent: pop-ups.js and calendar.js re-inject the footer after their
+  // Sanity fetch resolves, overwriting what was retargeted here, so they call
+  // this again afterwards.
+  const flag = window.REDESIGN_FLAG;
+  if (!flag || !flag.isEnabled()) return;
+
+  // When the redesign is on only because the URL says so — which is how it is
+  // seen today, since the flag defaults OFF everywhere — a link that drops the
+  // parameter walks the reader straight back out of the redesign. Carry it.
+  const carryOverride = flag.source === 'url-override';
+
+  doc.querySelectorAll('a[data-redesign-href]').forEach((link) => {
+    const target = link.dataset.redesignHref;
+    link.setAttribute('href', carryOverride ? withRedesignOverride(target) : target);
+  });
+}
+
+/** Appends `redesign=on` to a same-site href, respecting an existing query. */
+function withRedesignOverride(href) {
+  const url = String(href);
+  if (/[?&]redesign=/.test(url)) return url;
+  return `${url}${url.includes('?') ? '&' : '?'}redesign=on`;
+}
+
+window.applyRedesignLinks = applyRedesignLinks;
 
 // Function to initialize header.js functionality
 function initializeHeader() {
@@ -147,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const placeholder = document.getElementById('footer-placeholder');
       if (placeholder) {
         placeholder.innerHTML = footerContent;
+        applyRedesignLinks(document);
       } else {
         console.warn('Footer placeholder element not found in the DOM.');
       }

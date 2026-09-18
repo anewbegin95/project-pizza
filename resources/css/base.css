@@ -12,6 +12,10 @@
   --nyc-white: #FFFFFF;      /* Backgrounds, modal, pop-up tiles */
   --nyc-light-pink: #ffe2e7; /* Used for backgrounds, buttons, highlights */
   --nyc-fuschia: #D81E5B;    /* Accent, links, badges, focus */
+  --nyc-cream: #FAF8F5;      /* Page background for redesigned surfaces */
+  --nyc-green: #2D6A4F;      /* Primary interactive accent */
+  --nyc-green-light: #EAF2ED; /* Active filter and badge backgrounds */
+  --nyc-green-hover: #235A40; /* Hover state for green buttons */
   --nyc-light-blue: #e3f2fd; /* Calendar highlight, hover, backgrounds */
   --nyc-blue: #1976d2;       /* Calendar '+N more' link, secondary accent */
   --nyc-light-green: #A1C7B6;/* Success messages */
@@ -19,6 +23,16 @@
   --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
   --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
   --nyc-overlay: rgba(0, 0, 0, 0.5); /* Overlay for hero, modals, etc. */
+  --nyc-section-divider: #E5E5E5; /* Horizontal section separators */
+
+  /* --- SURFACE ROLES --- */
+  --nyc-surface-page: var(--nyc-cream);
+  --nyc-surface-page-legacy: var(--nyc-white);
+  --nyc-surface-card: var(--nyc-white);
+  --nyc-surface-elevated: var(--nyc-white);
+  --nyc-surface-muted: var(--nyc-light-gray);
+  --nyc-surface-active: var(--nyc-green-light);
+  --nyc-surface-border: #EEEEEE;
 
   /* --- SPACING SCALE --- */
   --space-xxxl: 256px;
@@ -29,6 +43,7 @@
   --space-sm-md: 24px;
   --space-sm: 16px;
   --space-xs: 8px;
+  --space-xxs-xs: 6px;
   --space-xxs: 4px;
   --space-xxxs: 2px;
 
@@ -40,6 +55,7 @@
   --font-md: 24px;
   --font-md-sm: 20px; /* nav, collapsible menu */
   --font-sm: 16px;  /* body, p, ul, ol, small text, etc. */
+  --font-xs-md: 14px; /* compact controls: chips, labels, metadata */
   --font-xs-sm: 12px; /* Small font for responsive buttons/labels */
   --font-xs: 8px;
 
@@ -68,6 +84,25 @@
   --container-max-width: 1200px;
   --container-width: 90%;
   --section-max-width: 900px;
+
+  /* --- TYPOGRAPHY ROLES --- */
+  --nyc-font-display: 'Playfair Display', Georgia, serif;
+  --nyc-font-body: 'Work Sans', 'Arial', sans-serif;
+  --nyc-font-heading-h1: 'Montserrat', 'Arial', sans-serif;
+  --nyc-font-heading-h2: var(--nyc-font-body);
+  --nyc-font-heading-h3: var(--nyc-font-body);
+  --nyc-font-weight-heading-h2: var(--font-weight-bold);
+  --nyc-page-background: var(--nyc-surface-page-legacy);
+}
+
+/* Redesign can be toggled either at the document root or on body for incremental rollout. */
+:root[data-redesign='on'],
+body.redesign-enabled {
+  --nyc-font-heading-h1: var(--nyc-font-display);
+  --nyc-font-heading-h2: var(--nyc-font-display);
+  --nyc-font-heading-h3: var(--nyc-font-display);
+  --nyc-font-weight-heading-h2: var(--font-weight-regular);
+  --nyc-page-background: var(--nyc-surface-page);
 }
 
 /* -----------------------------------------------------------------------------
@@ -78,9 +113,9 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
   height: 100%;
-  font-family: 'Work Sans', 'Arial', sans-serif;
+  font-family: var(--nyc-font-body);
   color: var(--nyc-navy);
-  background-color: var(--nyc-white);
+  background-color: var(--nyc-page-background);
   line-height: 1.6;
 }
 
@@ -88,22 +123,21 @@ html, body {
   TYPOGRAPHY
 ----------------------------------------------------------------------------- */
 
-/* Headings use Montserrat/Work Sans, body uses Work Sans */
+/* Headings support redesigned display typography via a shared role */
 h1 {
-  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-family: var(--nyc-font-heading-h1);
   font-size: var(--font-xxl, 40px); /* Use variable, fallback to px */
   font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
 }
-h2, h3 {
-  font-family: 'Work Sans', 'Arial', sans-serif;
-}
 h2 {
+  font-family: var(--nyc-font-heading-h2);
   font-size: var(--font-xl, 32px);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--nyc-font-weight-heading-h2);
   color: var(--nyc-navy);
 }
 h3 {
+  font-family: var(--nyc-font-heading-h3);
   font-size: var(--font-lg, 28px);
   font-weight: var(--font-weight-bold);
   color: var(--nyc-navy);
@@ -117,8 +151,71 @@ p, ul, ol {
 .modal-content p, .popup-text p, .event-text p {
   font-family: 'Work Sans', 'Arial', sans-serif;
 }
-.modal-content h2, .popup-text h3, .event-text h3 {
-  font-family: 'Work Sans', 'Arial', sans-serif;
+.modal-content h2 {
+  font-family: var(--nyc-font-heading-h2);
+}
+.popup-text h3, .event-text h3 {
+  font-family: var(--nyc-font-heading-h3);
+}
+
+/* -----------------------------------------------------------------------------
+  SHARED PRIMITIVES (REDESIGN-READY)
+----------------------------------------------------------------------------- */
+
+.ui-card {
+  background-color: var(--nyc-surface-card);
+  border: 1px solid var(--nyc-surface-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ui-pill,
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: var(--radius-pill);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+}
+
+.ui-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-pill);
+  background-color: var(--nyc-surface-card);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-xs-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--nyc-navy);
+}
+
+.ui-filter-chip--active {
+  border-color: var(--nyc-green);
+  background-color: var(--nyc-surface-active);
+  color: var(--nyc-green);
+}
+
+.ui-input {
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--nyc-medium-gray);
+  border-radius: var(--radius-pill);
+  background-color: var(--nyc-surface-elevated);
+  color: var(--nyc-navy);
+  font-family: var(--nyc-font-body);
+  font-size: var(--font-sm);
+}
+
+.ui-divider {
+  border: 0;
+  border-top: 1px solid var(--nyc-section-divider);
 }
 
 /* -----------------------------------------------------------------------------
