@@ -6,6 +6,7 @@ const {
   mapSanityPopup,
   mapSanityDateIdea,
   injectStaticTiles,
+  formatPopupDate,
 } = require('../../scripts/prebuild-events.js')
 const os = require('node:os')
 const fs = require('node:fs')
@@ -372,5 +373,92 @@ describe('generateSitemap', () => {
     expect(xml).not.toContain('id=event&<special>')
     expect(xml).toContain('id=event%26%3Cspecial%3E')
     expect(xml).toContain('id=idea%26test')
+  })
+})
+
+// The prebuild script keeps its own copy of the mapper and the date formatter
+// (it is a Node script and cannot require the browser globals), so these
+// mirror tests/unit/pop-ups.spec.js to stop the two copies drifting. See the
+// query-duplication note in CLAUDE.md.
+describe('mapSanityPopup date-pair selection', () => {
+  it('prefers start_date over a stale start_datetime when all_day is true', () => {
+    const result = mapSanityPopup({
+      name: 'Beyond Yoga Seek Beyond Open Air Concert',
+      all_day: true,
+      start_date: '2026-10-17',
+      end_date: '2026-10-17',
+      start_datetime: '2026-09-17T16:53:00.000Z',
+    })
+
+    expect(result.start_datetime).toBe('2026-10-17')
+    expect(result.end_datetime).toBe('2026-10-17')
+  })
+
+  it('prefers the datetimes over a stale date pair when all_day is false', () => {
+    const result = mapSanityPopup({
+      name: 'Timed Pop-Up',
+      all_day: false,
+      start_datetime: '2026-06-12T15:00:00.000Z',
+      end_datetime: '2026-06-12T19:00:00.000Z',
+      start_date: '2026-06-05',
+      end_date: '2026-06-05',
+    })
+
+    expect(result.start_datetime).toBe('2026-06-12T15:00:00.000Z')
+    expect(result.end_datetime).toBe('2026-06-12T19:00:00.000Z')
+  })
+
+  it('does not pull a stale end_datetime in when only start_date is set', () => {
+    const result = mapSanityPopup({
+      name: 'Half-Populated',
+      all_day: true,
+      start_date: '2026-10-17',
+      end_datetime: '2026-09-17T16:53:00.000Z',
+    })
+
+    expect(result.start_datetime).toBe('2026-10-17')
+    expect(result.end_datetime).toBe('')
+  })
+})
+
+describe('formatPopupDate (prebuild copy)', () => {
+  it('renders a single-day all-day event once', () => {
+    expect(formatPopupDate('2026-10-17', '2026-10-17', 'TRUE', 'FALSE'))
+      .toBe('Sat, Oct 17 (all day)')
+  })
+
+  it('collapses an all-day pair whose values arrive in different shapes', () => {
+    expect(formatPopupDate('2026-07-24', '2026-07-24T23:00:00.000Z', 'TRUE', 'FALSE'))
+      .toBe('Fri, Jul 24 (all day)')
+  })
+
+  it('renders a multi-day all-day event as a hyphenated range', () => {
+    expect(formatPopupDate('2026-07-17', '2026-07-19', 'TRUE', 'FALSE'))
+      .toBe('Fri, Jul 17 - Sun, Jul 19 (all day)')
+  })
+
+  it('returns the TBD copy when an all-day event has no dates at all', () => {
+    expect(formatPopupDate('', '', 'TRUE', 'FALSE'))
+      .toBe('Date and time to be announced')
+  })
+})
+
+// generatePopupTileHtml is where the static HTML actually gets its date text,
+// so this is the end-to-end guard for the no-JS listing.
+describe('generatePopupTileHtml date rendering', () => {
+  it('renders an all-day tile from start_date, not a stale datetime', () => {
+    const popup = mapSanityPopup({
+      slug: 'beyond-yoga-seek-beyond-open-air-concert',
+      name: 'Beyond Yoga Seek Beyond Open Air Concert',
+      all_day: true,
+      start_date: '2026-10-17',
+      end_date: '2026-10-17',
+      start_datetime: '2026-09-17T16:53:00.000Z',
+    })
+
+    const html = generatePopupTileHtml(popup)
+
+    expect(html).toContain('Sat, Oct 17 (all day)')
+    expect(html).not.toContain('Sep 17')
   })
 })

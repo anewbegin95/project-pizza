@@ -107,4 +107,4 @@ async function stubSanity(page, { popups = POPUPS, dateIdeas = DATE_IDEAS } = {}
   })
 }
 
-module.exports = { stubSanity, todayPopups, POPUPS, DATE_IDEAS, SANITY_URL_PATTERN }
+module.exports = { stubSanity, todayPopups, popup, dateIdea, POPUPS, DATE_IDEAS, SANITY_URL_PATTERN }
