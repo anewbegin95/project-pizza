@@ -882,5 +882,10 @@
     "lat": 40.753983,
     "lon": -74.0006028,
     "borough": "manhattan"
+  },
+  "Emily Warren Roebling Plaza, New York, NY": {
+    "lat": 40.7039727,
+    "lon": -73.9938787,
+    "borough": "brooklyn"
   }
 }
