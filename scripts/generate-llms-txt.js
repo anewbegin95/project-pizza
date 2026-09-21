@@ -33,12 +33,14 @@ const SANITY_DATASET = 'production';
 const SANITY_API_VERSION = '2024-01-01';
 
 /** Active pop-ups — only those that should appear on the pop-ups listing page */
-const POPUPS_QUERY = `*[_type == "pop-ups" && display_overall == true] | order(coalesce(start_datetime, start_date) asc) {
+const POPUPS_QUERY = `*[_type == "pop-ups" && display_overall == true] | order(select(all_day == true => coalesce(start_date, start_datetime), coalesce(start_datetime, start_date)) asc) {
   _id,
   name,
   "slug": slug.current,
   short_description,
   "display_in_popups_page": select(
+    all_day == true && defined(end_date) && end_date < now() => false,
+    all_day == true && defined(end_date) => display_in_popups_page,
     defined(end_datetime) && end_datetime < now() => false,
     defined(end_date) && end_date < now() => false,
     display_in_popups_page
