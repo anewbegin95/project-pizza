@@ -887,5 +887,16 @@
     "lat": 40.7039727,
     "lon": -73.9938787,
     "borough": "brooklyn"
+  },
+  "323 W 11th St, New York, NY": {
+    "lat": 40.7358404,
+    "lon": -74.0073759,
+    "borough": "manhattan"
+  },
+  "7th Ave & W 47th St (Father Duffy Square), New York, NY": null,
+  "600 Broadway, New York, NY": {
+    "lat": 40.6266182,
+    "lon": -74.1154365,
+    "borough": "staten_island"
   }
 }
