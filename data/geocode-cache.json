@@ -899,5 +899,21 @@
     "lon": -74.1154365,
     "borough": "staten_island"
   },
-  "To be announced, New York, NY": null
+  "To be announced, New York, NY": null,
+  "13 Crosby St, New York, NY": {
+    "lat": 40.7199825,
+    "lon": -73.9999632,
+    "borough": "manhattan"
+  },
+  "85 Fifth Ave, New York, NY": {
+    "lat": 40.9120157,
+    "lon": -73.8094523,
+    "borough": null
+  },
+  "174 7th Ave S (Fellini West Village), New York, NY": {
+    "lat": 40.735914,
+    "lon": -74.0016986,
+    "borough": "manhattan"
+  },
+  "526 W 26th St, Suite 207, New York, NY": null
 }
