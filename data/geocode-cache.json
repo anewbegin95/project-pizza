@@ -915,5 +915,10 @@
     "lon": -74.0016986,
     "borough": "manhattan"
   },
-  "526 W 26th St, Suite 207, New York, NY": null
+  "526 W 26th St, Suite 207, New York, NY": null,
+  "61 Bergen St (Talea Cobble Hill), New York, NY": {
+    "lat": 40.687157,
+    "lon": -73.9908532,
+    "borough": "brooklyn"
+  }
 }
