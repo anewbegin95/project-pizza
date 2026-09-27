@@ -920,5 +920,10 @@
     "lat": 40.687157,
     "lon": -73.9908532,
     "borough": "brooklyn"
+  },
+  "824 Washington St (under The High Line), New York, NY": {
+    "lat": 40.7397307,
+    "lon": -74.008117,
+    "borough": "manhattan"
   }
 }
