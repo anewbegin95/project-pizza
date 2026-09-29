@@ -925,5 +925,10 @@
     "lat": 40.7397307,
     "lon": -74.008117,
     "borough": "manhattan"
+  },
+  "552 Hudson St, New York, NY": {
+    "lat": 40.7352674,
+    "lon": -74.0058713,
+    "borough": "manhattan"
   }
 }
