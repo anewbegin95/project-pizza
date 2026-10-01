@@ -930,5 +930,11 @@
     "lat": 40.7352674,
     "lon": -74.0058713,
     "borough": "manhattan"
-  }
+  },
+  "45 Howard St, New York, NY": {
+    "lat": 40.7200121,
+    "lon": -74.0017415,
+    "borough": "manhattan"
+  },
+  "Sephora 34th St & Soho, New York, NY": null
 }
