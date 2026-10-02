@@ -936,5 +936,20 @@
     "lon": -74.0017415,
     "borough": "manhattan"
   },
-  "Sephora 34th St & Soho, New York, NY": null
+  "Sephora 34th St & Soho, New York, NY": null,
+  "20 Hudson Yards, New York, NY": {
+    "lat": 40.7559064,
+    "lon": -74.0005322,
+    "borough": "manhattan"
+  },
+  "412 W 14th St, New York, NY": {
+    "lat": 40.7411451,
+    "lon": -74.0062383,
+    "borough": "manhattan"
+  },
+  "38 Norman Ave (Brooklyn), New York, NY": {
+    "lat": 40.7245031,
+    "lon": -73.9539184,
+    "borough": "brooklyn"
+  }
 }
