@@ -951,5 +951,15 @@
     "lat": 40.7245031,
     "lon": -73.9539184,
     "borough": "brooklyn"
+  },
+  "513 Broadway, New York, NY": {
+    "lat": 40.7226023,
+    "lon": -73.9993495,
+    "borough": "manhattan"
+  },
+  "Tribeca (RSVP for exact location), New York, NY": {
+    "lat": 40.7153802,
+    "lon": -74.0093063,
+    "borough": "manhattan"
   }
 }
