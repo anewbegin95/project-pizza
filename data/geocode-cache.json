@@ -966,5 +966,11 @@
     "lat": 40.7300299,
     "lon": -74.0030254,
     "borough": "manhattan"
+  },
+  "Astor Place Plaza, New York, NY": null,
+  "410 West 13th St, New York, NY": {
+    "lat": 40.7402075,
+    "lon": -74.0067278,
+    "borough": "manhattan"
   }
 }
