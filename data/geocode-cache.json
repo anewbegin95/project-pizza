@@ -972,5 +972,10 @@
     "lat": 40.7402075,
     "lon": -74.0067278,
     "borough": "manhattan"
+  },
+  "279 Calyer St (Brooklyn), New York, NY": {
+    "lat": 40.729672,
+    "lon": -73.9488887,
+    "borough": "brooklyn"
   }
 }
