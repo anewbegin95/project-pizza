@@ -977,5 +977,11 @@
     "lat": 40.729672,
     "lon": -73.9488887,
     "borough": "brooklyn"
+  },
+  "446 W 54th St (Manhattan) & 131 Concord St (Brooklyn), New York, NY": null,
+  "410 W Broadway, New York, NY": {
+    "lat": 40.7247079,
+    "lon": -74.0019961,
+    "borough": "manhattan"
   }
 }
