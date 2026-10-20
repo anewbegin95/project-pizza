@@ -983,5 +983,11 @@
     "lat": 40.7247079,
     "lon": -74.0019961,
     "borough": "manhattan"
+  },
+  "Vanderbilt Hall at Grand Central, New York, NY": null,
+  "1459 3rd Ave (Heyday UES), New York, NY": {
+    "lat": 40.7764028,
+    "lon": -73.9553701,
+    "borough": "manhattan"
   }
 }
