@@ -989,5 +989,35 @@
     "lat": 40.7764028,
     "lon": -73.9553701,
     "borough": "manhattan"
+  },
+  "Union Square, New York, NY": {
+    "lat": 40.7360717,
+    "lon": -73.9901888,
+    "borough": "manhattan"
+  },
+  "205 Bleecker St, New York, NY": {
+    "lat": 40.7296464,
+    "lon": -74.0018437,
+    "borough": "manhattan"
+  },
+  "80 Pearl St (Brooklyn Flea), New York, NY": {
+    "lat": 40.7039037,
+    "lon": -74.010225,
+    "borough": "manhattan"
+  },
+  "51 West 34th St (2nd floor), New York, NY": {
+    "lat": 40.7497436,
+    "lon": -73.9872192,
+    "borough": "manhattan"
+  },
+  "Hudson Yards, New York, NY": {
+    "lat": 40.7559064,
+    "lon": -74.0005322,
+    "borough": "manhattan"
+  },
+  "325 Lafayette St, New York, NY": {
+    "lat": 40.7255031,
+    "lon": -73.9947757,
+    "borough": "manhattan"
   }
 }
