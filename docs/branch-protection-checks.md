@@ -88,7 +88,7 @@ gh api -X DELETE repos/anewbegin95/project-pizza/branches/main/protection/enforc
 gh api -X POST repos/anewbegin95/project-pizza/branches/main/protection/enforce_admins
 ```
 
-`Rollback Main` can't do this for you. See `docs/rollback-and-recovery.md`.
+`Rollback Main` doesn't help here: it produces a PR, and that PR needs the same green gate. See `docs/rollback-and-recovery.md`.
 
 ## Actions policy
 
