@@ -123,13 +123,15 @@ describe('Dependency hygiene', () => {
   const rootPackage = JSON.parse(read('package.json'))
   const sanityPackage = JSON.parse(read('sanity/package.json'))
 
-  it('drops CVE overrides that no longer pin anything', () => {
-    expect((rootPackage.overrides || {}).minimatch).toBeUndefined()
-    expect((sanityPackage.overrides || {})['basic-ftp']).toBeUndefined()
-  })
-
-  it('keeps the esbuild override, which is still live', () => {
-    expect(sanityPackage.overrides.esbuild).toBeDefined()
+  // Overrides force a version past what a package declares, so each one must
+  // still earn its place. Checked 2026-10-23: `basic-ftp` resolved nothing,
+  // and the `minimatch` ReDoS fix (GHSA-3ppc-4f35-3m26) has been backported
+  // to the 3.x and 9.x lines that eslint, rimraf and tmp declare, so forcing
+  // 10.x on them protected nothing. Adding an override means adding it here,
+  // with the advisory or bug it answers.
+  it('carries only overrides that still answer something', () => {
+    expect(rootPackage.overrides).toBeUndefined()
+    expect(Object.keys(sanityPackage.overrides || {})).toEqual(['esbuild'])
   })
 
   it('audits the root workspace, not only sanity/', () => {
@@ -137,11 +139,10 @@ describe('Dependency hygiene', () => {
     const auditSteps = Object.values(security.jobs)
       .flatMap((job) => (job.steps || []).map((step) => ({ step, job })))
       .filter(({ step }) => /npm audit/.test(step.run || ''))
-    const rootAudit = auditSteps.find(
-      ({ step, job }) =>
-        !(step['working-directory'] || (job.defaults && job.defaults.run && job.defaults.run['working-directory'])),
-    )
-    expect(rootAudit, 'an npm audit step with no working-directory').toBeDefined()
+    const directory = ({ step, job }) =>
+      step['working-directory'] || (job.defaults && job.defaults.run && job.defaults.run['working-directory']) || '.'
+    const rootAudit = auditSteps.find((found) => directory(found) === '.')
+    expect(rootAudit, 'an npm audit step running in the repository root').toBeDefined()
     expect(rootAudit.step.run).toMatch(/npm audit --audit-level=critical/)
   })
 })

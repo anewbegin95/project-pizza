@@ -1,30 +1,42 @@
 name: Dependabot auto-merge
 
+# Turns on auto-merge for Dependabot's grouped minor and patch PRs into
+# staging (#441, the delivery half of #209). GitHub merges once every required
+# check on staging is green; nothing here skips or weakens a check, and
+# releasing staging to main stays a person's call.
+#
+# Left for a person: major updates, security updates (they target main), any
+# PR whose packages changed maintainers, and any PR someone else has pushed to
+# (fetch-metadata returns nothing unless every commit is Dependabot's).
+#
+# pull_request, not pull_request_target: a Dependabot PR's token is raised by
+# the permissions block below, and nothing from the PR is checked out or run.
+
 on:
-  pull_request_target:
-    types: [opened, reopened, synchronize, ready_for_review]
+  pull_request:
+    branches:
+      - staging
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  dependabot:
-    if: github.actor == 'dependabot[bot]'
+  auto-merge:
+    name: Enable auto-merge for minor and patch updates
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
-      # Only auto-merge patch/minor devDependency updates
-      - name: Enable auto-merge for safe updates
-        if: |
-          (steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
-           steps.metadata.outputs.update-type == 'version-update:semver-patch') &&
-          steps.metadata.outputs.dependency-type == 'direct:development'
-        run: gh pr merge --auto --merge "${{ github.event.pull_request.html_url }}"
+      - name: Enable auto-merge
+        if: >-
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+          steps.metadata.outputs.maintainer-changes != 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr merge --auto --merge "$PR_URL"

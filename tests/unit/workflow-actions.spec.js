@@ -22,6 +22,7 @@ const ALLOWED_ACTIONS = [
   /^gitleaks\/gitleaks-action$/,
   /^lycheeverse\/lychee-action$/,
   /^snyk\/actions\/node$/,
+  /^dependabot\/fetch-metadata$/,
 ]
 
 const USES_LINE = /^\s*(?:-\s*)?uses:\s*([^\s#]+)\s*(#.*)?$/
