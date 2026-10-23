@@ -18,9 +18,13 @@ Production regressions are detected by `Main Deployment Gate` via:
 
 1. Confirm failing check in GitHub Actions.
 2. Identify the culprit commit SHA from `main` history.
-3. Trigger `Rollback Main` workflow with that SHA.
-4. Verify rollback commit lands on `main`.
-5. Confirm health checks pass.
+3. Trigger `Rollback Main` (Actions → Rollback Main → Run workflow) with that
+   SHA.
+4. Open the run's summary and click **Open the pull request into main**.
+5. When `main`'s required checks are green, merge the PR with a **merge
+   commit**.
+6. Confirm the `Deployment status + health check` job passes on the push to
+   `main`.
 
 ## Automated rollback workflow
 
@@ -29,9 +33,20 @@ Workflow: `.github/workflows/rollback-main.yml`
 - Trigger: manual (`workflow_dispatch`)
 - Input: `commit_sha`
 - Behavior:
+  - Rejects a `commit_sha` that isn't 7–40 lowercase hex, or isn't on `main`
+  - Cuts `rollback/<short-sha>-<run-id>` from `main`
   - Reverts normal commits with `git revert --no-edit`
   - Reverts merge commits with `git revert -m 1 --no-edit`
-  - Pushes revert commit to `main`
+  - Pushes the branch and writes a one-click "open PR" link to the run summary
+
+It doesn't push to `main` or open the PR itself (#464). `main` requires a pull
+request, enforced for admins. A PR opened with `GITHUB_TOKEN` would trigger
+none of `main`'s required checks, so it could never merge, and creating one
+needs "Allow GitHub Actions to create and approve pull requests", which stays
+off. A PR you open runs the full gate like any other.
+
+If `main`'s gate is red for an unrelated reason, the revert PR can't merge.
+Use the break-glass procedure in `docs/branch-protection-checks.md`.
 
 ## Recovery validation
 
@@ -85,7 +100,8 @@ Revert the activation commit on `main`:
 
 1. Identify the SHA of the release (or the specific analytics commit) on `main`.
 2. Trigger **Rollback Main** (`.github/workflows/rollback-main.yml`,
-   `workflow_dispatch`) with that `commit_sha`.
+   `workflow_dispatch`) with that `commit_sha`, then open the PR from the run
+   summary's link and merge it once `main`'s checks are green.
 3. Confirm the revert lands and `Main Deployment Gate` is green.
 4. Verify on the live site: load any page, accept consent, and confirm no
    request goes to `googletagmanager.com` or `google-analytics.com`.

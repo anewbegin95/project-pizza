@@ -34,6 +34,16 @@ Create/update branch protection for `main` and mark these checks as required:
 - Secret scan (Gitleaks)
 - Review dependency changes
 
+`Pre-deploy checks` was listed here long before the live rule had it. Until
+2026-10-23 (#461) `main` gated only on the three security checks, so the unit,
+e2e and Studio-build suite never blocked a merge to production. Compare the
+live rule against this list whenever you touch either one:
+
+```bash
+gh api repos/anewbegin95/project-pizza/branches/main/protection \
+  -q '[.required_status_checks.checks[].context] | sort | join("\n")'
+```
+
 ### Optional check
 
 - Snyk (optional)
@@ -50,6 +60,71 @@ Only mark this as required if `SNYK_TOKEN` is configured and expected for all PR
 - `Sanity Lint + npm audit` currently runs `npm audit --omit=dev --audit-level=critical`.
 - This keeps merge-blocking focused on production dependency risk.
 - Dev-tooling/transitive dependency vulnerabilities should be handled in dedicated dependency-upgrade issues/PRs.
+
+## Rules beyond required checks
+
+Set on both `main` and `staging` (#461):
+
+- **Enforced for administrators** (`enforce_admins`). The maintainer can't
+  merge past a red or pending check, or push straight to either branch. Sync
+  `main` into `staging` on a branch with a PR, not a direct push.
+- **Require branches to be up to date** (`strict`). A PR has to be rebased or
+  merged with its base before it can merge.
+- **Pull request required**, with **0 approvals**. GitHub doesn't let an author
+  approve their own PR, so with one maintainer, any approval requirement would
+  either block every PR or need a bypass that gets clicked every time.
+  `.github/CODEOWNERS` requests the maintainer's review on every PR instead.
+- Force pushes and branch deletion are off.
+
+### Break glass
+
+If production needs a revert and the gate can't go green (for example `Pre-deploy
+checks` failing for an unrelated reason), lift admin enforcement just long
+enough to land it, then put it back:
+
+```bash
+gh api -X DELETE repos/anewbegin95/project-pizza/branches/main/protection/enforce_admins
+# git revert <sha> locally, then push to main as admin
+gh api -X POST repos/anewbegin95/project-pizza/branches/main/protection/enforce_admins
+```
+
+`Rollback Main` doesn't help here: it produces a PR, and that PR needs the same green gate. See `docs/rollback-and-recovery.md`.
+
+## Actions policy
+
+Settings → Actions → General, set 2026-10-23 (#461):
+
+- **Allowed actions:** GitHub-owned, plus `gitleaks/gitleaks-action@*`,
+  `lycheeverse/lychee-action@*` and `snyk/actions/node@*`. Anything else fails
+  at run time.
+- **Every `uses:` is pinned to a full commit SHA**, with its release in a
+  trailing comment (`@<sha> # v4.4.0`). Dependabot's `github-actions`
+  ecosystem bumps both together.
+- **`sha_pinning_required`** stays off until the pins reach `main`, because
+  scheduled workflows run from `main`. Switch it on after that release:
+
+  ```bash
+  gh api -X PUT repos/anewbegin95/project-pizza/actions/permissions \
+    -F enabled=true -f allowed_actions=selected -F sha_pinning_required=true
+  ```
+
+`tests/unit/workflow-actions.spec.js` checks both rules at PR time. To add an
+action, update its `ALLOWED_ACTIONS` list and the repository setting in the
+same PR.
+
+Fork PRs: workflows from first-time contributors wait for approval, and every
+PR-triggered workflow uses `pull_request`, never `pull_request_target`, so a
+fork's code never runs with secrets.
+
+## Interaction limits
+
+Set to **collaborators only** on 2026-10-23, **expiring 2027-04-23**. Six
+months is GitHub's maximum, so it has to be renewed by hand:
+
+```bash
+gh api -X PUT repos/anewbegin95/project-pizza/interaction-limits \
+  -f limit=collaborators_only -f expiry=six_months
+```
 
 ## Setup path in GitHub
 
