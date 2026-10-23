@@ -21,6 +21,7 @@
   --nyc-light-green: #A1C7B6;/* Success messages */
   --nyc-light-gray: #F5F5F5; /* Calendar, backgrounds, alt sections */
   --nyc-medium-gray: #B0B0B0;/* Borders, muted text */
+  --nyc-text-muted: #767676; /* Muted text with AA contrast on white */
   --nyc-charcoal: #2E2E2E;   /* Rare, for deep contrast */
   --nyc-overlay: rgba(0, 0, 0, 0.5); /* Overlay for hero, modals, etc. */
   --nyc-section-divider: #E5E5E5; /* Horizontal section separators */

@@ -46,7 +46,7 @@
 .popup-detail__date,
 .popup-detail__location {
   font-size: var(--font-md-sm);
-  color: var(--nyc-medium-gray);
+  color: var(--nyc-text-muted);
   font-weight: var(--font-weight-medium);
   margin: var(--space-xxs) 0 var(--space-xxs) 0;
   letter-spacing: 0.01em;
