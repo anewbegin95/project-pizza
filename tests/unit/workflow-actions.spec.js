@@ -2,8 +2,8 @@
  * Workflow action pinning (issue #461).
  *
  * The repo's Actions policy is an allowlist (GitHub-owned plus three named
- * third-party actions), and `sha_pinning_required` is switched on once these
- * pins reach `main`. Both are enforced by GitHub at run time, where a miss
+ * third-party actions), and `sha_pinning_required` is on (since 2026-10-23,
+ * #469). Both are enforced by GitHub at run time, where a miss
  * fails the job — including the scheduled workflows nobody is watching. This
  * file moves that failure to PR time.
  *
