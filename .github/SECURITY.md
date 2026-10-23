@@ -1,21 +1,21 @@
 # Security Policy
 
-## Supported Versions
+## Scope
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+The live site at [nycsliceoflife.com](https://nycsliceoflife.com/), built from
+`main`, plus this repository's GitHub Actions workflows and Sanity Studio
+configuration. There are no versioned releases: only what's on `main` is
+supported.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+**Please don't open a public issue.** Email
+[NYCSliceofLife@gmail.com](mailto:NYCSliceofLife@gmail.com) with:
 
-Use this section to tell people how to report a vulnerability.
+- what you found and where (a URL, a file and line, or a workflow name)
+- how to reproduce it
+- what an attacker could do with it
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+This is a one-person project, so responses are best-effort, but security
+reports come first. You'll get a reply when the report has been read, and
+another when it's fixed or declined, with the reason.

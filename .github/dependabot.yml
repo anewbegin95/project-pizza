@@ -12,3 +12,13 @@ updates:
     labels:
       - "dependencies"
       - "dependabot"
+
+  # Keeps the SHA-pinned workflow actions current (#461). Dependabot reads the
+  # `# vX.Y.Z` comment beside each pin and rewrites both together.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "dependabot"

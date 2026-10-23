@@ -18,7 +18,8 @@ Production regressions are detected by `Main Deployment Gate` via:
 
 1. Confirm failing check in GitHub Actions.
 2. Identify the culprit commit SHA from `main` history.
-3. Trigger `Rollback Main` workflow with that SHA.
+3. Trigger `Rollback Main` workflow with that SHA. **Currently broken.** See
+   the warning under "Automated rollback workflow".
 4. Verify rollback commit lands on `main`.
 5. Confirm health checks pass.
 
@@ -32,6 +33,11 @@ Workflow: `.github/workflows/rollback-main.yml`
   - Reverts normal commits with `git revert --no-edit`
   - Reverts merge commits with `git revert -m 1 --no-edit`
   - Pushes revert commit to `main`
+
+> **This workflow can't push to `main` (found 2026-10-23, #461).** `main`
+> requires a pull request, and the workflow pushes directly with
+> `GITHUB_TOKEN`, so the push is rejected. It has never been run. Until it's
+> fixed, use the break-glass procedure in `docs/branch-protection-checks.md`.
 
 ## Recovery validation
 
@@ -85,7 +91,8 @@ Revert the activation commit on `main`:
 
 1. Identify the SHA of the release (or the specific analytics commit) on `main`.
 2. Trigger **Rollback Main** (`.github/workflows/rollback-main.yml`,
-   `workflow_dispatch`) with that `commit_sha`.
+   `workflow_dispatch`) with that `commit_sha`. **Currently broken.** Use the
+   break-glass procedure in `docs/branch-protection-checks.md`.
 3. Confirm the revert lands and `Main Deployment Gate` is green.
 4. Verify on the live site: load any page, accept consent, and confirm no
    request goes to `googletagmanager.com` or `google-analytics.com`.
