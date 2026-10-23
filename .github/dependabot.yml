@@ -1,14 +1,47 @@
 version: 2
+
+# Dependency automation (#441). Version updates land on staging, never main:
+# staging runs the full gate, and updates that skip it are how a React split
+# reached main and froze it (#463). Minor and patch updates are grouped into
+# one PR per directory, and .github/workflows/dependabot-auto-merge.yml merges
+# them once that gate is green. Majors come as individual PRs for a person.
+#
+# Each directory runs on its own day: staging requires PRs to be up to date,
+# so two grouped PRs opened together would leave the second stuck behind the
+# first. If one does stall, comment `@dependabot rebase` on it.
+#
+# Security updates ignore target-branch and always open against main. The
+# next release absorbs them through a release branch (see CONTRIBUTING.md).
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "staging"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 20
-    ignore:
-      - dependency-name: "*"
+      day: "monday"
+    groups:
+      root-minor-and-patch:
         update-types:
-          - "version-update:semver-major"
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "dependabot"
+
+  # The Studio: the repo's only production dependencies.
+  - package-ecosystem: "npm"
+    directory: "/sanity"
+    target-branch: "staging"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    groups:
+      sanity-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "dependabot"
@@ -17,8 +50,15 @@ updates:
   # `# vX.Y.Z` comment beside each pin and rewrites both together.
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "staging"
     schedule:
       interval: "weekly"
+      day: "wednesday"
+    groups:
+      actions-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "dependencies"
       - "dependabot"
