@@ -1,5 +1,13 @@
 name: Rollback Main
 
+# Reverts a commit onto a rollback/ branch and links a PR into main (#464).
+#
+# It cannot push to main: main requires a pull request, enforced for admins.
+# It does not open the PR either. A PR opened with GITHUB_TOKEN triggers none
+# of main's required checks, so it could never merge, and creating one needs
+# "Allow GitHub Actions to create and approve pull requests", which stays off.
+# A PR opened by a person runs the full gate like any other.
+
 on:
   workflow_dispatch:
     inputs:
@@ -15,6 +23,9 @@ jobs:
   rollback:
     name: Revert commit on main
     runs-on: ubuntu-latest
+    env:
+      # Passed through the environment, never pasted into the script.
+      TARGET_SHA: ${{ inputs.commit_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -26,20 +37,48 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Revert commit
+      - name: Check the commit is on main
         run: |
-          TARGET_SHA="${{ github.event.inputs.commit_sha }}"
-          git checkout main
-          git pull --ff-only origin main
-
-          PARENTS=$(git rev-list --parents -n 1 "$TARGET_SHA")
-          PARENT_COUNT=$(echo "$PARENTS" | wc -w | tr -d ' ')
-
-          if [ "$PARENT_COUNT" -gt 2 ]; then
-            git revert -m 1 --no-edit "$TARGET_SHA"
-          else
-            git revert --no-edit "$TARGET_SHA"
+          if ! [[ "${TARGET_SHA}" =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::commit_sha must be 7-40 lowercase hex characters, got '${TARGET_SHA}'"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "${TARGET_SHA}" origin/main; then
+            echo "::error::${TARGET_SHA} is not on main"
+            exit 1
           fi
 
-      - name: Push revert
-        run: git push origin main
+      - name: Revert onto a rollback branch
+        run: |
+          SHORT_SHA=$(git rev-parse --short "${TARGET_SHA}")
+          BRANCH="rollback/${SHORT_SHA}-${GITHUB_RUN_ID}"
+          git checkout -b "${BRANCH}" origin/main
+
+          PARENT_COUNT=$(git rev-list --parents -n 1 "${TARGET_SHA}" | wc -w | tr -d ' ')
+          if [ "${PARENT_COUNT}" -gt 2 ]; then
+            git revert -m 1 --no-edit "${TARGET_SHA}"
+          else
+            git revert --no-edit "${TARGET_SHA}"
+          fi
+
+          echo "BRANCH=${BRANCH}" >> "${GITHUB_ENV}"
+          echo "SHORT_SHA=${SHORT_SHA}" >> "${GITHUB_ENV}"
+
+      - name: Push the rollback branch
+        run: git push origin "${BRANCH}"
+
+      - name: Link the pull request
+        run: |
+          SUBJECT=$(git log -1 --format=%s "${TARGET_SHA}")
+          COMPARE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/main...${BRANCH}?expand=1"
+          {
+            echo "## Revert of \`${SHORT_SHA}\` is ready on \`${BRANCH}\`"
+            echo
+            echo "> ${SUBJECT}"
+            echo
+            echo "**[Open the pull request into main](${COMPARE_URL})**"
+            echo
+            echo "main's required checks run once the PR is open. Merge it with a merge commit when they're green."
+            echo "If the gate itself is red for an unrelated reason, follow the break-glass steps in docs/branch-protection-checks.md."
+          } >> "${GITHUB_STEP_SUMMARY}"
+          echo "::notice title=Open the rollback PR::${COMPARE_URL}"

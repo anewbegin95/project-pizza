@@ -200,7 +200,7 @@ Epic 3 built the redesign's shared UI — collage hero, search bar + List/Map to
 - **Branch protection is enforced for admins on `main` and `staging`** (#461). No merging past a red check, and no direct pushes, including the `main` → `staging` back-merge, which now goes through a branch and PR.
 - **Actions are allowlisted and SHA-pinned.** A new `uses:` must be pinned to a full SHA with a `# vX.Y.Z` comment and come from an allowed owner. `tests/unit/workflow-actions.spec.js` fails otherwise. The policy is in `docs/branch-protection-checks.md`.
 - **Outside PRs aren't accepted** (`CONTRIBUTING.md`). Interaction limits are collaborators-only and **expire 2027-04-23**.
-- Rollback: `.github/workflows/rollback-main.yml` (manual `workflow_dispatch`, takes a `commit_sha`, reverts via `git revert`). **It can't push to protected `main`.** Until it's fixed, use the break-glass steps in `docs/branch-protection-checks.md`. Full runbook in `docs/rollback-and-recovery.md`.
+- Rollback: `.github/workflows/rollback-main.yml` (manual `workflow_dispatch`, takes a `commit_sha`) reverts onto a `rollback/` branch and links a PR into `main` from the run summary. It never pushes to `main` and doesn't open the PR itself: a `GITHUB_TOKEN` PR would trigger none of `main`'s required checks (#464). `tests/unit/rollback-workflow.spec.js` pins this. Full runbook in `docs/rollback-and-recovery.md`; break-glass for a red gate in `docs/branch-protection-checks.md`.
 - CI status/checklist tracked in `.github/CICD-CHECKLIST.md`.
 
 ## Coding conventions
