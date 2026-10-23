@@ -1019,5 +1019,10 @@
     "lat": 40.7255031,
     "lon": -73.9947757,
     "borough": "manhattan"
+  },
+  "The Shops at Columbus Circle, New York, NY": {
+    "lat": 40.7684026,
+    "lon": -73.9828296,
+    "borough": "manhattan"
   }
 }
