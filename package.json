@@ -11,9 +11,6 @@
     "test:e2e": "playwright test",
     "lighthouse:ci": "lhci autorun --config=.lighthouserc.json"
   },
-  "overrides": {
-    "minimatch": "^10.2.1"
-  },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.64.0",
