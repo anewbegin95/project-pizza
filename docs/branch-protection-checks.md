@@ -100,13 +100,10 @@ Settings → Actions → General, set 2026-10-23 (#461):
 - **Every `uses:` is pinned to a full commit SHA**, with its release in a
   trailing comment (`@<sha> # v4.4.0`). Dependabot's `github-actions`
   ecosystem bumps both together.
-- **`sha_pinning_required`** stays off until the pins reach `main`, because
-  scheduled workflows run from `main`. Switch it on after that release:
-
-  ```bash
-  gh api -X PUT repos/anewbegin95/project-pizza/actions/permissions \
-    -F enabled=true -f allowed_actions=selected -F sha_pinning_required=true
-  ```
+- **`sha_pinning_required` is on** (since 2026-10-23, after #469 shipped the
+  pins to `main`). An unpinned `uses:` fails at run time on any branch,
+  including scheduled workflows on `main` and Dependabot branches cut before
+  the pins landed. Rebase those with `@dependabot rebase`.
 
 `tests/unit/workflow-actions.spec.js` checks both rules at PR time. To add an
 action, update its `ALLOWED_ACTIONS` list and the repository setting in the
