@@ -86,6 +86,26 @@ Set on both `main` and `staging` (#461):
   `.github/CODEOWNERS` requests the maintainer's review on every PR instead.
 - Force pushes and branch deletion are off.
 
+### Dependabot PRs
+
+Two rules bite only Dependabot, and both look like something else when they do.
+
+- **The `Access` ruleset blocks every Dependabot PR that targets `main`.** It
+  sets `require_extra_approval_for_unattributed_changes`, so a PR authored by
+  `dependabot[bot]` needs one approval even though the branch requires 0. The
+  PR reports `BLOCKED` with every check green, which reads like a missing
+  check. Rulesets are separate from classic branch protection and don't appear
+  in the protection API — `gh api repos/anewbegin95/project-pizza/rules/branches/main`
+  is the one that shows them. Admins hold an always-bypass. This is a reason to
+  keep version updates on `staging`, where the ruleset doesn't apply.
+- **Never click "Update branch" on a Dependabot PR.** It pushes a merge commit
+  authored by the maintainer, and `dependabot/fetch-metadata` returns nothing
+  unless every commit on the branch is Dependabot's — so the auto-merge job
+  fails with `PR is not from Dependabot` and the PR can never auto-merge again.
+  Comment `@dependabot rebase` instead: Dependabot re-pushes the branch under
+  its own authorship and the job runs clean. `strict` makes this tempting,
+  because every open Dependabot PR goes stale as soon as another one lands.
+
 ### Break glass
 
 If production needs a revert and the gate can't go green (for example `Pre-deploy
