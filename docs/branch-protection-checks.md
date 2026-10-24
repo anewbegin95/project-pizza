@@ -57,9 +57,19 @@ Only mark this as required if `SNYK_TOKEN` is configured and expected for all PR
 
 ## Notes on security audit scope
 
-- `Sanity Lint + npm audit` currently runs `npm audit --omit=dev --audit-level=critical`.
-- This keeps merge-blocking focused on production dependency risk.
-- Dev-tooling/transitive dependency vulnerabilities should be handled in dedicated dependency-upgrade issues/PRs.
+Three gates, deliberately at different floors (#441):
+
+| Gate | Scope | Blocks at |
+|---|---|---|
+| `Review dependency changes` | packages a PR **adds or changes** | high |
+| `Sanity Lint + npm audit`, sanity step | `sanity/` production deps already in the tree | critical |
+| `Sanity Lint + npm audit`, root step | root workspace, dev tooling included | critical |
+
+The tree audits stay at critical because `sanity/`'s production tree carries
+high advisories (undici and others) that only clear with a breaking Sanity
+change. `npm audit fix --force` wants `sanity@5.14.1`. At high, every PR would
+fail on debt no PR caused. Dependency review still stops a PR from *adding* a
+high. Raise the tree floors to high when the Sanity tree clears it.
 
 ## Rules beyond required checks
 
@@ -95,18 +105,16 @@ gh api -X POST repos/anewbegin95/project-pizza/branches/main/protection/enforce_
 Settings → Actions → General, set 2026-10-23 (#461):
 
 - **Allowed actions:** GitHub-owned, plus `gitleaks/gitleaks-action@*`,
-  `lycheeverse/lychee-action@*` and `snyk/actions/node@*`. Anything else fails
-  at run time.
+  `lycheeverse/lychee-action@*`, `snyk/actions/node@*` and
+  `dependabot/fetch-metadata@*` (added for auto-merge, #441). Anything else
+  fails at run time.
 - **Every `uses:` is pinned to a full commit SHA**, with its release in a
   trailing comment (`@<sha> # v4.4.0`). Dependabot's `github-actions`
   ecosystem bumps both together.
-- **`sha_pinning_required`** stays off until the pins reach `main`, because
-  scheduled workflows run from `main`. Switch it on after that release:
-
-  ```bash
-  gh api -X PUT repos/anewbegin95/project-pizza/actions/permissions \
-    -F enabled=true -f allowed_actions=selected -F sha_pinning_required=true
-  ```
+- **`sha_pinning_required` is on** (since 2026-10-23, after #469 shipped the
+  pins to `main`). An unpinned `uses:` fails at run time on any branch,
+  including scheduled workflows on `main` and Dependabot branches cut before
+  the pins landed. Rebase those with `@dependabot rebase`.
 
 `tests/unit/workflow-actions.spec.js` checks both rules at PR time. To add an
 action, update its `ALLOWED_ACTIONS` list and the repository setting in the
