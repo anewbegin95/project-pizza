@@ -102,11 +102,13 @@ either one. Nobody else can.
 - **Commits must be signed.** Commits made through the GitHub UI are signed by
   `web-flow` and pass. Anything committed locally does not, unless
   `commit.gpgsign` is configured — and it currently is not. One unsigned commit
-  anywhere in a PR's history blocks it on `main` forever: force pushes are off,
-  so once an unsigned commit is on `staging` it cannot be rewritten, and every
-  future release carrying it inherits the block. `c81971d` (#461) is already in
-  this state. Set up signing before committing locally on a branch bound for
-  `main`.
+  anywhere in a PR's history is enough to block the whole PR, reporting
+  `BLOCKED` with every check green. Force pushes are off, so an unsigned commit
+  that reaches `staging` can't be rewritten; it takes one admin-bypass merge to
+  get it into `main`, and after that it is history like any other and stops
+  blocking. What recurs is the next release, and the one after: every release
+  carrying a locally-made commit hits this again until signing is set up.
+  `c81971d` (#461) is the one currently blocking release #476.
 - **Bot-authored changes need an extra approval**
   (`require_extra_approval_for_unattributed_changes`). A PR authored by
   `dependabot[bot]` needs one approval even though the branch requires 0. This
