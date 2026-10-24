@@ -86,25 +86,42 @@ Set on both `main` and `staging` (#461):
   `.github/CODEOWNERS` requests the maintainer's review on every PR instead.
 - Force pushes and branch deletion are off.
 
+### The `Access` ruleset
+
+A ruleset, not branch protection, scoped to `~DEFAULT_BRANCH` — so it applies
+to `main` and not to `staging`. It does **not** appear in
+`gh api repos/anewbegin95/project-pizza/branches/main/protection`, which is the
+usual place to look when a PR won't merge. Use
+`gh api repos/anewbegin95/project-pizza/rules/branches/main` instead. Both of
+its teeth below report as `BLOCKED` with every required check green, which
+reads like a missing check and isn't.
+
+Admins hold an always-bypass, so in practice the maintainer can merge past
+either one. Nobody else can.
+
+- **Commits must be signed.** Commits made through the GitHub UI are signed by
+  `web-flow` and pass. Anything committed locally does not, unless
+  `commit.gpgsign` is configured — and it currently is not. One unsigned commit
+  anywhere in a PR's history blocks it on `main` forever: force pushes are off,
+  so once an unsigned commit is on `staging` it cannot be rewritten, and every
+  future release carrying it inherits the block. `c81971d` (#461) is already in
+  this state. Set up signing before committing locally on a branch bound for
+  `main`.
+- **Bot-authored changes need an extra approval**
+  (`require_extra_approval_for_unattributed_changes`). A PR authored by
+  `dependabot[bot]` needs one approval even though the branch requires 0. This
+  is a reason to keep version updates on `staging`, where the ruleset doesn't
+  reach.
+
 ### Dependabot PRs
 
-Two rules bite only Dependabot, and both look like something else when they do.
-
-- **The `Access` ruleset blocks every Dependabot PR that targets `main`.** It
-  sets `require_extra_approval_for_unattributed_changes`, so a PR authored by
-  `dependabot[bot]` needs one approval even though the branch requires 0. The
-  PR reports `BLOCKED` with every check green, which reads like a missing
-  check. Rulesets are separate from classic branch protection and don't appear
-  in the protection API — `gh api repos/anewbegin95/project-pizza/rules/branches/main`
-  is the one that shows them. Admins hold an always-bypass. This is a reason to
-  keep version updates on `staging`, where the ruleset doesn't apply.
-- **Never click "Update branch" on a Dependabot PR.** It pushes a merge commit
-  authored by the maintainer, and `dependabot/fetch-metadata` returns nothing
-  unless every commit on the branch is Dependabot's — so the auto-merge job
-  fails with `PR is not from Dependabot` and the PR can never auto-merge again.
-  Comment `@dependabot rebase` instead: Dependabot re-pushes the branch under
-  its own authorship and the job runs clean. `strict` makes this tempting,
-  because every open Dependabot PR goes stale as soon as another one lands.
+**Never click "Update branch" on a Dependabot PR.** It pushes a merge commit
+authored by the maintainer, and `dependabot/fetch-metadata` returns nothing
+unless every commit on the branch is Dependabot's — so the auto-merge job fails
+with `PR is not from Dependabot` and the PR can never auto-merge again. Comment
+`@dependabot rebase` instead: Dependabot re-pushes the branch under its own
+authorship and the job runs clean. `strict` makes the button tempting, because
+every open Dependabot PR goes stale as soon as another one lands.
 
 ### Break glass
 
