@@ -1024,5 +1024,10 @@
     "lat": 40.7684026,
     "lon": -73.9828296,
     "borough": "manhattan"
+  },
+  "150 Second Ave, New York, NY": {
+    "lat": 40.9145785,
+    "lon": -73.8106886,
+    "borough": null
   }
 }
