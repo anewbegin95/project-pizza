@@ -1029,5 +1029,10 @@
     "lat": 40.9145785,
     "lon": -73.8106886,
     "borough": null
+  },
+  "Soho, New York, NY": {
+    "lat": 40.72288,
+    "lon": -73.9987505,
+    "borough": "manhattan"
   }
 }
