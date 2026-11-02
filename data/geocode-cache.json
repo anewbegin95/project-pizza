@@ -1034,5 +1034,11 @@
     "lat": 40.72288,
     "lon": -73.9987505,
     "borough": "manhattan"
+  },
+  "N 6th St & Berry St (Williamsburg), New York, NY": null,
+  "135 Wythe Ave, New York, NY": {
+    "lat": 40.7196785,
+    "lon": -73.96002,
+    "borough": "brooklyn"
   }
 }
