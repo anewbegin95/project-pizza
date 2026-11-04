@@ -126,7 +126,11 @@
     "lon": -73.9977194,
     "borough": "manhattan"
   },
-  "Prince & Mercer, New York, NY": null,
+  "Prince & Mercer, New York, NY": {
+    "lat": 40.7244281,
+    "lon": -73.9977583,
+    "borough": "manhattan"
+  },
   "262 Mott St, New York, NY": {
     "lat": 40.7238034,
     "lon": -73.9943123,
