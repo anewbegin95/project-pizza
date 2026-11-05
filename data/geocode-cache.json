@@ -1044,5 +1044,10 @@
     "lat": 40.7196785,
     "lon": -73.96002,
     "borough": "brooklyn"
+  },
+  "16 W 10th St, New York, NY": {
+    "lat": 40.7337048,
+    "lon": -73.9965893,
+    "borough": "manhattan"
   }
 }
