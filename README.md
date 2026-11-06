@@ -115,7 +115,7 @@ GitHub Actions now enforces branch-specific quality gates:
 - Post-merge deployment health checks against production URLs
 - Manual rollback automation via GitHub Actions workflow
 
-Dependabot (`.github/dependabot.yml`) remains enabled for weekly npm updates in `sanity/`.
+Dependabot (`.github/dependabot.yml`) opens weekly version updates against `staging` for the root workspace, `sanity/` and the workflow actions. Minor and patch updates are grouped and auto-merged once the staging gate is green (`.github/workflows/dependabot-auto-merge.yml`). Majors and security updates wait for a person. See [CONTRIBUTING.md](CONTRIBUTING.md#dependabot).
 
 ---
 
