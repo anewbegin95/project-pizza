@@ -12,8 +12,8 @@
     "lighthouse:ci": "lhci autorun --config=.lighthouserc.json"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.64.0",
+    "@lhci/cli": "^0.16.0",
+    "@playwright/test": "^1.64.1",
     "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
     "js-yaml": "^4.3.2",
