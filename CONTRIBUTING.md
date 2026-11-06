@@ -25,8 +25,32 @@ Every change starts as a GitHub issue and follows one path:
    branches, so the next release tries to re-apply work `main` already has.
 
 Branch protection applies to admins too, so there's no merging past a red
-check and no direct pushes to `staging` or `main`. That includes syncing
-`main` back into `staging`: do it on a branch and open a PR.
+check and no direct pushes to `staging` or `main`.
+
+**When `main` has commits `staging` doesn't**, usually a security update, the
+release can't be a plain `staging` → `main` PR. Cut `release/<date>` from
+`staging`, merge `origin/main` into it, resolve any conflicts there, and open
+that branch's PR into `main`. Don't sync through a PR into `staging` instead:
+one squash discards the merge, and the next release conflicts again. That
+happened twice in a row in October 2026.
+
+## Dependabot
+
+Configured in `.github/dependabot.yml` (#441):
+
+- **Version updates** open against `staging`, one directory a day: root on
+  Monday, `sanity/` on Tuesday, workflow actions on Wednesday.
+- **Minor and patch** updates are grouped into one PR per directory and
+  **merge themselves** once every required `staging` check is green
+  (`.github/workflows/dependabot-auto-merge.yml`). Nothing reaches `main`
+  until a person releases `staging`.
+- **Left for a person:** majors (one PR each), a PR whose packages changed
+  maintainers, and any Dependabot PR someone else has pushed to.
+- **Security updates** always open against `main`. Merge them there; the next
+  release absorbs them as described above.
+- **A grouped PR stuck "behind" `staging`:** comment `@dependabot rebase`. Don't
+  click "Update branch": that adds a commit that isn't Dependabot's, and the
+  PR stops being eligible to merge itself.
 
 [docs/branch-protection-checks.md](docs/branch-protection-checks.md) lists
 every required check and repository setting.

@@ -54,6 +54,13 @@ jobs:
       - name: Run npm audit (critical, prod deps only)
         run: npm audit --omit=dev --audit-level=critical
 
+      # The root workspace is dev tooling only (Playwright, Lighthouse,
+      # Stylelint, Vitest), and until #441 nothing audited it. npm audit reads
+      # the lockfile, so this needs no install.
+      - name: Run npm audit (root workspace, critical)
+        working-directory: .
+        run: npm audit --audit-level=critical
+
   secret-scan:
     name: Secret scan (Gitleaks)
     runs-on: ubuntu-latest
