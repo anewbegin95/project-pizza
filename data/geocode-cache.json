@@ -1049,5 +1049,10 @@
     "lat": 40.7337048,
     "lon": -73.9965893,
     "borough": "manhattan"
+  },
+  "109 W 17th St, New York, NY": {
+    "lat": 40.7397009,
+    "lon": -73.9959083,
+    "borough": "manhattan"
   }
 }
