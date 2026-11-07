@@ -129,9 +129,18 @@ describe('Dependency hygiene', () => {
   // to the 3.x and 9.x lines that eslint, rimraf and tmp declare, so forcing
   // 10.x on them protected nothing. Adding an override means adding it here,
   // with the advisory or bug it answers.
+  //
+  // `undici` answers eight advisories fixed in 7.30.1, GHSA-2m5v-pch6-74hx
+  // (TLS certificate validation bypass, high) among them. It is unreachable
+  // without the override: `@module-federation/dts-plugin`, pulled in through
+  // `sanity` -> `@module-federation/vite`, declares `undici 7.29.1` as an
+  // exact version, and no lockfile-only update passes an exact pin -- so
+  // Dependabot proposed nothing while the alerts stayed open at runtime
+  // scope. Retire it once dts-plugin declares a range that admits 7.30.1;
+  // `tests/unit/studio-dependencies.spec.js` holds the resolution check.
   it('carries only overrides that still answer something', () => {
     expect(rootPackage.overrides).toBeUndefined()
-    expect(Object.keys(sanityPackage.overrides || {})).toEqual(['esbuild'])
+    expect(Object.keys(sanityPackage.overrides || {})).toEqual(['esbuild', 'undici'])
   })
 
   it('audits the root workspace, not only sanity/', () => {
