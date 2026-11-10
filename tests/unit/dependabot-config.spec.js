@@ -130,17 +130,37 @@ describe('Dependency hygiene', () => {
   // 10.x on them protected nothing. Adding an override means adding it here,
   // with the advisory or bug it answers.
   //
+  // `tests/unit/dependency-overrides.spec.js` holds the resolution check for
+  // every entry below -- what each one actually resolves to in the committed
+  // lockfiles -- and the retirement condition for each. This test is the
+  // inventory: nothing more than these, and nothing undocumented.
+  //
+  // `esbuild` (GHSA-gv7w-rqvm-qjhr, high): `vite` 7.3.5 declared `^0.27.0`,
+  // locking in a vulnerable 0.27.7 nested copy (9df6e5b).
+  //
   // `undici` answers eight advisories fixed in 7.30.1, GHSA-2m5v-pch6-74hx
   // (TLS certificate validation bypass, high) among them. It is unreachable
   // without the override: `@module-federation/dts-plugin`, pulled in through
   // `sanity` -> `@module-federation/vite`, declares `undici 7.29.1` as an
   // exact version, and no lockfile-only update passes an exact pin -- so
   // Dependabot proposed nothing while the alerts stayed open at runtime
-  // scope. Retire it once dts-plugin declares a range that admits 7.30.1;
-  // `tests/unit/studio-dependencies.spec.js` holds the resolution check.
+  // scope. Retire it once dts-plugin declares a range that admits 7.30.1.
+  //
+  // `minimatch` (GHSA-g3hv-75wg-m249, glob-parts amplification DoS, fixed in
+  // 11.0.1) is in BOTH workspaces, because a caret range stops at the next
+  // major and every declarer holding a vulnerable copy is on one: root `glob`
+  // declares `^10.2.2`, `@oclif/core` `^10.2.5`, `typescript-eslint`'s
+  // `typescript-estree` `^9.0.5`. Note this is a different advisory from the
+  // ReDoS the override removed above answered -- 10.x is inside this one's
+  // range, which is how that pin came to hold the tree below a fix.
+  //
+  // `qs` (GHSA-6pq8-jhm2-2vcw, uncaught TypeError in `stringify`, fixed in
+  // 6.16.1): #489 bumped express into `~6.16.0` and moved its nested copy,
+  // but `body-parser` declares `qs ~6.15.1` -- a tilde, capped at 6.15.x --
+  // so that copy could not follow. Root only; `sanity/` has no qs.
   it('carries only overrides that still answer something', () => {
-    expect(rootPackage.overrides).toBeUndefined()
-    expect(Object.keys(sanityPackage.overrides || {})).toEqual(['esbuild', 'undici'])
+    expect(Object.keys(rootPackage.overrides || {})).toEqual(['minimatch', 'qs'])
+    expect(Object.keys(sanityPackage.overrides || {})).toEqual(['esbuild', 'minimatch', 'undici'])
   })
 
   it('audits the root workspace, not only sanity/', () => {
