@@ -127,21 +127,6 @@ describe('Dependency override resolution', () => {
   })
 
   /**
-   * esbuild: GHSA-gv7w-rqvm-qjhr (high). `vite` 7.3.5 declared `^0.27.0`, so
-   * the vulnerable 0.27.7 was locked in as a nested copy with no bump able to
-   * reach past it (9df6e5b). The floor is a `>=` rather than a caret because
-   * the point was to escape a major, not to track one.
-   *
-   * Retire it once nothing in `sanity/` declares an esbuild range below
-   * 0.28.1.
-   */
-  it('keeps every copy of esbuild at the override floor', () => {
-    const copies = copiesOf(locks.sanity, 'esbuild')
-    expect(copies.length).toBeGreaterThan(0)
-    expect(copies.filter((copy) => compare(copy.version, '0.28.1') < 0)).toEqual([])
-  })
-
-  /**
    * js-yaml, the 3.x line: five advisories against the copy `@vercel/frameworks`
    * holds, the widest being GHSA-2883-xcg3-v3hh (`maxTotalMergeKeys` does not
    * limit CPU use for empty merge sources, high, fixed in 3.15.2). The others

@@ -130,13 +130,22 @@ describe('Dependency hygiene', () => {
   // 10.x on them protected nothing. Adding an override means adding it here,
   // with the advisory or bug it answers.
   //
+  // Retired 2026-11-10 in `sanity/`: `esbuild` (GHSA-gv7w-rqvm-qjhr, added
+  // in 9df6e5b when `vite` 7.3.5 declared `^0.27.0`). After `sanity` 6.22.0
+  // nothing installs esbuild at all: the last hard declarer was `tsx`
+  // (`~0.28.0`), which `sanity` no longer pulls, and `vite` names it only as
+  // an optional peer. An override with nothing to act on answers nothing,
+  // so it goes. If esbuild comes back, Dependabot alerts on it like any
+  // other package. Also `typeid-js` (scoped, uuid GHSA-w5hq-g745-h8pq): the
+  // tree now resolves typeid-js 0.3.0, pulled by `@sanity/telemetry`, which
+  // depends on `uuidv7` rather than `uuid`. The 1.2.0 copy that declared
+  // `uuid ^10.0.0` left with `@sanity/cli` 8, and `@sanity/uuid`'s `^11.0.0`
+  // reaches 11.1.1 on its own.
+  //
   // `tests/unit/dependency-overrides.spec.js` holds the resolution check for
   // every entry below -- what each one actually resolves to in the committed
   // lockfiles -- and the retirement condition for each. This test is the
   // inventory: nothing more than these, and nothing undocumented.
-  //
-  // `esbuild` (GHSA-gv7w-rqvm-qjhr, high): `vite` 7.3.5 declared `^0.27.0`,
-  // locking in a vulnerable 0.27.7 nested copy (9df6e5b).
   //
   // `undici` answers eight advisories fixed in 7.30.1, GHSA-2m5v-pch6-74hx
   // (TLS certificate validation bypass, high) among them. It is unreachable
@@ -169,13 +178,6 @@ describe('Dependency hygiene', () => {
   // across a major to serve the other. Retire once `@vercel/frameworks`
   // declares ranges admitting 3.15.2 and 1.9.0.
   //
-  // `typeid-js` is a SCOPED override for GHSA-w5hq-g745-h8pq (missing buffer
-  // bounds check in uuid v3/v5/v6 when `buf` is provided, fixed in 11.1.1,
-  // runtime scope). `typeid-js` declares `uuid ^10.0.0` and a caret stops at
-  // the next major. Scoped because `sanity` and `@sanity/comlink` hold 14.x
-  // copies already past the fix, which a flat entry would drag down two
-  // majors. Retire once typeid-js declares a range admitting 11.1.1.
-  //
   // `tmp` (GHSA-ph9p-34f9-6g65, path traversal via unsanitized prefix, high,
   // fixed in 0.2.6; also GHSA-52f5-9888-hmc6) is root-only and flat, because
   // both copies are vulnerable: `@lhci/cli` declares `^0.1.0` and
@@ -190,9 +192,7 @@ describe('Dependency hygiene', () => {
     expect(Object.keys(rootPackage.overrides || {})).toEqual(['minimatch', 'qs', 'tmp', 'uuid'])
     expect(Object.keys(sanityPackage.overrides || {})).toEqual([
       '@vercel/frameworks',
-      'esbuild',
       'minimatch',
-      'typeid-js',
       'undici',
     ])
   })
