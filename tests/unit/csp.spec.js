@@ -6,10 +6,13 @@
  * step, so this file does.
  *
  * Note on `_headers`: it is only honoured by hosts such as Netlify and
- * Cloudflare Pages. This site deploys to GitHub Pages, which does not emit it,
- * so the `<meta http-equiv>` CSP is the only policy actually enforced in
- * production. `_headers` is kept in sync so it does not become a misleading
- * record of a policy the site no longer has — not because it protects prod.
+ * Cloudflare Pages. This site deploys to GitHub Pages, which
+ * does not serve `_headers`, so half of what this file compares (the `_headers`
+ * side) is a file production never serves, and the `<meta http-equiv>` CSP is the only
+ * policy actually enforced in production. `_headers` is kept in sync so it
+ * does not become a misleading record of a policy the site no longer has — not
+ * because it protects prod. The decision is recorded in .github/SECURITY.md
+ * under "Response headers" (#433).
  *
  * Directives are compared as parsed name -> source-set maps rather than as raw
  * strings, so whitespace, source ordering, or HTML attribute ordering cannot

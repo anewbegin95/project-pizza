@@ -2,13 +2,19 @@
  * @file Security response headers configuration for static hosting platforms that support a `_headers` file.
  *
  * @remarks
- * This file is only applied by compatible hosts (for example, Netlify and Cloudflare Pages).
- * If production is served via GitHub Pages, these headers are not emitted and therefore do not
- * provide runtime protection.
+ * Production is served from GitHub Pages, which does not read this file, so none of it is served
+ * to visitors (not emitted as headers). It is kept as a reference copy of the intended policy, and the decision to accept
+ * that, with what is and is not covered and how to change it, is recorded in .github/SECURITY.md
+ * under "Response headers" (#433).
+ *
+ * This file is only applied by compatible hosts (for example, Netlify and Cloudflare Pages). A
+ * Cloudflare proxy in front of GitHub Pages does not apply it either; the same headers would have
+ * to be recreated as Response Header Transform Rules in the Cloudflare dashboard.
  *
  * @warning
- * Verify the active deployment target supports `_headers`, or enforce equivalent headers at the
- * actual edge/CDN or reverse-proxy layer used in production.
+ * If hosting changes, or the headers are recreated elsewhere, update .github/SECURITY.md so the
+ * two do not drift. The only policy actually enforced today is the <meta> CSP and <meta> referrer
+ * tag in each page.
  */
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
