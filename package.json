@@ -17,7 +17,7 @@
     "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
     "js-yaml": "^5.5.0",
-    "stylelint": "^16.24.0",
+    "stylelint": "^18.0.0",
     "vitest": "^5.1.0"
   },
   "overrides": {
