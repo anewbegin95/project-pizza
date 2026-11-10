@@ -1055,5 +1055,22 @@
     "lon": -73.9959083,
     "borough": "manhattan"
   },
-  "Fuze House Tribeca + Chelsea, New York, NY": null
+  "Fuze House Tribeca + Chelsea, New York, NY": null,
+  "525 W 24th St (Studio 525), New York, NY": {
+    "lat": 40.7491286,
+    "lon": -74.0049767,
+    "borough": "manhattan"
+  },
+  "609 Fifth Ave, New York, NY": {
+    "lat": 40.9199989,
+    "lon": -73.8049316,
+    "borough": null
+  },
+  "Corner of Broome St & W Broadway, New York, NY": null,
+  "30 Lincoln Center Plaza, New York, NY": null,
+  "252 Front St, New York, NY": {
+    "lat": 40.7083307,
+    "lon": -74.0009058,
+    "borough": "manhattan"
+  }
 }
