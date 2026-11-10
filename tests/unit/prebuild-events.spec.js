@@ -476,7 +476,7 @@ describe('assertMinimumCount', () => {
   })
 
   it('throws below the floor, naming the collection and both numbers', () => {
-    expect(() => assertMinimumCount('pop-ups', 0, 1)).toThrow(/pop-ups.*0.*1/)
+    expect(() => assertMinimumCount('pop-ups', 0, 1)).toThrow(/found 0 active pop-ups.*at least 1/)
   })
 })
 
