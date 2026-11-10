@@ -32,7 +32,15 @@
     "node": "^18.0.0 || ^20.0.0 || >=22.0.0"
   },
   "overrides": {
+    "@vercel/frameworks": {
+      "js-yaml": "^3.15.2",
+      "smol-toml": "^1.9.0"
+    },
     "esbuild": ">=0.28.1",
+    "minimatch": "^11.0.1",
+    "typeid-js": {
+      "uuid": "^11.1.1"
+    },
     "undici": "^7.30.1"
   },
   "prettier": {
