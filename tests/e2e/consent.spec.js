@@ -16,6 +16,7 @@
  * clean regardless of the CORS allowlist, and it carries the shared footer.
  */
 const { test, expect } = require('@playwright/test')
+const { stubSanity } = require('./helpers/sanity-stub')
 
 /**
  * Asks for the bar explicitly. Since #398 the bootstrap already mounts it for a
@@ -305,4 +306,49 @@ test('the module is present, and the bar offered, on every page that ships it', 
     expect(await getState(page), `state on ${url}`).toBe('unset')
     await expect(page.locator('.nyc-consent'), `banner on ${url}`).toHaveCount(1)
   }
+})
+
+/**
+ * Issue #432: pop-up.html shipped with no `#footer-placeholder`, so the Cookie
+ * settings button, the site's only consent-withdrawal control, was reachable
+ * on eight of nine pages. One test per page, so a tenth page that forgets its
+ * footer fails by name instead of being absorbed into a loop's first failure.
+ *
+ * Sanity is stubbed so the detail pages render a populated body rather than
+ * the empty one the CORS allowlist produces locally.
+ */
+const EVERY_PAGE = [
+  '/',
+  '/pop-ups.html',
+  '/date-ideas.html',
+  '/calendar.html',
+  '/pop-up.html?id=fixture-popup-1',
+  '/date-idea.html?id=fixture-date-idea-1',
+  '/about.html',
+  '/contact_us.html',
+  '/privacy_policy.html',
+]
+
+EVERY_PAGE.forEach((url) => {
+  test(`withdrawal is one click from ${url}`, async ({ page }) => {
+    await stubSanity(page)
+    await page.goto(url)
+    await page.waitForFunction(() => Boolean(window.NycConsent))
+
+    // Settle the choice first so the bar is not already open: the click below
+    // must be what reopens it, or this passes without the control existing.
+    await page.evaluate(() => window.NycConsent.grant())
+    await expect(page.locator('.nyc-consent')).toHaveCount(0)
+
+    // Scoped to the footer: privacy_policy.html carries a second button in its
+    // body, and the footer is the one that must exist on every page.
+    const cookieSettings = page.locator('footer').getByRole('button', { name: /cookie settings/i })
+    await expect(cookieSettings).toHaveCount(1)
+    await cookieSettings.click()
+
+    const banner = page.getByRole('region', { name: /cookie|analytics|consent/i })
+    await expect(banner).toBeVisible()
+    await banner.getByRole('button', { name: /^decline$/i }).click()
+    expect(await getState(page)).toBe('denied')
+  })
 })
