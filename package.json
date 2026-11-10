@@ -12,8 +12,8 @@
     "lighthouse:ci": "lhci autorun --config=.lighthouserc.json"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.64.0",
+    "@lhci/cli": "^0.16.0",
+    "@playwright/test": "^1.65.0",
     "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
     "js-yaml": "^5.5.0",
@@ -21,9 +21,6 @@
     "vitest": "^5.1.0"
   },
   "overrides": {
-    "minimatch": "^11.0.1",
-    "qs": "^6.16.1",
-    "tmp": "^0.2.6",
-    "uuid": "^11.1.1"
+    "minimatch": "^11.0.1"
   }
 }

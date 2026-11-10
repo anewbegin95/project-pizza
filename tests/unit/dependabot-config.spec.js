@@ -163,11 +163,6 @@ describe('Dependency hygiene', () => {
   // ReDoS the override removed above answered -- 10.x is inside this one's
   // range, which is how that pin came to hold the tree below a fix.
   //
-  // `qs` (GHSA-6pq8-jhm2-2vcw, uncaught TypeError in `stringify`, fixed in
-  // 6.16.1): #489 bumped express into `~6.16.0` and moved its nested copy,
-  // but `body-parser` declares `qs ~6.15.1` -- a tilde, capped at 6.15.x --
-  // so that copy could not follow. Root only; `sanity/` has no qs.
-  //
   // `@vercel/frameworks` is a SCOPED override carrying two entries, because
   // that package declares both `js-yaml 3.13.1` and `smol-toml 1.5.2` as
   // EXACT versions and no lockfile-only update passes an exact pin. It
@@ -178,18 +173,15 @@ describe('Dependency hygiene', () => {
   // across a major to serve the other. Retire once `@vercel/frameworks`
   // declares ranges admitting 3.15.2 and 1.9.0.
   //
-  // `tmp` (GHSA-ph9p-34f9-6g65, path traversal via unsanitized prefix, high,
-  // fixed in 0.2.6; also GHSA-52f5-9888-hmc6) is root-only and flat, because
-  // both copies are vulnerable: `@lhci/cli` declares `^0.1.0` and
-  // `external-editor` `^0.0.33`, and a caret on a 0.x pins the minor while
-  // on a 0.0.x it pins the patch. Retire once both admit 0.2.6.
-  //
-  // `uuid` at root answers the same GHSA-w5hq-g745-h8pq at development
-  // scope. `@lhci/cli` declares `^8.3.1`, so the fix is three majors away.
-  // Flat because 8.3.2 was the only copy in that tree. Retire once
-  // @lhci/cli admits 11.1.1.
+  // Retired 2026-11-10, all three at root, when `@lhci/cli` 0.16.0 replaced
+  // its old dependency pins. `tmp`: no longer in the tree at all, since
+  // neither `@lhci/cli` nor `inquirer`/`external-editor` pull it now. `qs`:
+  // `body-parser` now declares `~6.16.0`, which admits the 6.16.1 fix on its
+  // own. `uuid`: `@lhci/cli` now declares `^14.0.3`, so the flat `^11.1.1`
+  // floor was forcing it DOWN to 11.1.1 -- an override holding a package
+  // below what it asks for, the failure this inventory exists to catch.
   it('carries only overrides that still answer something', () => {
-    expect(Object.keys(rootPackage.overrides || {})).toEqual(['minimatch', 'qs', 'tmp', 'uuid'])
+    expect(Object.keys(rootPackage.overrides || {})).toEqual(['minimatch'])
     expect(Object.keys(sanityPackage.overrides || {})).toEqual([
       '@vercel/frameworks',
       'minimatch',
