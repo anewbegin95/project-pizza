@@ -1,9 +1,28 @@
 name: Refresh Static Event Listings
 
-# Refreshes the pre-rendered event tiles in pop-ups.html and date-ideas.html
-# by fetching the latest data from Sanity and committing the updated files to
-# an automation branch (to avoid triggering main deployment workflows).
-# Runs on a daily schedule and can also be triggered manually.
+# Refreshes the pre-rendered event tiles, JSON-LD, sitemap.xml and llms.txt
+# from Sanity, and lands them through `staging` like any other change (#431).
+#
+# It used to push to one long-lived automation branch that nothing merged: that
+# branch ended up 209 commits ahead and 158 behind main while every marker pair
+# in production stayed empty. Now each run cuts a fresh branch from `staging`
+# and writes a link to open the PR into it.
+#
+# It does not open the PR itself, for the same reasons as rollback-main.yml
+# (#464): a PR opened with GITHUB_TOKEN triggers none of staging's required
+# checks, so it could never merge, and creating one needs "Allow GitHub Actions
+# to create and approve pull requests", which stays off. For the same reason
+# the branch is per-run: a later push by GITHUB_TOKEN to an open PR would not
+# re-run its checks. A PR opened by a person runs the full gate.
+#
+# Runs on a daily schedule and can also be triggered manually. Fails (and
+# pushes nothing) if Sanity returns fewer than the minimum number of events;
+# see assertMinimumCount in scripts/prebuild-events.js.
+#
+# No `npm ci`: these scripts require only https, fs and path
+# (tests/unit/refresh-static-events-workflow.spec.js keeps that true).
+#
+# Old per-run branches are safe to delete once their PR is merged or closed.
 
 on:
   schedule:
@@ -22,36 +41,34 @@ jobs:
     name: Pre-render static event listings
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: Checkout staging
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: staging
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Switch to automation branch, run prebuild, and push if changed
+      - name: Run prebuild on a fresh branch and push if changed
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH_NAME="automation/refresh-static-events"
-          # Check out the automation branch if it exists on origin, otherwise create it.
-          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" > /dev/null 2>&1; then
-            git fetch origin "${BRANCH_NAME}"
-            git switch -C "${BRANCH_NAME}" "origin/${BRANCH_NAME}"
-          else
-            git switch -c "${BRANCH_NAME}"
-          fi
-          # Run the prebuild on the automation branch.
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="automation/refresh-static-events-$(date -u +%Y%m%d)-${GITHUB_RUN_ID}"
+          git switch -c "${BRANCH}"
           node scripts/prebuild-events.js
-          git add pop-ups.html date-ideas.html
+          node scripts/generate-llms-txt.js
+          git add pop-ups.html date-ideas.html sitemap.xml llms.txt
           if git diff --staged --quiet; then
-            echo "No changes detected — pop-ups.html and date-ideas.html are already up to date."
-          else
-            git commit -m "chore: refresh static event listings [skip ci]"
-            git push origin "${BRANCH_NAME}"
+            echo "No changes detected: the listings, sitemap and llms.txt are already up to date." | tee -a "${GITHUB_STEP_SUMMARY}"
+            exit 0
           fi
+          git commit -m "chore: refresh static event listings"
+          git push origin "${BRANCH}"
+          COMPARE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/staging...${BRANCH}?expand=1"
+          {
+            echo "## Refreshed listings are ready on \`${BRANCH}\`"
+            echo
+            echo "**[Open the pull request into staging](${COMPARE_URL})**"
+          } >> "${GITHUB_STEP_SUMMARY}"
