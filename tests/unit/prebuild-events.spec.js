@@ -7,6 +7,8 @@ const {
   mapSanityDateIdea,
   injectStaticTiles,
   formatPopupDate,
+  assertMinimumCount,
+  main,
 } = require('../../scripts/prebuild-events.js')
 const os = require('node:os')
 const fs = require('node:fs')
@@ -460,5 +462,131 @@ describe('generatePopupTileHtml date rendering', () => {
 
     expect(html).toContain('Sat, Oct 17 (all day)')
     expect(html).not.toContain('Sep 17')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Issue #431: an empty Sanity result must never be committed as a blank page.
+// ---------------------------------------------------------------------------
+
+describe('assertMinimumCount', () => {
+  it('passes at the floor and above it', () => {
+    expect(() => assertMinimumCount('pop-ups', 1, 1)).not.toThrow()
+    expect(() => assertMinimumCount('pop-ups', 40, 1)).not.toThrow()
+  })
+
+  it('throws below the floor, naming the collection and both numbers', () => {
+    expect(() => assertMinimumCount('pop-ups', 0, 1)).toThrow(/found 0 active pop-ups.*at least 1/)
+  })
+})
+
+describe('main', () => {
+  const POPUP_HTML =
+    '<!-- STATIC_JSONLD_START --><!-- STATIC_JSONLD_END -->\n' +
+    '<!-- STATIC_POPUPS_START --><!-- STATIC_POPUPS_END -->\n'
+  const DATE_IDEA_HTML = '<!-- STATIC_DATE_IDEAS_START --><!-- STATIC_DATE_IDEAS_END -->\n'
+
+  const POPUP_DOC = {
+    _id: 'p1',
+    name: 'Fixture Pop-Up',
+    slug: 'fixture-pop-up',
+    start_datetime: '2099-06-01T18:00:00.000Z',
+    end_datetime: '2099-06-02T22:00:00.000Z',
+    display_overall: true,
+    display_in_popups_page: true,
+  }
+  const DATE_IDEA_DOC = { _id: 'd1', name: 'Fixture Date', slug: 'fixture-date', display_overall: true }
+
+  let root
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'prebuild-main-'))
+    fs.writeFileSync(path.join(root, 'pop-ups.html'), POPUP_HTML)
+    fs.writeFileSync(path.join(root, 'date-ideas.html'), DATE_IDEA_HTML)
+  })
+
+  afterEach(() => {
+    fs.rmSync(root, { recursive: true, force: true })
+  })
+
+  /** Answers the pop-up query and the date-idea query with different results. */
+  function fetchWith({ popups, dateIdeas }) {
+    return async (query) => (query.includes('"date_ideas"') ? dateIdeas : popups)
+  }
+
+  function snapshot() {
+    return {
+      popups: fs.readFileSync(path.join(root, 'pop-ups.html'), 'utf8'),
+      dateIdeas: fs.readFileSync(path.join(root, 'date-ideas.html'), 'utf8'),
+      sitemap: fs.existsSync(path.join(root, 'sitemap.xml')),
+    }
+  }
+
+  it('renders tiles, JSON-LD and a sitemap from a populated result', async () => {
+    await main({ rootDir: root, fetchQuery: fetchWith({ popups: [POPUP_DOC], dateIdeas: [DATE_IDEA_DOC] }) })
+
+    const after = snapshot()
+    expect(after.popups).toContain('Fixture Pop-Up')
+    expect(after.popups).toContain('application/ld+json')
+    expect(after.dateIdeas).toContain('Fixture Date')
+    expect(after.sitemap).toBe(true)
+  })
+
+  it('rejects an empty pop-up result and touches no file', async () => {
+    const before = snapshot()
+    await expect(
+      main({ rootDir: root, fetchQuery: fetchWith({ popups: [], dateIdeas: [DATE_IDEA_DOC] }) })
+    ).rejects.toThrow(/pop-ups/)
+    expect(snapshot()).toEqual(before)
+  })
+
+  it('rejects an empty date-idea result and leaves pop-ups.html untouched too', async () => {
+    const before = snapshot()
+    await expect(
+      main({ rootDir: root, fetchQuery: fetchWith({ popups: [POPUP_DOC], dateIdeas: [] }) })
+    ).rejects.toThrow(/date ideas/)
+    // Pop-ups are fetched first; they must not be written before date ideas are known good.
+    expect(snapshot()).toEqual(before)
+  })
+
+  it('treats documents that all fail the display filter as empty', async () => {
+    const hidden = { ...POPUP_DOC, display_overall: false }
+    const before = snapshot()
+    await expect(
+      main({ rootDir: root, fetchQuery: fetchWith({ popups: [hidden], dateIdeas: [DATE_IDEA_DOC] }) })
+    ).rejects.toThrow(/pop-ups/)
+    expect(snapshot()).toEqual(before)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Issue #431 (and #254): the committed pages must actually carry the output.
+// The pipeline shipped for months with every marker pair empty on main.
+// ---------------------------------------------------------------------------
+
+describe('committed pre-rendered output', () => {
+  const repo = path.resolve(__dirname, '..', '..')
+  const between = (file, start, end) => {
+    const html = fs.readFileSync(path.join(repo, file), 'utf8')
+    const from = html.indexOf(start) + start.length
+    return html.slice(from, html.indexOf(end, from)).trim()
+  }
+
+  it('pop-ups.html has tiles between the markers', () => {
+    expect(between('pop-ups.html', '<!-- STATIC_POPUPS_START -->', '<!-- STATIC_POPUPS_END -->')).toContain('popup-tile')
+  })
+
+  it('pop-ups.html has JSON-LD between the markers', () => {
+    expect(between('pop-ups.html', '<!-- STATIC_JSONLD_START -->', '<!-- STATIC_JSONLD_END -->')).toContain('application/ld+json')
+  })
+
+  it('date-ideas.html has tiles between the markers', () => {
+    expect(between('date-ideas.html', '<!-- STATIC_DATE_IDEAS_START -->', '<!-- STATIC_DATE_IDEAS_END -->')).not.toBe('')
+  })
+
+  it('sitemap.xml exists, because robots.txt advertises it', () => {
+    expect(fs.readFileSync(path.join(repo, 'robots.txt'), 'utf8')).toMatch(/Sitemap: https:\/\/nycsliceoflife\.com\/sitemap\.xml/)
+    const sitemap = fs.readFileSync(path.join(repo, 'sitemap.xml'), 'utf8')
+    expect(sitemap).toContain('<urlset')
   })
 })

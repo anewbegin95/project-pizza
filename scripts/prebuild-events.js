@@ -608,21 +608,49 @@ function injectStaticTiles(htmlPath, tilesHtml, startMarker, endMarker) {
 }
 
 // ---------------------------------------------------------------------------
+// Empty-result floor (#431)
+// ---------------------------------------------------------------------------
+
+/**
+ * Sanity answering `[]`, or every document failing the display filter, is
+ * indistinguishable from a quiet day if the script just writes what it got:
+ * it exits 0, blanks the markers, regenerates an empty sitemap and commits it.
+ * A floor turns that into a failed run. Override with PREBUILD_MIN_POPUPS /
+ * PREBUILD_MIN_DATE_IDEAS (0 disables) for a stretch with genuinely none.
+ */
+function minimumFromEnv(name, fallback) {
+    const parsed = Number.parseInt(process.env[name], 10);
+    return Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+}
+
+function assertMinimumCount(label, count, minimum) {
+    if (count < minimum) {
+        throw new Error(
+            `Refusing to write: found ${count} active ${label}, expected at least ${minimum}. ` +
+            'An empty Sanity result would blank the static listings and the sitemap. ' +
+            'If there really are none, rerun with PREBUILD_MIN_POPUPS / PREBUILD_MIN_DATE_IDEAS=0.'
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
-async function main() {
-    // --- Pop-ups ---
-    const popupsHtmlPath = path.resolve(__dirname, '..', 'pop-ups.html');
-
+/**
+ * Fetches, validates, and only then writes. Everything is fetched and checked
+ * before the first file is touched, so a bad date-ideas result cannot leave
+ * pop-ups.html half-updated.
+ *
+ * Throws rather than exiting so it can be tested; the CLI wrapper below turns
+ * a rejection into a non-zero exit.
+ */
+async function main({ rootDir = path.resolve(__dirname, '..'), fetchQuery = sanityFetch } = {}) {
     console.log('Fetching pop-up events from Sanity...');
-    let popupResults;
-    try {
-        popupResults = await sanityFetch(POPUPS_QUERY);
-    } catch (err) {
-        console.error('Failed to fetch pop-up events from Sanity:', err.message);
-        process.exit(1);
-    }
+    const popupResults = await fetchQuery(POPUPS_QUERY);
+
+    console.log('Fetching date ideas from Sanity...');
+    const dateIdeaResults = await fetchQuery(DATE_IDEAS_QUERY);
 
     const popups = popupResults
         .map(mapSanityPopup)
@@ -630,66 +658,39 @@ async function main() {
             String(e.master_display).toUpperCase() === 'TRUE' &&
             String(e.popups_page).toUpperCase() === 'TRUE'
         );
-
-    console.log(`Found ${popups.length} active pop-up(s) for the pop-ups listing page.`);
-
-    const popupTilesHtml = popups.map(generatePopupTileHtml).join('\n        ');
-
-    try {
-        injectStaticTiles(popupsHtmlPath, popupTilesHtml, STATIC_POPUPS_START, STATIC_POPUPS_END);
-        console.log(`Updated pop-ups.html with ${popups.length} pre-rendered event tile(s).`);
-    } catch (err) {
-        console.error(err.message);
-        process.exit(1);
-    }
-
-    const jsonLdHtml = generateCollectionJsonLd(popups);
-    try {
-        injectStaticTiles(popupsHtmlPath, jsonLdHtml, STATIC_JSONLD_START, STATIC_JSONLD_END);
-        console.log('Updated pop-ups.html with static JSON-LD structured data.');
-    } catch (err) {
-        console.error(err.message);
-        process.exit(1);
-    }
-
-    // --- Date Ideas ---
-    const dateIdeasHtmlPath = path.resolve(__dirname, '..', 'date-ideas.html');
-
-    console.log('Fetching date ideas from Sanity...');
-    let dateIdeasResults;
-    try {
-        dateIdeasResults = await sanityFetch(DATE_IDEAS_QUERY);
-    } catch (err) {
-        console.error('Failed to fetch date ideas from Sanity:', err.message);
-        process.exit(1);
-    }
-
-    const dateIdeas = dateIdeasResults
+    const dateIdeas = dateIdeaResults
         .map(mapSanityDateIdea)
         .filter(e => String(e.master_display).toUpperCase() === 'TRUE');
 
+    console.log(`Found ${popups.length} active pop-up(s) for the pop-ups listing page.`);
     console.log(`Found ${dateIdeas.length} active date idea(s) for the date ideas listing page.`);
 
-    const dateIdeaTilesHtml = dateIdeas.map(generateDateIdeaTileHtml).join('\n        ');
+    assertMinimumCount('pop-ups', popups.length, minimumFromEnv('PREBUILD_MIN_POPUPS', 1));
+    assertMinimumCount('date ideas', dateIdeas.length, minimumFromEnv('PREBUILD_MIN_DATE_IDEAS', 1));
 
-    try {
-        injectStaticTiles(dateIdeasHtmlPath, dateIdeaTilesHtml, STATIC_DATE_IDEAS_START, STATIC_DATE_IDEAS_END);
-        console.log(`Updated date-ideas.html with ${dateIdeas.length} pre-rendered date idea tile(s).`);
-    } catch (err) {
-        console.error(err.message);
-        process.exit(1);
-    }
+    // --- Pop-ups ---
+    const popupsHtmlPath = path.join(rootDir, 'pop-ups.html');
+    const popupTilesHtml = popups.map(generatePopupTileHtml).join('\n        ');
+    injectStaticTiles(popupsHtmlPath, popupTilesHtml, STATIC_POPUPS_START, STATIC_POPUPS_END);
+    console.log(`Updated pop-ups.html with ${popups.length} pre-rendered event tile(s).`);
+
+    injectStaticTiles(popupsHtmlPath, generateCollectionJsonLd(popups), STATIC_JSONLD_START, STATIC_JSONLD_END);
+    console.log('Updated pop-ups.html with static JSON-LD structured data.');
+
+    // --- Date Ideas ---
+    const dateIdeasHtmlPath = path.join(rootDir, 'date-ideas.html');
+    const dateIdeaTilesHtml = dateIdeas.map(generateDateIdeaTileHtml).join('\n        ');
+    injectStaticTiles(dateIdeasHtmlPath, dateIdeaTilesHtml, STATIC_DATE_IDEAS_START, STATIC_DATE_IDEAS_END);
+    console.log(`Updated date-ideas.html with ${dateIdeas.length} pre-rendered date idea tile(s).`);
 
     // --- Sitemap ---
-    const sitemapPath = path.resolve(__dirname, '..', 'sitemap.xml');
-    const sitemapXml = generateSitemap(popups, dateIdeas);
-    fs.writeFileSync(sitemapPath, sitemapXml, 'utf8');
+    fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), generateSitemap(popups, dateIdeas), 'utf8');
     console.log(`Generated sitemap.xml with ${popups.length} pop-up(s) and ${dateIdeas.length} date idea(s).`);
 }
 
 if (require.main === module) {
     main().catch(err => {
-        console.error(err);
+        console.error(err.message || err);
         process.exit(1);
     });
 }
@@ -708,4 +709,6 @@ module.exports = {
     mapSanityPopup,
     mapSanityDateIdea,
     injectStaticTiles,
+    assertMinimumCount,
+    main,
 };
