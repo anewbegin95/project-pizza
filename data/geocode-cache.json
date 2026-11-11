@@ -1072,5 +1072,10 @@
     "lat": 40.7083307,
     "lon": -74.0009058,
     "borough": "manhattan"
+  },
+  "64 Dobbin St (Brooklyn), New York, NY": {
+    "lat": 40.7242319,
+    "lon": -73.9537824,
+    "borough": "brooklyn"
   }
 }
