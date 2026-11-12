@@ -1077,5 +1077,10 @@
     "lat": 40.7242319,
     "lon": -73.9537824,
     "borough": "brooklyn"
+  },
+  "40 Renwick St, New York, NY": {
+    "lat": 40.7255372,
+    "lon": -74.0082146,
+    "borough": "manhattan"
   }
 }
