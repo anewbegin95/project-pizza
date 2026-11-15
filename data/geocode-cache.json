@@ -1082,5 +1082,10 @@
     "lat": 40.7255372,
     "lon": -74.0082146,
     "borough": "manhattan"
+  },
+  "444 Broome St, New York, NY": {
+    "lat": 40.72201,
+    "lon": -74.0000529,
+    "borough": "manhattan"
   }
 }
