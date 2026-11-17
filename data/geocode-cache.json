@@ -1087,5 +1087,15 @@
     "lat": 40.72201,
     "lon": -74.0000529,
     "borough": "manhattan"
+  },
+  "89 Greene St, New York, NY": {
+    "lat": 40.72401,
+    "lon": -74.0003145,
+    "borough": "manhattan"
+  },
+  "152 Franklin St, New York, NY": {
+    "lat": 40.7194221,
+    "lon": -74.0078766,
+    "borough": "manhattan"
   }
 }
