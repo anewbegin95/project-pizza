@@ -1097,5 +1097,10 @@
     "lat": 40.7194221,
     "lon": -74.0078766,
     "borough": "manhattan"
+  },
+  "179 W Broadway, New York, NY": {
+    "lat": 40.7179072,
+    "lon": -74.0070492,
+    "borough": "manhattan"
   }
 }
