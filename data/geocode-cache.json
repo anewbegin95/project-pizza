@@ -1102,5 +1102,10 @@
     "lat": 40.7179072,
     "lon": -74.0070492,
     "borough": "manhattan"
+  },
+  "23 W 18th St, New York, NY": {
+    "lat": 40.739136,
+    "lon": -73.9930759,
+    "borough": "manhattan"
   }
 }
