@@ -1107,5 +1107,15 @@
     "lat": 40.739136,
     "lon": -73.9930759,
     "borough": "manhattan"
+  },
+  "42 Greene St, New York, NY": {
+    "lat": 40.7218609,
+    "lon": -74.001689,
+    "borough": "manhattan"
+  },
+  "666 Broadway, New York, NY": {
+    "lat": 40.7020308,
+    "lon": -73.9446584,
+    "borough": "brooklyn"
   }
 }
