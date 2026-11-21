@@ -1117,5 +1117,15 @@
     "lat": 40.7020308,
     "lon": -73.9446584,
     "borough": "brooklyn"
+  },
+  "SoHo (Northern Broadway area), New York, NY": {
+    "lat": 40.72288,
+    "lon": -73.9987505,
+    "borough": "manhattan"
+  },
+  "347 Broome St, New York, NY": {
+    "lat": 40.7196267,
+    "lon": -73.9949609,
+    "borough": "manhattan"
   }
 }
