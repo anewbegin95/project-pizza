@@ -1127,5 +1127,15 @@
     "lat": 40.7196267,
     "lon": -73.9949609,
     "borough": "manhattan"
+  },
+  "9 E 19th St, New York, NY": {
+    "lat": 40.7389287,
+    "lon": -73.990469,
+    "borough": "manhattan"
+  },
+  "647 5th Ave, New York, NY": {
+    "lat": 40.7594223,
+    "lon": -73.9761615,
+    "borough": "manhattan"
   }
 }
